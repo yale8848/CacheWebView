@@ -19,7 +19,7 @@ import android.webkit.WebViewClient;
  * Created by yale on 2017/9/15.
  */
 
-public final class CacheWebViewClient extends WebViewClient {
+final class CacheWebViewClient extends WebViewClient {
 
 
     public WebViewClient mCustomWebViewClient;
@@ -30,6 +30,7 @@ public final class CacheWebViewClient extends WebViewClient {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
         if (mCustomWebViewClient!=null){
             return mCustomWebViewClient.shouldOverrideUrlLoading(view,url);
         }

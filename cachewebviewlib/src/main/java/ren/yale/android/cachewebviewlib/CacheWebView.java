@@ -11,9 +11,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
-import ren.yale.android.cachewebviewlib.utils.CacheWebViewFileUtil;
+import ren.yale.android.cachewebviewlib.utils.FileUtil;
 import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
 
 
@@ -29,6 +30,8 @@ public class CacheWebView extends WebView {
 
     private CacheWebViewClient mCacheWebViewClient;
 
+    private HashMap<String,Map> mHeaderMaps;
+
     public CacheWebView(Context context) {
         this(context,null,0);
     }
@@ -42,8 +45,13 @@ public class CacheWebView extends WebView {
         init();
     }
     private void init(){
+        initData();
         initSettings();
         initWebViewClient();
+    }
+
+    private void initData() {
+        mHeaderMaps = new HashMap<>();
     }
 
     public static WebViewCache getWebViewCache(){
@@ -69,6 +77,8 @@ public class CacheWebView extends WebView {
     }
 
     public void loadUrl(String url, Map<String, String> additionalHttpHeaders) {
+        mHeaderMaps.put(url,additionalHttpHeaders);
+        getWebViewCache().addHeaderMap(url,additionalHttpHeaders);
         super.loadUrl(url,additionalHttpHeaders);
     }
 
@@ -93,7 +103,8 @@ public class CacheWebView extends WebView {
         webSettings.setDefaultTextEncodingName("UTF-8");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-           webSettings.setAllowFileAccessFromFileURLs(true);
+            webSettings.setAllowFileAccessFromFileURLs(true);
+            webSettings.setAllowUniversalAccessFromFileURLs(true);
         }
         if (NetworkUtils.isConnected(this.getContext()) ){
             webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
@@ -134,24 +145,29 @@ public class CacheWebView extends WebView {
 
     public void clearCache(){
 
-        CacheWebViewFileUtil.deleteDirs(mAppCachePath,false);
+        FileUtil.deleteDirs(mAppCachePath,false);
         getWebViewCache().clean();
     }
 
-    public void release(){
+    public void destroy(){
+
+        getWebViewCache().clearHeaderMap(mHeaderMaps);
+        mHeaderMaps.clear();
+        mHeaderMaps = null;
+
         ViewParent viewParent = this.getParent();
         if (viewParent == null){
-            this.destroy();
+            super.destroy();
             return ;
         }
         ViewGroup parent = (ViewGroup) viewParent;
         parent.removeView(this);
-        this.destroy();
+        super.destroy();
     }
     public void evaluateJS(String strJsFunction){
         this.evaluateJS(strJsFunction,null);
     }
-   public void evaluateJS(String strJsFunction,ValueCallback valueCallback){
+    public void evaluateJS(String strJsFunction,ValueCallback valueCallback){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT&&valueCallback!=null) {
             this.evaluateJavascript("javascript:"+strJsFunction, valueCallback);
         } else {

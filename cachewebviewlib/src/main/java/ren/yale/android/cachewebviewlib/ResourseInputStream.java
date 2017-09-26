@@ -1,7 +1,5 @@
 package ren.yale.android.cachewebviewlib;
 
-import android.support.annotation.NonNull;
-
 import com.jakewharton.disklrucache.DiskLruCache;
 
 import java.io.IOException;
@@ -12,7 +10,7 @@ import java.io.OutputStream;
  * Created by yale on 2017/9/22.
  */
 
-public class ResourseInputStream extends InputStream {
+class ResourseInputStream extends InputStream {
 
     private OutputStream mOutputStream;
     private OutputStream mOutputStreamProperty;
@@ -53,7 +51,7 @@ public class ResourseInputStream extends InputStream {
     }
 
     @Override
-    public int read(@NonNull byte[] b) throws IOException {
+    public int read( byte[] b) throws IOException {
         int count =  mInnerInputStream.read(b);
         writeStream(b,0,count);
         return count;
@@ -74,7 +72,7 @@ public class ResourseInputStream extends InputStream {
 
     }
     @Override
-    public int read(@NonNull byte[] b, int off, int len) throws IOException {
+    public int read( byte[] b, int off, int len) throws IOException {
         int count = mInnerInputStream.read(b, off, len);
         writeStream(b,off,count);
         return count;

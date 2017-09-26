@@ -2,16 +2,12 @@ package ren.yale.android.cachewebviewlib;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.webkit.WebResourceResponse;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.HashSet;
-
-import ren.yale.android.cachewebviewlib.utils.CacheWebViewFileUtil;
-import ren.yale.android.cachewebviewlib.utils.CacheFastWebViewLog;
 
 
 /**
@@ -95,19 +91,6 @@ class ResourceLoader {
         return url;
     }
 
-    public WebResourceResponse getWebResourceResponse(String url){
-        String urlPath = getUrlPath(url);
-        String mime = CacheWebViewFileUtil.getMIMEType(urlPath);
-        if (TextUtils.isEmpty(mime)){
-            return null;
-        }
-
-        InputStream inputStream = getAssetFileStream(urlPath);
-        if (inputStream == null){
-            return null;
-        }
-        return new WebResourceResponse(mime,"utf-8",inputStream);
-    }
 
     public InputStream getAssetFileStream(String urlPath){
         String assetFile = findAssetFile(urlPath);
@@ -115,7 +98,7 @@ class ResourceLoader {
             return null;
         }
         try {
-            CacheFastWebViewLog.d(urlPath);
+            CacheWebViewLog.d(urlPath);
             return  mContext.getAssets().open(mAssetDir+File.separator+assetFile);
         } catch (IOException e) {
             e.printStackTrace();

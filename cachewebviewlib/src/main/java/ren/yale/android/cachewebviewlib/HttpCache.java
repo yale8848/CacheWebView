@@ -14,13 +14,11 @@ import ren.yale.android.cachewebviewlib.utils.TimeUtils;
  */
 
 class HttpCache {
-    private HttpURLConnection mConnect;
 
 
     private HttpCacheFlag mHttpCacheFlag;
 
     public HttpCache(HttpURLConnection connection){
-        mConnect = connection;
         mHttpCacheFlag = new HttpCacheFlag();
 
         mHttpCacheFlag.setCacheControl(connection.getHeaderField(CacheFlag.Cache_control.value()));
