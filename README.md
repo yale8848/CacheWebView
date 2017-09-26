@@ -20,11 +20,11 @@ compile 'ren.yale.android:cachewebviewlib:0.2'
  - 修改缓存路径和大小
  ```
  try {
-             File cacheFile = new File(this.getCacheDir(),"cache_path_name");
-             CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100)；
-         } catch (IOException e) {
-             e.printStackTrace();
-         }
+    File cacheFile = new File(this.getCacheDir(),"cache_path_name");
+    CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100);//100M
+ } catch (IOException e) {
+     e.printStackTrace();
+ }
 
  ```
 
@@ -39,13 +39,14 @@ compile 'ren.yale.android:cachewebviewlib:0.2'
 请让web前端同学修改静态资源链接，如给链接加md5值，或者加版本等等方式；
 
 ```
-  try {
-            File cacheFile = new File(this.getCacheDir(),CACHE_NAME);
-            CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*10).
-                    setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+ try {
+    File cacheFile = new File(this.getCacheDir(),"cache_path_name");
+    CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100).
+    setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
+ } catch (IOException e) {
+     e.printStackTrace();
+ }
+
 ```
 
 - 静态资源后缀映射
@@ -78,12 +79,12 @@ webview.loadUrl(URL,getHeaderMap(URL));
 ```
 
 ```
-      @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                CacheWebView v = (CacheWebView) view;
-                v.loadUrl(url,getHeaderMap(url));
-                return true;
-            }
+@Override
+ public boolean shouldOverrideUrlLoading(WebView view, String url) {
+     CacheWebView v = (CacheWebView) view;
+     v.loadUrl(url,getHeaderMap(url));
+     return true;
+ }
 ```
 
 
