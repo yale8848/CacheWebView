@@ -100,66 +100,134 @@ final class CacheWebViewClient extends WebViewClient {
 
     @Override
     public void onTooManyRedirects(WebView view, Message cancelMsg, Message continueMsg) {
+
+        if (mCustomWebViewClient!=null){
+            mCustomWebViewClient.onTooManyRedirects(view, cancelMsg, continueMsg);
+            return;
+        }
+
         super.onTooManyRedirects(view, cancelMsg, continueMsg);
     }
 
     @Override
     public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+
+        if (mCustomWebViewClient!=null){
+            mCustomWebViewClient.onReceivedError(view, errorCode, description, failingUrl);
+            return;
+        }
+
         super.onReceivedError(view, errorCode, description, failingUrl);
     }
 
     @Override
     public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+        if (mCustomWebViewClient!=null){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mCustomWebViewClient.onReceivedError(view, request, error);
+            }
+            return;
+        }
         super.onReceivedError(view, request, error);
     }
 
     @Override
     public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+
+        if (mCustomWebViewClient!=null){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mCustomWebViewClient.onReceivedHttpError(view, request, errorResponse);
+            }
+            return;
+        }
+
         super.onReceivedHttpError(view, request, errorResponse);
     }
 
     @Override
     public void onFormResubmission(WebView view, Message dontResend, Message resend) {
+
+        if (mCustomWebViewClient!=null){
+            mCustomWebViewClient.onFormResubmission(view, dontResend, resend);
+            return;
+        }
         super.onFormResubmission(view, dontResend, resend);
     }
 
     @Override
     public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+
+        if (mCustomWebViewClient!=null){
+            mCustomWebViewClient.doUpdateVisitedHistory(view, url, isReload);
+            return;
+        }
         super.doUpdateVisitedHistory(view, url, isReload);
     }
 
     @Override
     public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-        handler.proceed();
+
+        if (mCustomWebViewClient!=null){
+            mCustomWebViewClient.onReceivedSslError( view,  handler,  error);
+            return;
+        }
+        super.onReceivedSslError( view,  handler,  error);
     }
 
     @Override
     public void onReceivedClientCertRequest(WebView view, ClientCertRequest request) {
+        if (mCustomWebViewClient!=null){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mCustomWebViewClient.onReceivedClientCertRequest(view, request);
+            }
+            return;
+        }
         super.onReceivedClientCertRequest(view, request);
     }
 
     @Override
     public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
+
+        if (mCustomWebViewClient!=null){
+            mCustomWebViewClient.onReceivedHttpAuthRequest(view, handler, host, realm);
+            return;
+        }
+
         super.onReceivedHttpAuthRequest(view, handler, host, realm);
     }
 
     @Override
     public boolean shouldOverrideKeyEvent(WebView view, KeyEvent event) {
+        if (mCustomWebViewClient!=null){
+            return mCustomWebViewClient.shouldOverrideKeyEvent(view, event);
+        }
         return super.shouldOverrideKeyEvent(view, event);
     }
 
     @Override
     public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
+        if (mCustomWebViewClient!=null){
+            mCustomWebViewClient.onUnhandledKeyEvent(view, event);
+            return;
+        }
         super.onUnhandledKeyEvent(view, event);
     }
 
     @Override
     public void onScaleChanged(WebView view, float oldScale, float newScale) {
+        if (mCustomWebViewClient!=null){
+            mCustomWebViewClient.onScaleChanged(view, oldScale, newScale);
+            return;
+        }
         super.onScaleChanged(view, oldScale, newScale);
     }
 
     @Override
     public void onReceivedLoginRequest(WebView view, String realm, String account, String args) {
+        if (mCustomWebViewClient!=null){
+            mCustomWebViewClient.onReceivedLoginRequest(view, realm, account, args);
+            return;
+        }
         super.onReceivedLoginRequest(view, realm, account, args);
     }
 }
