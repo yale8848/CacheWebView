@@ -29,3 +29,5 @@ dependencies {
     compile 'com.jakewharton:disklrucache:2.0.2'
     testCompile 'junit:junit:4.12'
 }
+
+apply from: './config/bintray.gradle'
