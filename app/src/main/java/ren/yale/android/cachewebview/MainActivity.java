@@ -1,9 +1,12 @@
 package ren.yale.android.cachewebview;
 
 import android.graphics.Bitmap;
+import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -18,14 +21,10 @@ import ren.yale.android.cachewebviewlib.WebViewCache;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String URL ="http://121.42.232.14:5600/converter/public/gs/index.html";
-    //private static final String URL ="http://lftbjb.52fdw.com:9058/LFT-EditingSystem/page/knowdic/knowdic-view.html?uid=1:101:701:[699]";
-    //private static final String URL = "https://image.baidu.com/search/index?tn=baiduimage&ipn=r&ct=201326592&cl=2&lm=-1&st=-1&fr=&hs=0&xthttps=111121&sf=1&fmq=&pv=&ic=0&nc=1&z=&se=1&showtab=0&fb=0&width=&height=&face=0&istype=2&ie=utf-8&word=%E5%B0%8F%E6%B8%85%E6%96%B0&oq=%E5%B0%8F%E6%B8%85%E6%96%B0&rsp=-1";
-    //private static final String URL ="https://lftresource.oss-cn-qingdao.aliyuncs.com/test/index1.html";
-    //private static final String URL ="http://www.baidu.com";
-    CacheWebView webview;
+    private static final String URL ="http://m.baidu.com";
+    private CacheWebView webview;
     long mStart = 0;
-    private static final String CACHE_NAME = "FastWebView68";
+    private static final String CACHE_NAME = "cahce_path";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,24 +35,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 mStart = System.currentTimeMillis();
+                view.getSettings().setLoadsImagesAutomatically(false);
                 super.onPageStarted(view, url, favicon);
             }
             @Override
             public void onPageFinished(WebView view, String url) {
+                view.getSettings().setLoadsImagesAutomatically(true);
+                Log.d("CacheWebView",(System.currentTimeMillis()-mStart)+"");
                 super.onPageFinished(view, url);
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 CacheWebView v = (CacheWebView) view;
-                v.loadUrl(url,getHeaderMap(url));
+                if (url.startsWith("http")){
+                    v.loadUrl(url,getHeaderMap(url));
+                }
                 return true;
+            }
+
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                handler.proceed();
             }
         });
 
         try {
-            File cacheFile = new File(webview.getContext().getCacheDir(),CACHE_NAME);
-            CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*10).
+            File cacheFile = new File(this.getCacheDir(),CACHE_NAME);
+            CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100).
                     setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
         } catch (IOException e) {
             e.printStackTrace();
@@ -64,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
     private Map getHeaderMap(String url){
         HashMap<String,String> map = new HashMap<>();
         map.put("aaa",url);
-
         return map;
 
     }
@@ -85,7 +93,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void clearCache(){
+
+        CacheWebView.getWebViewCache().clean();
         webview.clearCache();
+    }
+
+    @Override
+    protected void onDestroy() {
+        webview.destroy();
+        super.onDestroy();
     }
 
     @Override

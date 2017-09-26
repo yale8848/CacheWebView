@@ -15,19 +15,14 @@ class ResourseInputStream extends InputStream {
     private OutputStream mOutputStream;
     private OutputStream mOutputStreamProperty;
     private InputStream mInnerInputStream;
-    private IWriteFinish mIWriteFinish;
-    private int mFileLength;
     private int mCurrenReadLength;
     private DiskLruCache.Editor mEditorContent;
     private DiskLruCache.Editor mEditorProperty;
     private HttpCache mHttpCache;
-    private String mUrl;
 
-    public ResourseInputStream(String url,InputStream inputStream, int fileLength,
+    public ResourseInputStream(InputStream inputStream,
                                DiskLruCache.Editor content,DiskLruCache.Editor property,HttpCache httpCache){
-        mUrl=url;
         mInnerInputStream = inputStream;
-        mFileLength = fileLength;
         mHttpCache = httpCache;
         mEditorProperty = property;
         mEditorContent = content;

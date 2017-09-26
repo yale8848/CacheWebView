@@ -11,6 +11,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
 public class CacheWebView extends WebView {
 
     private static final String CACHE_NAME = "CacheWebView";
+    private static final int CACHE_SIZE = 200*1024*1024;
 
     private String mAppCachePath = "";
 
@@ -52,6 +54,15 @@ public class CacheWebView extends WebView {
 
     private void initData() {
         mHeaderMaps = new HashMap<>();
+
+        File cacheFile = new File(getContext().getCacheDir(),CACHE_NAME);
+        try {
+            CacheWebView.getWebViewCache().init(getContext(),cacheFile,CACHE_SIZE).
+                    setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static WebViewCache getWebViewCache(){
@@ -91,7 +102,6 @@ public class CacheWebView extends WebView {
         webSettings.setAllowFileAccess(true);
         webSettings.setUseWideViewPort(true);
 
-
         webSettings.setUseWideViewPort(true);
         webSettings.setLoadWithOverviewMode(true);
 
@@ -99,7 +109,6 @@ public class CacheWebView extends WebView {
         webSettings.setBuiltInZoomControls(false);
         webSettings.setDisplayZoomControls(false);
 
-        webSettings.setLoadsImagesAutomatically(true);
         webSettings.setDefaultTextEncodingName("UTF-8");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {

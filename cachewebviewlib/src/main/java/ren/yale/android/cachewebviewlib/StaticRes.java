@@ -12,6 +12,7 @@ public class StaticRes {
     private static HashSet STATIC = new HashSet(){
         {
             add("html");
+            add("htm");
             add("js");
             add("css");
             add("png");
@@ -41,11 +42,21 @@ public class StaticRes {
         return STATIC.contains(extension.toLowerCase().trim());
 
     }
-    public void addExtension(String extension){
+    public StaticRes addExtension(String extension){
         if (TextUtils.isEmpty(extension)){
-            return ;
+            return this;
         }
         extension = extension.replaceAll(".","");
         STATIC.add(extension.toLowerCase().trim());
+        return this;
+    }
+
+    public StaticRes removeExtension(String extension){
+        if (TextUtils.isEmpty(extension)){
+            return this;
+        }
+        extension = extension.replaceAll(".","");
+        STATIC.remove(extension.toLowerCase().trim());
+        return this;
     }
 }
