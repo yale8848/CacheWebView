@@ -6,7 +6,7 @@
 ### 引入库
 
 ```
-compile 'ren.yale.android:cachewebviewlib:0.2'
+compile 'ren.yale.android:cachewebviewlib:0.3'
 ```
 
 ### 修改代码
@@ -15,16 +15,16 @@ compile 'ren.yale.android:cachewebviewlib:0.2'
 
  以上，完毕，CacheWebView默认会有内部cache200M的空间，同时缓存模式是http默认的模式
 
+---
+
 ### 进阶
 
- - 修改缓存路径和大小
+ - 修改缓存路径和大小,最好在Application中初始化，初始化没有耗时操作
  ```
- try {
-    File cacheFile = new File(this.getCacheDir(),"cache_path_name");
-    CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100);//100M
- } catch (IOException e) {
-     e.printStackTrace();
- }
+
+File cacheFile = new File(this.getCacheDir(),"cache_path_name");
+CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100);//100M
+
 
  ```
 
@@ -39,13 +39,9 @@ compile 'ren.yale.android:cachewebviewlib:0.2'
 请让web前端同学修改静态资源链接，如给链接加md5值，或者加版本等等方式；
 
 ```
- try {
-    File cacheFile = new File(this.getCacheDir(),"cache_path_name");
-    CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100).
-    setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
- } catch (IOException e) {
-     e.printStackTrace();
- }
+File cacheFile = new File(this.getCacheDir(),"cache_path_name");
+CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100).
+setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
 
 ```
 

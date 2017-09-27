@@ -31,10 +31,13 @@ import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
 public class WebViewCache {
 
     private DiskLruCache mDiskLruCache;
-    private Context mContext;
     private StaticRes mStaticRes;
     private HashMap<String,Map> mHeaderMaps;
     private CacheStrategy mCacheStrategy = CacheStrategy.NORMAL;
+
+    private Context mContext;
+    private File mCacheFile;
+    private long mCaceSize;
 
     private static class InstanceHolder {
         public static final WebViewCache INSTANCE = new WebViewCache();
@@ -50,20 +53,35 @@ public class WebViewCache {
     }
 
 
+    public WebViewCache openCache(Context context, File directory, long maxSize) throws IOException {
+
+        if (mContext==null||mCacheFile==null||mCaceSize==0){
+            mContext = context.getApplicationContext();
+            mCacheFile = directory;
+            mCaceSize = maxSize;
+        }
+        if (mHeaderMaps==null){
+            mHeaderMaps = new HashMap<>();
+        }
+        if (mDiskLruCache==null){
+            mDiskLruCache = DiskLruCache.open(mCacheFile, AppUtils.getVersionCode(mContext),1,mCaceSize);
+        }
+        return this;
+    }
+
+
+
     /**
      * Create DiskLruCache
      * @param directory a writable directory
      * @param maxSize the maximum number of bytes this cache should use to store
      * @throws IOException if reading or writing the cache directory fails
      */
-    public WebViewCache init(Context context, File directory, long maxSize) throws IOException{
-        mHeaderMaps = new HashMap<>();
+    public WebViewCache init(Context context, File directory, long maxSize){
+
         mContext = context.getApplicationContext();
-        if (mDiskLruCache!=null){
-            mDiskLruCache.delete();
-            mDiskLruCache = null;
-        }
-        mDiskLruCache = DiskLruCache.open(directory, AppUtils.getVersionCode(context),1,maxSize);
+        mCacheFile = directory;
+        mCaceSize = maxSize;
         return this;
     }
     /**
@@ -71,7 +89,7 @@ public class WebViewCache {
      * @param directory a writable directory
      * @throws IOException if reading or writing the cache directory fails
      */
-    public WebViewCache init(Context context, File directory) throws IOException{
+    public WebViewCache init(Context context, File directory){
         return  init(context,directory,Integer.MAX_VALUE);
     }
     public void clean(){
@@ -147,19 +165,18 @@ public class WebViewCache {
 
             if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK){
 
-                ResourseInputStream resourseInputStream = new ResourseInputStream(httpURLConnection.getInputStream(),
+                return new ResourseInputStream(url,httpURLConnection.getInputStream(),
                         getEditor(getKey(url)),getEditor(getFlagKey(url)),remote);
-                return resourseInputStream;
             }
             if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_MODIFIED){
                 InputStream  inputStream = getCacheInputStream(url);
                 ResourseInputStream resourseInputStream = null;
                 if (inputStream == null){
-                    resourseInputStream = new ResourseInputStream(httpURLConnection.getInputStream(),
+                    resourseInputStream = new ResourseInputStream(url,httpURLConnection.getInputStream(),
                             getEditor(getKey(url)),getEditor(getFlagKey(url)),remote);
                 }else{
                     CacheWebViewLog.d(url+" 304 from cache");
-                    resourseInputStream = new ResourseInputStream(inputStream,
+                    resourseInputStream = new ResourseInputStream(url,inputStream,
                             null,null,remote);
                 }
                 return resourseInputStream;

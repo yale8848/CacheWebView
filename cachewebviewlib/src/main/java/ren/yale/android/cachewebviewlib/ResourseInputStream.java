@@ -19,16 +19,18 @@ class ResourseInputStream extends InputStream {
     private DiskLruCache.Editor mEditorContent;
     private DiskLruCache.Editor mEditorProperty;
     private HttpCache mHttpCache;
+    private String mUrl="";
 
-    public ResourseInputStream(InputStream inputStream,
+    public ResourseInputStream(String url,InputStream inputStream,
                                DiskLruCache.Editor content,DiskLruCache.Editor property,HttpCache httpCache){
+
+
+        mUrl = url;
         mInnerInputStream = inputStream;
         mHttpCache = httpCache;
         mEditorProperty = property;
         mEditorContent = content;
         getStream(content,property);
-
-
     }
 
     private void getStream(DiskLruCache.Editor content,DiskLruCache.Editor property){
@@ -36,7 +38,6 @@ class ResourseInputStream extends InputStream {
             return;
         }
         try {
-
             mOutputStream = content.newOutputStream(0);
             mOutputStreamProperty = property.newOutputStream(0);
         } catch (IOException e) {
@@ -95,6 +96,8 @@ class ResourseInputStream extends InputStream {
             mEditorProperty.commit();
             mOutputStreamProperty.close();
             mOutputStream.close();
+
+            CacheWebViewLog.d(mUrl +" cached");
         }else if (mEditorProperty!=null&&mEditorContent!=null){
             mEditorContent.abort();
             mEditorProperty.abort();

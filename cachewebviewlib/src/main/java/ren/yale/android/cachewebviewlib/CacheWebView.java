@@ -57,8 +57,8 @@ public class CacheWebView extends WebView {
 
         File cacheFile = new File(getContext().getCacheDir(),CACHE_NAME);
         try {
-            CacheWebView.getWebViewCache().init(getContext(),cacheFile,CACHE_SIZE).
-                    setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
+            CacheWebView.getWebViewCache().openCache(getContext(),cacheFile,CACHE_SIZE);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

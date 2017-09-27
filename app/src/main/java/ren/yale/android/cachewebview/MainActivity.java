@@ -10,24 +10,22 @@ import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import ren.yale.android.cachewebviewlib.CacheWebView;
-import ren.yale.android.cachewebviewlib.WebViewCache;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String URL ="http://m.baidu.com";
     private CacheWebView webview;
-    long mStart = 0;
-    private static final String CACHE_NAME = "cahce_path";
+    private long mStart = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         webview = (CacheWebView) findViewById(R.id.webview);
 
@@ -60,13 +58,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        try {
-            File cacheFile = new File(this.getCacheDir(),CACHE_NAME);
-            CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100).
-                    setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
 
     }
 

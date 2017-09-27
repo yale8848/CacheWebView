@@ -88,14 +88,30 @@ final class CacheWebViewClient extends WebViewClient {
 
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+        WebResourceResponse webResourceResponse = null;
+        if (mCustomWebViewClient!=null){
+            webResourceResponse =  mCustomWebViewClient.shouldInterceptRequest(view,url);
+        }
+        if (webResourceResponse != null){
+            return webResourceResponse;
 
+        }
         return WebViewCache.getInstance().getWebResourceResponse(url);
+
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-        return this.shouldInterceptRequest(view, request.getUrl().toString());
+
+        WebResourceResponse webResourceResponse = null;
+        if (mCustomWebViewClient!=null){
+            webResourceResponse =  mCustomWebViewClient.shouldInterceptRequest(view,request);
+        }
+        if (webResourceResponse != null){
+            return webResourceResponse;
+        }
+        return WebViewCache.getInstance().getWebResourceResponse(request.getUrl().toString());
     }
 
     @Override
