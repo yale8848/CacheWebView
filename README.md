@@ -93,5 +93,5 @@ webview.loadUrl(URL,getHeaderMap(URL));
 
 ### 流程图
 
-![CacheWebView流程图](https://static.oschina.net/uploads/img/201709/27155537_DDjg.png)
+![CacheWebView流程图](https://static.oschina.net/uploads/img/201709/27155537_DDjg.png?v=1)
 
