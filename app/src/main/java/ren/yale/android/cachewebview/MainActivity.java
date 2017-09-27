@@ -58,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
     }
 
     private Map getHeaderMap(String url){

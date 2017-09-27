@@ -21,7 +21,7 @@ class HttpCache {
     public HttpCache(HttpURLConnection connection){
         mHttpCacheFlag = new HttpCacheFlag();
 
-        mHttpCacheFlag.setCacheControl(connection.getHeaderField(CacheFlag.Cache_control.value()));
+        mHttpCacheFlag.setCacheControl(connection.getHeaderField(CacheFlag.Cache_Control.value()));
         mHttpCacheFlag.setEtag(connection.getHeaderField(CacheFlag.ETag.value()));
         mHttpCacheFlag.setExpires(connection.getHeaderField(CacheFlag.Expires.value()));
         mHttpCacheFlag.setLastModified(connection.getHeaderField(CacheFlag.Last_Modified.value()));
@@ -64,7 +64,7 @@ class HttpCache {
     }
 
     private enum CacheFlag{
-        Cache_control("Cache-control"),
+        Cache_Control("Cache-Control"),
         Last_Modified("Last-Modified"),
         ETag("ETag"),
         Expires("Expires"),
