@@ -95,3 +95,7 @@ webview.loadUrl(URL,getHeaderMap(URL));
 
 ![CacheWebView流程图](https://static.oschina.net/uploads/img/201709/27155537_DDjg.png?v=1)
 
+
+### 博客
+
+[如何让Android WebView访问更快](https://my.oschina.net/yale8848/blog/1544298)
