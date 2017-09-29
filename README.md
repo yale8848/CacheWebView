@@ -7,7 +7,7 @@
 ### 引入库
 
 ```
-compile 'ren.yale.android:cachewebviewlib:0.5.1'
+compile 'ren.yale.android:cachewebviewlib:0.5.2'
 ```
 
 ### 修改代码
@@ -90,6 +90,14 @@ webview.loadUrl(URL,getHeaderMap(URL));
  }
 ```
 
+- 阻塞图片加载，让页面更快加载
+
+  默认没有阻塞图片加载，isBlockNetworkImage(true)后。在页面onPageStarted时阻塞图片加载，onPageFinished时打开图片加载
+
+```
+CacheWebView webview;
+webview.isBlockNetworkImage(true);
+```
 
 ### 流程图
 

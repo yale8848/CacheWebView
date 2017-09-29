@@ -24,6 +24,7 @@ final class CacheWebViewClient extends WebViewClient {
 
     public WebViewClient mCustomWebViewClient;
 
+
     public void setCustomWebViewClient(WebViewClient webViewClient){
         mCustomWebViewClient = webViewClient;
     }
@@ -50,6 +51,8 @@ final class CacheWebViewClient extends WebViewClient {
 
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        CacheWebView cacheWebView = (CacheWebView) view;
+        cacheWebView.setBlockNetworkImage(true);
         if (mCustomWebViewClient!=null){
             mCustomWebViewClient.onPageStarted(view,url,favicon);
             return;
@@ -59,6 +62,8 @@ final class CacheWebViewClient extends WebViewClient {
 
     @Override
     public void onPageFinished(WebView view, String url) {
+        CacheWebView cacheWebView = (CacheWebView) view;
+        cacheWebView.setBlockNetworkImage(false);
         if (mCustomWebViewClient!=null){
             mCustomWebViewClient.onPageFinished(view,url);
             return;

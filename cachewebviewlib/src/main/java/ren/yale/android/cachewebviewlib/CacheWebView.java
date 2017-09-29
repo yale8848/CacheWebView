@@ -33,6 +33,7 @@ public class CacheWebView extends WebView {
     private CacheWebViewClient mCacheWebViewClient;
 
     private HashMap<String,Map> mHeaderMaps;
+    private boolean mIsBlockImageLoad = false;
 
     public CacheWebView(Context context) {
         this(context,null,0);
@@ -91,6 +92,18 @@ public class CacheWebView extends WebView {
         mHeaderMaps.put(url,additionalHttpHeaders);
         getWebViewCache().addHeaderMap(url,additionalHttpHeaders);
         super.loadUrl(url,additionalHttpHeaders);
+    }
+
+    public void isBlockNetworkImage(boolean isBlock){
+        mIsBlockImageLoad = isBlock;
+    }
+
+    public void setBlockNetworkImage(boolean isBlock){
+        if (mIsBlockImageLoad){
+            WebSettings webSettings = this.getSettings();
+            webSettings.setBlockNetworkImage(isBlock);
+        }
+
     }
 
     private void initSettings(){
