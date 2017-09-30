@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
         webview.setEnableCache(true);
         webview.setBlockNetworkImage(false);
+
         webview.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 webview.loadUrl(URL,getHeaderMap(URL));
                 break;
             case R.id.btn_preload:
-                CacheWebView.preLoad(this,URL);
+                CacheWebView.cacheWebView(this).loadUrl(URL);
                 break;
             case R.id.btn_clearcache:
                 clearCache();

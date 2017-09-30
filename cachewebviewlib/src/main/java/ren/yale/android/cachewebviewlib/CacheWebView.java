@@ -84,9 +84,8 @@ public class CacheWebView extends WebView {
         mCacheWebViewClient.setCacheStrategy(cacheStrategy);
     }
 
-    public static void preLoad(Context context,String url){
-        CacheWebView webView = new CacheWebView(context);
-        webView.loadUrl(url);
+    public static CacheWebView cacheWebView(Context context){
+        return new CacheWebView(context);
     }
 
     public void setEnableCache(boolean enableCache){

@@ -7,7 +7,7 @@
 ### 引入库
 
 ```
-compile 'ren.yale.android:cachewebviewlib:0.7.1'
+compile 'ren.yale.android:cachewebviewlib:0.7.2'
 ```
 
 ### 修改代码
@@ -32,7 +32,7 @@ CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100);//100M
 - 预加载，为了访问更快，可以将常用的页面预加载，要放在UI线程
 
 ```
- CacheWebView.preLoad(this,URL);
+CacheWebView.cacheWebView(this).loadUrl(URL);
 
 ```
 
