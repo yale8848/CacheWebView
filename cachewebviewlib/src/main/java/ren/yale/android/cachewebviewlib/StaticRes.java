@@ -14,6 +14,7 @@ public class StaticRes {
             add("html");
             add("htm");
             add("js");
+            add("ico");
             add("css");
             add("png");
             add("jpg");

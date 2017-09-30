@@ -7,7 +7,7 @@
 ### 引入库
 
 ```
-compile 'ren.yale.android:cachewebviewlib:0.7.2'
+compile 'ren.yale.android:cachewebviewlib:0.7.3'
 ```
 
 ### 修改代码
