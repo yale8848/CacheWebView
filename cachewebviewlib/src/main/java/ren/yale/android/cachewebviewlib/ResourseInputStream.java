@@ -33,6 +33,10 @@ class ResourseInputStream extends InputStream {
         getStream(content,property);
     }
 
+    public HttpCache getHttpCache(){
+        return mHttpCache;
+    }
+
     private void getStream(DiskLruCache.Editor content,DiskLruCache.Editor property){
         if (content == null||property == null){
             return;

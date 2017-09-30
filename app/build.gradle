@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
     defaultConfig {
-        applicationId "ren.yale.android.cachewebview"
+        applicationId "ren.yale.android.cachewebview1"
         minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
@@ -28,5 +28,6 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha9'
     testCompile 'junit:junit:4.12'
     //compile project(':cachewebviewlib')
-    compile 'ren.yale.android:cachewebviewlib:0.5'
+    //compile 'ren.yale.android:cachewebviewlib:0.5'
+    compile project(':cachewebviewlib')
 }

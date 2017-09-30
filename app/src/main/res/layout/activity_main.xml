@@ -26,12 +26,12 @@
         android:layout_height="wrap_content"
         android:onClick="onClick"
         android:text="clear cache"/>
-    <ren.yale.android.cachewebviewlib.CacheWebView
+    <ren.yale.android.cachewebview.TestWebView
         android:id="@+id/webview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         >
-    </ren.yale.android.cachewebviewlib.CacheWebView>
+    </ren.yale.android.cachewebview.TestWebView>
 
 </LinearLayout>

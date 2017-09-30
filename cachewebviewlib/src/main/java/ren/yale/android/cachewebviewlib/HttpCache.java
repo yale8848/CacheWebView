@@ -2,7 +2,11 @@ package ren.yale.android.cachewebviewlib;
 
 import android.text.TextUtils;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import ren.yale.android.cachewebviewlib.bean.HttpCacheFlag;
 import ren.yale.android.cachewebviewlib.utils.JsonWrapper;
@@ -17,16 +21,54 @@ class HttpCache {
 
 
     private HttpCacheFlag mHttpCacheFlag;
+    private HttpURLConnection mConnection;
+
 
     public HttpCache(HttpURLConnection connection){
         mHttpCacheFlag = new HttpCacheFlag();
-
+        mConnection = connection;
         mHttpCacheFlag.setCacheControl(connection.getHeaderField(CacheFlag.Cache_Control.value()));
         mHttpCacheFlag.setEtag(connection.getHeaderField(CacheFlag.ETag.value()));
         mHttpCacheFlag.setExpires(connection.getHeaderField(CacheFlag.Expires.value()));
         mHttpCacheFlag.setLastModified(connection.getHeaderField(CacheFlag.Last_Modified.value()));
         mHttpCacheFlag.setPragma(connection.getHeaderField(CacheFlag.Pragma.value()));
         mHttpCacheFlag.setCurrentTime(TimeUtils.getCurrentTime());
+    }
+    public int getStatusCode(){
+        try {
+            return mConnection.getResponseCode();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    public Map<String,String> getResponseHeader(){
+        Map<String,String> map = new HashMap<>();
+        Map<String,List<String>> maps =  mConnection.getHeaderFields();
+
+        if (maps==null||maps.size()==0){
+            return map;
+        }
+
+        for (Map.Entry entry: maps.entrySet()){
+
+
+            if (entry == null){
+                continue;
+            }
+            Object key = entry.getKey();
+            if (key == null){
+                continue;
+            }
+
+            List<String> values = (List<String>) entry.getValue();
+            if (values!=null&&values.size()>0){
+                map.put((String) entry.getKey(),values.get(0));
+            }
+
+        }
+
+        return map;
     }
     public HttpCacheFlag getHttpCacheFlag(){
         return mHttpCacheFlag;

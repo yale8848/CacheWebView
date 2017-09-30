@@ -1,6 +1,7 @@
 package ren.yale.android.cachewebviewlib;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 import android.webkit.WebResourceResponse;
@@ -142,7 +143,7 @@ public class WebViewCache {
             HttpURLConnection httpURLConnection = (HttpURLConnection) urlRequest.openConnection();
             httpURLConnection.setRequestMethod("GET");
             httpURLConnection.setUseCaches(false);
-            httpURLConnection.setConnectTimeout(10000);
+            httpURLConnection.setConnectTimeout(30000);
             httpURLConnection.setReadTimeout(30000);
 
             Map<String,Object> header = mHeaderMaps.get(url);
@@ -235,6 +236,7 @@ public class WebViewCache {
         if(mDiskLruCache==null){
             return null;
         }
+
         if (TextUtils.isEmpty(url)){
             return null;
         }
@@ -279,7 +281,18 @@ public class WebViewCache {
         }
 
         if (inputStream !=null){
-            return new WebResourceResponse(mimeType,"utf-8",inputStream);
+            if (inputStream instanceof ResourseInputStream){
+
+                ResourseInputStream resourseInputStream= (ResourseInputStream) inputStream;
+                WebResourceResponse webResourceResponse=   new WebResourceResponse(mimeType,"utf-8",inputStream);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    webResourceResponse.setResponseHeaders(resourseInputStream.getHttpCache().getResponseHeader());
+                }
+                return webResourceResponse;
+            }else{
+                return new WebResourceResponse(mimeType,"utf-8",inputStream);
+            }
+
         }
 
         return null;

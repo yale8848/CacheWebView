@@ -19,7 +19,7 @@ import ren.yale.android.cachewebviewlib.CacheWebView;
 public class MainActivity extends AppCompatActivity {
 
     private static final String URL ="http://m.baidu.com";
-    private CacheWebView webview;
+    private WebView webview;
     private long mStart = 0;
 
     @Override
@@ -27,7 +27,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        webview = (CacheWebView) findViewById(R.id.webview);
+        TestWebView testWebView = (TestWebView) findViewById(R.id.webview);
+        webview = testWebView.getDXHWebView();
 
         webview.setWebViewClient(new WebViewClient(){
             @Override
@@ -85,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
     private void clearCache(){
 
         CacheWebView.getWebViewCache().clean();
-        webview.clearCache();
+        //webview.clearCache();
     }
 
     @Override
