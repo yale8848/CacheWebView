@@ -7,12 +7,12 @@
 ### 引入库
 
 ```
-compile 'ren.yale.android:cachewebviewlib:0.6.2'
+compile 'ren.yale.android:cachewebviewlib:0.6.3'
 ```
 
 ### 修改代码
 
- - 将 WebView 改为ren.yale.android.cachewebviewlib.CacheWebView
+ - 将 WebView 改为 CacheWebView
 
   完毕，其他都不用修改。CacheWebView默认会有内部cache200M的空间，同时缓存模式是http默认的模式
 
@@ -36,21 +36,15 @@ CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100);//100M
 
 ```
 
-- 强制缓存，默认是普通缓存，setCacheStrategy(WebViewCache.CacheStrategy.FORCE),这样对于静态资源直接走缓存，不需要和服务器沟通走304缓存，这样会更快；如果静态资源要更新，
+- 强制缓存，默认是普通缓存，http缓存模式一样。setCacheStrategy(WebViewCache.CacheStrategy.FORCE),这样对于静态资源直接走缓存，不需要和服务器沟通走304缓存，这样会更快；如果静态资源要更新，
 请让web前端同学修改静态资源链接，如给链接加md5值，或者加版本等等方式；
 
 ```
-File cacheFile = new File(this.getCacheDir(),"cache_path_name");
-CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100).
-setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
+CacheWebView webview;
+webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
 
 ```
 
-或者
-
-```
-CacheWebView.getWebViewCache().setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
-```
 
 - 静态资源后缀映射
 
@@ -92,11 +86,18 @@ webview.loadUrl(URL,getHeaderMap(URL));
 
 - 阻塞图片加载，让页面更快加载
 
-  默认没有阻塞图片加载，isBlockNetworkImage(true)后。在页面onPageStarted时阻塞图片加载，onPageFinished时打开图片加载
+  默认没有阻塞图片加载，setBlockNetworkImage(true)后。在页面onPageStarted时阻塞图片加载，onPageFinished时打开图片加载
 
 ```
 CacheWebView webview;
-webview.isBlockNetworkImage(true);
+webview.setBlockNetworkImage(true);
+```
+
+- 是否使用自定义缓存，默认是自定义缓存,如果是false，那就和正常的WebView使用一样
+
+```
+CacheWebView webview;
+webview.setEnableCache(true);
 ```
 
 ### 流程图

@@ -34,7 +34,7 @@ public class CacheWebView extends WebView {
     private CacheWebViewClient mCacheWebViewClient;
 
     private HashMap<String,Map> mHeaderMaps;
-    private boolean mIsBlockImageLoad = false;
+
 
     public CacheWebView(Context context) {
         this(context,null,0);
@@ -80,11 +80,18 @@ public class CacheWebView extends WebView {
        super.setWebViewClient(mCacheWebViewClient);
     }
 
+    public void setCacheStrategy(WebViewCache.CacheStrategy cacheStrategy){
+        mCacheWebViewClient.setCacheStrategy(cacheStrategy);
+    }
+
     public static void preLoad(Context context,String url){
         CacheWebView webView = new CacheWebView(context);
         webView.loadUrl(url);
     }
 
+    public void setEnableCache(boolean enableCache){
+        mCacheWebViewClient.setEnableCache(enableCache);
+    }
     public void loadUrl(String url){
         super.loadUrl(url);
     }
@@ -94,17 +101,8 @@ public class CacheWebView extends WebView {
         getWebViewCache().addHeaderMap(url,additionalHttpHeaders);
         super.loadUrl(url,additionalHttpHeaders);
     }
-
-    public void isBlockNetworkImage(boolean isBlock){
-        mIsBlockImageLoad = isBlock;
-    }
-
     public void setBlockNetworkImage(boolean isBlock){
-        if (mIsBlockImageLoad){
-            WebSettings webSettings = this.getSettings();
-            webSettings.setBlockNetworkImage(isBlock);
-        }
-
+       mCacheWebViewClient.setBlockNetworkImage(isBlock);
     }
 
     private void initSettings(){

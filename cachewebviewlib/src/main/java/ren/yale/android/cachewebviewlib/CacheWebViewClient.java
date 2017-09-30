@@ -12,6 +12,7 @@ import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -23,6 +24,9 @@ final class CacheWebViewClient extends WebViewClient {
 
 
     public WebViewClient mCustomWebViewClient;
+    private boolean mIsEnableCache = true;
+    private boolean mIsBlockImageLoad = false;
+    private WebViewCache.CacheStrategy mCacheStrategy = WebViewCache.CacheStrategy.NORMAL;
 
 
     public void setCustomWebViewClient(WebViewClient webViewClient){
@@ -51,8 +55,10 @@ final class CacheWebViewClient extends WebViewClient {
 
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
-        CacheWebView cacheWebView = (CacheWebView) view;
-        cacheWebView.setBlockNetworkImage(true);
+        if (mIsBlockImageLoad){
+            WebSettings webSettings = view.getSettings();
+            webSettings.setBlockNetworkImage(true);
+        }
         if (mCustomWebViewClient!=null){
             mCustomWebViewClient.onPageStarted(view,url,favicon);
             return;
@@ -62,8 +68,10 @@ final class CacheWebViewClient extends WebViewClient {
 
     @Override
     public void onPageFinished(WebView view, String url) {
-        CacheWebView cacheWebView = (CacheWebView) view;
-        cacheWebView.setBlockNetworkImage(false);
+        if (mIsBlockImageLoad){
+            WebSettings webSettings = view.getSettings();
+            webSettings.setBlockNetworkImage(false);
+        }
         if (mCustomWebViewClient!=null){
             mCustomWebViewClient.onPageFinished(view,url);
             return;
@@ -91,6 +99,17 @@ final class CacheWebViewClient extends WebViewClient {
         super.onPageCommitVisible(view, url);
     }
 
+    public void setCacheStrategy(WebViewCache.CacheStrategy cacheStrategy){
+        mCacheStrategy =cacheStrategy;
+    }
+
+    public void setBlockNetworkImage(boolean isBlock){
+        mIsBlockImageLoad = isBlock;
+    }
+
+    public void setEnableCache(boolean enableCache){
+        mIsEnableCache = enableCache;
+    }
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
         WebResourceResponse webResourceResponse = null;
@@ -101,7 +120,10 @@ final class CacheWebViewClient extends WebViewClient {
             return webResourceResponse;
 
         }
-        return WebViewCache.getInstance().getWebResourceResponse(url);
+        if (!mIsEnableCache){
+            return null;
+        }
+        return WebViewCache.getInstance().getWebResourceResponse(url,mCacheStrategy);
 
     }
 
@@ -116,7 +138,10 @@ final class CacheWebViewClient extends WebViewClient {
         if (webResourceResponse != null){
             return webResourceResponse;
         }
-        return WebViewCache.getInstance().getWebResourceResponse(request.getUrl().toString());
+        if (!mIsEnableCache){
+            return null;
+        }
+        return WebViewCache.getInstance().getWebResourceResponse(request.getUrl().toString(),mCacheStrategy);
     }
 
     @Override

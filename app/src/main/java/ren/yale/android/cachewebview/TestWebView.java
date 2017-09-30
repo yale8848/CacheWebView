@@ -35,7 +35,7 @@ public class TestWebView extends RelativeLayout {
         init(context);
 
     }
-    public WebView getDXHWebView(){
+    public CacheWebView getDXHWebView(){
         return mDXHWebView;
     }
 

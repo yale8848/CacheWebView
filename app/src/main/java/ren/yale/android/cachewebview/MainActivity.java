@@ -14,12 +14,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ren.yale.android.cachewebviewlib.CacheWebView;
+import ren.yale.android.cachewebviewlib.WebViewCache;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String URL ="http://m.baidu.com";
-    private WebView webview;
+    private CacheWebView webview;
     private long mStart = 0;
 
     @Override
@@ -29,17 +30,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         TestWebView testWebView = (TestWebView) findViewById(R.id.webview);
         webview = testWebView.getDXHWebView();
-
+        webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
+        webview.setEnableCache(true);
+        webview.setBlockNetworkImage(false);
         webview.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 mStart = System.currentTimeMillis();
-                view.getSettings().setLoadsImagesAutomatically(false);
                 super.onPageStarted(view, url, favicon);
             }
             @Override
             public void onPageFinished(WebView view, String url) {
-                view.getSettings().setLoadsImagesAutomatically(true);
                 Log.d("CacheWebView",(System.currentTimeMillis()-mStart)+"");
                 super.onPageFinished(view, url);
             }
@@ -86,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
     private void clearCache(){
 
         CacheWebView.getWebViewCache().clean();
-        //webview.clearCache();
     }
 
     @Override

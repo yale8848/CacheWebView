@@ -34,7 +34,6 @@ public class WebViewCache {
     private DiskLruCache mDiskLruCache;
     private StaticRes mStaticRes;
     private HashMap<String,Map> mHeaderMaps;
-    private CacheStrategy mCacheStrategy = CacheStrategy.NORMAL;
 
     private Context mContext;
     private File mCacheFile;
@@ -129,10 +128,6 @@ public class WebViewCache {
                 mHeaderMaps.remove(entry.getKey());
             }
         }
-    }
-
-    public void setCacheStrategy(CacheStrategy cacheStrategy){
-        mCacheStrategy = cacheStrategy;
     }
 
     public InputStream httpRequest(String url) {
@@ -230,8 +225,11 @@ public class WebViewCache {
         }
         return inputStream;
     }
-
     public WebResourceResponse getWebResourceResponse(String url){
+
+        return getWebResourceResponse(url,CacheStrategy.NORMAL);
+    }
+    public WebResourceResponse getWebResourceResponse(String url,CacheStrategy cacheStrategy){
 
         if(mDiskLruCache==null){
             return null;
@@ -253,7 +251,6 @@ public class WebViewCache {
             return null;
         }
         InputStream inputStream = null;
-        CacheStrategy cacheStrategy = mCacheStrategy;
 
 
         if (extension.equals("html")||extension.equals("htm")){
