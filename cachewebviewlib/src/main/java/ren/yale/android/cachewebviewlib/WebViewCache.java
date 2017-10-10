@@ -83,10 +83,17 @@ public class WebViewCache {
         if (mDiskLruCache==null){
             mDiskLruCache = DiskLruCache.open(mCacheFile, AppUtils.getVersionCode(mContext),2,mCacheSize);
         }
-        if(mLruCache==null){
-            mLruCache = new LruCache((int) mCacheRamSize);
-        }
+        initLruCache();
         return this;
+    }
+    private void initLruCache(){
+        if(mLruCache==null){
+            synchronized (WebViewCache.class){
+                if (mLruCache == null){
+                    mLruCache = new LruCache((int) mCacheRamSize);
+                }
+            }
+        }
     }
 
     /**
@@ -331,6 +338,8 @@ public class WebViewCache {
         if (extension.equals("html")||extension.equals("htm")){
             cacheStrategy = CacheStrategy.NORMAL;
         }
+
+        initLruCache();
 
         if (NetworkUtils.isConnected(mContext)){
 
