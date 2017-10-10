@@ -3,6 +3,7 @@ package ren.yale.android.cachewebviewlib;
 import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.LruCache;
 import android.webkit.MimeTypeMap;
 import android.webkit.WebResourceResponse;
 
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ren.yale.android.cachewebviewlib.bean.HttpCacheFlag;
+import ren.yale.android.cachewebviewlib.bean.RamObject;
 import ren.yale.android.cachewebviewlib.utils.AppUtils;
 import ren.yale.android.cachewebviewlib.utils.FileUtil;
 import ren.yale.android.cachewebviewlib.utils.JsonWrapper;
@@ -38,6 +40,8 @@ public class WebViewCache {
     private Context mContext;
     private File mCacheFile;
     private long mCaceSize;
+
+    private LruCache<String,RamObject> mLruCache;
 
     private static class InstanceHolder {
         public static final WebViewCache INSTANCE = new WebViewCache();
@@ -66,7 +70,14 @@ public class WebViewCache {
         if (mDiskLruCache==null){
             mDiskLruCache = DiskLruCache.open(mCacheFile, AppUtils.getVersionCode(mContext),1,mCaceSize);
         }
+        if(mLruCache==null){
+            mLruCache = new LruCache(20*1024*1024);
+        }
         return this;
+    }
+
+    public LruCache getLruCache(){
+        return mLruCache;
     }
 
 

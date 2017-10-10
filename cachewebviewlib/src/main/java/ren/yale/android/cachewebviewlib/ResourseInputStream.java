@@ -20,6 +20,7 @@ class ResourseInputStream extends InputStream {
     private DiskLruCache.Editor mEditorProperty;
     private HttpCache mHttpCache;
     private String mUrl="";
+    private StringBuilder mRamString;
 
     public ResourseInputStream(String url,InputStream inputStream,
                                DiskLruCache.Editor content,DiskLruCache.Editor property,HttpCache httpCache){
@@ -44,6 +45,7 @@ class ResourseInputStream extends InputStream {
         try {
             mOutputStream = content.newOutputStream(0);
             mOutputStreamProperty = property.newOutputStream(0);
+            mRamString = new StringBuilder();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -64,6 +66,8 @@ class ResourseInputStream extends InputStream {
             mCurrenReadLength+=len;
             try {
                 mOutputStream.write(b,off,len);
+                String str  = new String(b,off,len);
+                mRamString.append(str);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -129,6 +133,6 @@ class ResourseInputStream extends InputStream {
     }
 
     public interface IWriteFinish{
-        void finish();
+        void close(String content,String flag );
     }
 }
