@@ -17,6 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import ren.yale.android.cachewebviewlib.bean.HttpCacheFlag;
@@ -39,7 +40,8 @@ public class WebViewCache {
 
     private Context mContext;
     private File mCacheFile;
-    private long mCaceSize;
+    private long mCacheSize;
+    private long mCacheRamSize;
 
     private LruCache<String,RamObject> mLruCache;
 
@@ -59,40 +61,60 @@ public class WebViewCache {
 
     public WebViewCache openCache(Context context, File directory, long maxSize) throws IOException {
 
-        if (mContext==null||mCacheFile==null||mCaceSize==0){
+        return openCache(context,directory,maxSize,maxSize/10);
+    }
+    public WebViewCache openCache(Context context, File directory, long maxDiskSize,long maxRamSize) throws IOException {
+
+        if (mContext==null){
             mContext = context.getApplicationContext();
+        }
+        if (mCacheFile==null){
             mCacheFile = directory;
-            mCaceSize = maxSize;
+        }
+        if (mCacheSize<=0){
+            mCacheSize = maxDiskSize;
+        }
+        if (mCacheRamSize<=0){
+            mCacheRamSize = maxRamSize;
         }
         if (mHeaderMaps==null){
             mHeaderMaps = new HashMap<>();
         }
         if (mDiskLruCache==null){
-            mDiskLruCache = DiskLruCache.open(mCacheFile, AppUtils.getVersionCode(mContext),1,mCaceSize);
+            mDiskLruCache = DiskLruCache.open(mCacheFile, AppUtils.getVersionCode(mContext),2,mCacheSize);
         }
         if(mLruCache==null){
-            mLruCache = new LruCache(20*1024*1024);
+            mLruCache = new LruCache((int) mCacheRamSize);
         }
         return this;
     }
 
-    public LruCache getLruCache(){
-        return mLruCache;
-    }
-
-
-
     /**
      * Create DiskLruCache
      * @param directory a writable directory
-     * @param maxSize the maximum number of bytes this cache should use to store
+     * @param maxDiskSize the maximum number of bytes this cache should use to store
      * @throws IOException if reading or writing the cache directory fails
      */
-    public WebViewCache init(Context context, File directory, long maxSize){
+    public WebViewCache init(Context context, File directory, long maxDiskSize){
 
         mContext = context.getApplicationContext();
         mCacheFile = directory;
-        mCaceSize = maxSize;
+        mCacheSize = maxDiskSize;
+        mCacheRamSize =maxDiskSize/10;
+        return this;
+    }
+    /**
+     * Create DiskLruCache
+     * @param directory a writable directory
+     * @param maxDiskSize the maximum number of bytes this cache should use to store
+     * @throws IOException if reading or writing the cache directory fails
+     */
+    public WebViewCache init(Context context, File directory, long maxDiskSize,long maxRamSize){
+
+        mContext = context.getApplicationContext();
+        mCacheFile = directory;
+        mCacheSize = maxDiskSize;
+        mCacheRamSize =maxRamSize;
         return this;
     }
     /**
@@ -101,7 +123,7 @@ public class WebViewCache {
      * @throws IOException if reading or writing the cache directory fails
      */
     public WebViewCache init(Context context, File directory){
-        return  init(context,directory,Integer.MAX_VALUE);
+        return  init(context,directory,Integer.MAX_VALUE,20*1024*1024);
     }
     public void clean(){
         if (mDiskLruCache!=null){
@@ -111,13 +133,17 @@ public class WebViewCache {
                 e.printStackTrace();
             }
         }
+        if (mLruCache!=null){
+            Map<String,RamObject> map = (LinkedHashMap) mLruCache.snapshot();
+            if (map!=null){
+                map.clear();
+            }
+            mLruCache = null;
+        }
     }
 
     public static String getKey(String url){
         return MD5Utils.getMD5(url,false);
-    }
-    public static String getFlagKey(String url){
-        return getKey(url)+"_";
     }
     private DiskLruCache.Editor getEditor(String key){
         try {
@@ -173,18 +199,18 @@ public class WebViewCache {
             if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK){
 
                 return new ResourseInputStream(url,httpURLConnection.getInputStream(),
-                        getEditor(getKey(url)),getEditor(getFlagKey(url)),remote);
+                        getEditor(getKey(url)),remote,mLruCache);
             }
             if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_MODIFIED){
                 InputStream  inputStream = getCacheInputStream(url);
                 ResourseInputStream resourseInputStream = null;
                 if (inputStream == null){
                     resourseInputStream = new ResourseInputStream(url,httpURLConnection.getInputStream(),
-                            getEditor(getKey(url)),getEditor(getFlagKey(url)),remote);
+                            getEditor(getKey(url)),remote,mLruCache);
                 }else{
                     CacheWebViewLog.d(url+" 304 from cache");
                     resourseInputStream = new ResourseInputStream(url,inputStream,
-                            null,null,remote);
+                            null,remote,mLruCache);
                 }
                 return resourseInputStream;
             }
@@ -201,11 +227,16 @@ public class WebViewCache {
     }
 
     private HttpCacheFlag getCacheFlag(String url){
+
+        HttpCacheFlag  httpCacheFlag = getRamCacheFlag(url);
+        if (httpCacheFlag!=null){
+            return httpCacheFlag;
+        }
         InputStream inputStream = null;
         try {
-            DiskLruCache.Snapshot snapshot=  mDiskLruCache.get(getFlagKey(url));
+            DiskLruCache.Snapshot snapshot=  mDiskLruCache.get(getKey(url));
             if (snapshot!=null){
-                inputStream =  snapshot.getInputStream(0);
+                inputStream =  snapshot.getInputStream(CacheIndexType.PROPERTY.ordinal());
                 BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
                 StringBuffer sb = new StringBuffer();
                 byte buffer[] = new byte[1024];
@@ -222,17 +253,50 @@ public class WebViewCache {
         }
         return null;
     }
+    private HttpCacheFlag getRamCacheFlag(String url){
+        RamObject ramObject = mLruCache.get(getKey(url));
+        if (ramObject!=null&&!TextUtils.isEmpty(ramObject.getHttpFlag())){
+            try {
+                return new JsonWrapper(ramObject.getHttpFlag()).getBean(HttpCacheFlag.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+    private InputStream getRamCache(String url){
+        RamObject ramObject = mLruCache.get(getKey(url));
+        if (ramObject!=null){
+            InputStream inputStream =  ramObject.getStream();
+            if (inputStream!=null){
+                try {
+                    inputStream.reset();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return inputStream;
+        }
+        return null;
+    }
 
     private InputStream getCacheInputStream(String url){
-        InputStream inputStream = null;
+        InputStream inputStream = getRamCache(url);
+        if (inputStream!=null){
+            CacheWebViewLog.d(url +": from ram cache");
+            return inputStream;
+        }
         try {
             DiskLruCache.Snapshot snapshot=  mDiskLruCache.get(getKey(url));
             if (snapshot!=null){
-                inputStream =  snapshot.getInputStream(0);
+                inputStream =  snapshot.getInputStream(CacheIndexType.CONTENT.ordinal());
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        if (inputStream!=null){
+            CacheWebViewLog.d(url +": from disk cache");
         }
         return inputStream;
     }
@@ -284,8 +348,6 @@ public class WebViewCache {
         }
         if (inputStream==null){
             inputStream = httpRequest(url);
-        }else{
-            CacheWebViewLog.d(url +": from cache");
         }
 
         if (inputStream !=null){

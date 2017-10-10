@@ -7,14 +7,14 @@
 ### 引入库
 
 ```
-compile 'ren.yale.android:cachewebviewlib:0.7.3'
+compile 'ren.yale.android:cachewebviewlib:0.8.0'
 ```
 
 ### 修改代码
 
  - 将 WebView 改为 CacheWebView
 
-  完毕，其他都不用修改。CacheWebView默认会有内部cache200M的空间，同时缓存模式是http默认的模式
+  完毕，其他都不用修改。CacheWebView默认会有内部cache200M 磁盘缓存空间，20M内存缓存空间。同时缓存模式是http默认的缓存模式
 
 ---
 
@@ -24,7 +24,7 @@ compile 'ren.yale.android:cachewebviewlib:0.7.3'
  ```
 
 File cacheFile = new File(this.getCacheDir(),"cache_path_name");
-CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100);//100M
+CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100,1024*1024*10);//100M 磁盘缓存空间,10M 内存缓存空间
 
 
  ```
@@ -36,7 +36,7 @@ CacheWebView.cacheWebView(this).loadUrl(URL);
 
 ```
 
-- 强制缓存，默认是普通缓存，http缓存模式一样。setCacheStrategy(WebViewCache.CacheStrategy.FORCE),这样对于静态资源直接走缓存，不需要和服务器沟通走304缓存，这样会更快；如果静态资源要更新，
+- 强制缓存，默认是普通缓存，和http缓存模式一样。setCacheStrategy(WebViewCache.CacheStrategy.FORCE),这样对于静态资源直接走缓存，不需要和服务器沟通走304缓存，这样会更快；如果静态资源要更新，
 请让web前端同学修改静态资源链接，如给链接加md5值，或者加版本等等方式；
 
 ```
@@ -48,10 +48,13 @@ webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
 
 - 静态资源后缀映射
 
-  默认静态资源后缀有：html,htm,js,css,png,jpg,jpeg,gif,bmp,ttf,woff,woff2,otf,eot,svg,xml,swf,txt,text,conf,可以添加删除
+  默认磁盘缓存静态资源后缀有：html,htm,js,ico,css,png,jpg,jpeg,gif,bmp,ttf,woff,woff2,otf,eot,svg,xml,swf,txt,text,conf,可以添加删除,addExtension,removeExtension
+
+  默认内存缓存静态资源后缀有：html,htm,js,css,xml,txt,text,conf,可以添加删除,addRamExtension,removeRamExtension
 
 ```
-CacheWebView.getWebViewCache().getStaticRes().addExtension("aaa").removeExtension("bbb");
+CacheWebView.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
+                .addRamExtension("png").removeRamExtension("html");
 ```
 
 - 删除缓存

@@ -1,10 +1,17 @@
 package ren.yale.android.cachewebviewlib;
 
+import android.util.LruCache;
+import android.webkit.MimeTypeMap;
+
 import com.jakewharton.disklrucache.DiskLruCache;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import ren.yale.android.cachewebviewlib.bean.RamObject;
 
 /**
  * Created by yale on 2017/9/22.
@@ -17,39 +24,42 @@ class ResourseInputStream extends InputStream {
     private InputStream mInnerInputStream;
     private int mCurrenReadLength;
     private DiskLruCache.Editor mEditorContent;
-    private DiskLruCache.Editor mEditorProperty;
     private HttpCache mHttpCache;
     private String mUrl="";
-    private StringBuilder mRamString;
+    private LruCache mLruCache;
+    private ByteArrayOutputStream mRamArray;
 
     public ResourseInputStream(String url,InputStream inputStream,
-                               DiskLruCache.Editor content,DiskLruCache.Editor property,HttpCache httpCache){
+                               DiskLruCache.Editor content,HttpCache httpCache,LruCache lrucache){
 
 
         mUrl = url;
         mInnerInputStream = inputStream;
         mHttpCache = httpCache;
-        mEditorProperty = property;
         mEditorContent = content;
-        getStream(content,property);
+        mLruCache = lrucache;
+        getStream(content);
     }
 
     public HttpCache getHttpCache(){
         return mHttpCache;
     }
 
-    private void getStream(DiskLruCache.Editor content,DiskLruCache.Editor property){
-        if (content == null||property == null){
+    private void getStream(DiskLruCache.Editor content){
+        if (content == null){
             return;
         }
         try {
-            mOutputStream = content.newOutputStream(0);
-            mOutputStreamProperty = property.newOutputStream(0);
-            mRamString = new StringBuilder();
+            mOutputStream = content.newOutputStream(CacheIndexType.CONTENT.ordinal());
+            mOutputStreamProperty = content.newOutputStream(CacheIndexType.PROPERTY.ordinal());
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        String extension = MimeTypeMap.getFileExtensionFromUrl(mUrl.toLowerCase());
+        if (WebViewCache.getInstance().getStaticRes().canRamCache(extension)){
+            mRamArray = new ByteArrayOutputStream();
+        }
     }
 
     @Override
@@ -66,10 +76,11 @@ class ResourseInputStream extends InputStream {
             mCurrenReadLength+=len;
             try {
                 mOutputStream.write(b,off,len);
-                String str  = new String(b,off,len);
-                mRamString.append(str);
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+            if (mRamArray!=null){
+                mRamArray.write(b,off,len);
             }
         }
 
@@ -96,19 +107,24 @@ class ResourseInputStream extends InputStream {
         mInnerInputStream.close();
 
         if (mOutputStream!=null&&mOutputStreamProperty!=null){
-            mOutputStream.flush();
             String flag = mHttpCache.getCacheFlagString();
+
+            if (mRamArray!=null){
+                RamObject ram = new RamObject();
+                ram.setStream(new ByteArrayInputStream(mRamArray.toByteArray()));
+                ram.setHttpFlag(flag);
+                mLruCache.put(WebViewCache.getKey(mUrl),ram);
+                CacheWebViewLog.d(mUrl +" ram cached");
+            }
+            mOutputStream.flush();
             mOutputStreamProperty.write(flag.getBytes());
             mOutputStreamProperty.flush();
             mEditorContent.commit();
-            mEditorProperty.commit();
             mOutputStreamProperty.close();
             mOutputStream.close();
-
-            CacheWebViewLog.d(mUrl +" cached");
-        }else if (mEditorProperty!=null&&mEditorContent!=null){
+            CacheWebViewLog.d(mUrl +" disk cached");
+        }else if (mEditorContent!=null){
             mEditorContent.abort();
-            mEditorProperty.abort();
         }
     }
 

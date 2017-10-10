@@ -35,6 +35,19 @@ public class StaticRes {
         }
     };
 
+    private static HashSet STATIC_RAM = new HashSet(){
+        {
+            add("html");
+            add("htm");
+            add("js");
+            add("css");
+            add("xml");
+            add("txt");
+            add("text");
+            add("conf");
+        }
+    };
+
     public boolean canCache(String extension){
 
         if (TextUtils.isEmpty(extension)){
@@ -43,21 +56,44 @@ public class StaticRes {
         return STATIC.contains(extension.toLowerCase().trim());
 
     }
-    public StaticRes addExtension(String extension){
+    public boolean canRamCache(String extension){
+
         if (TextUtils.isEmpty(extension)){
-            return this;
+            return false;
+        }
+        return STATIC_RAM.contains(extension.toLowerCase().trim());
+
+    }
+    private void add(HashSet set,String extension){
+        if (TextUtils.isEmpty(extension)){
+            return ;
         }
         extension = extension.replaceAll(".","");
-        STATIC.add(extension.toLowerCase().trim());
+        set.add(extension.toLowerCase().trim());
+    }
+    private void remove(HashSet set,String extension){
+        if (TextUtils.isEmpty(extension)){
+            return;
+        }
+        extension = extension.replaceAll(".","");
+        set.remove(extension.toLowerCase().trim());
+    }
+    public StaticRes addExtension(String extension){
+        add(STATIC,extension);
+        return this;
+    }
+    public StaticRes removeExtension(String extension){
+        remove(STATIC,extension);
+        return this;
+    }
+    public StaticRes addRamExtension(String extension){
+        add(STATIC_RAM,extension);
         return this;
     }
 
-    public StaticRes removeExtension(String extension){
-        if (TextUtils.isEmpty(extension)){
-            return this;
-        }
-        extension = extension.replaceAll(".","");
-        STATIC.remove(extension.toLowerCase().trim());
+    public StaticRes removeRamExtension(String extension){
+        remove(STATIC_RAM,extension);
         return this;
     }
+
 }
