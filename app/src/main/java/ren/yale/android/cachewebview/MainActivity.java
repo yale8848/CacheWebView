@@ -1,5 +1,6 @@
 package ren.yale.android.cachewebview;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Bundle;
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 CacheWebView v = (CacheWebView) view;
                 if (url.startsWith("http")){
-                    v.loadUrl(url,getHeaderMap(url));
+                    view.loadUrl(url,getHeaderMap(url));
                 }
                 return true;
             }
@@ -61,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
                 handler.proceed();
             }
         });
-        CacheWebView.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
-                .addRamExtension("png").removeRamExtension("html");
+        //webview.setEnableCache(false);
+        webview.setUserAgent("Android");
     }
 
     private Map getHeaderMap(String url){
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         switch (v.getId()){
             case R.id.btn_load:
 
-                webview.loadUrl(URL,getHeaderMap(URL));
+                webview.loadUrl(URL);
                 break;
             case R.id.btn_preload:
                 CacheWebView.cacheWebView(this).loadUrl(URL);
@@ -83,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.btn_clearcache:
                 clearCache();
 
+                break;
+            case R.id.btn_start2:
+                startActivity(new Intent(MainActivity.this,Main2Activity.class));
                 break;
         }
     }

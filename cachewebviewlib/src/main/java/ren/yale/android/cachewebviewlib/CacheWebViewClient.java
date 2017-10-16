@@ -28,7 +28,6 @@ final class CacheWebViewClient extends WebViewClient {
     private boolean mIsBlockImageLoad = false;
     private WebViewCache.CacheStrategy mCacheStrategy = WebViewCache.CacheStrategy.NORMAL;
 
-
     public void setCustomWebViewClient(WebViewClient webViewClient){
         mCustomWebViewClient = webViewClient;
     }
@@ -37,7 +36,12 @@ final class CacheWebViewClient extends WebViewClient {
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
         if (mCustomWebViewClient!=null){
-            return mCustomWebViewClient.shouldOverrideUrlLoading(view,url);
+            boolean load =  mCustomWebViewClient.shouldOverrideUrlLoading(view,url);
+            if (!load){
+
+                view.loadUrl(url);
+            }
+            return load;
         }
         view.loadUrl(url);
         return true;
@@ -47,10 +51,17 @@ final class CacheWebViewClient extends WebViewClient {
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
         if (mCustomWebViewClient!=null){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                return mCustomWebViewClient.shouldOverrideUrlLoading(view,request);
+                boolean load =   mCustomWebViewClient.shouldOverrideUrlLoading(view,request);
+                if (!load){
+                    view.loadUrl(request.getUrl().toString());
+                }
+                return load;
             }
         }
-        return super.shouldOverrideUrlLoading(view, request);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            view.loadUrl(request.getUrl().toString());
+        }
+        return true;
     }
 
     @Override
@@ -123,7 +134,7 @@ final class CacheWebViewClient extends WebViewClient {
         if (!mIsEnableCache){
             return null;
         }
-        return WebViewCache.getInstance().getWebResourceResponse(url,mCacheStrategy);
+        return WebViewCache.getInstance().getWebResourceResponse(view,url,mCacheStrategy);
 
     }
 
@@ -141,7 +152,7 @@ final class CacheWebViewClient extends WebViewClient {
         if (!mIsEnableCache){
             return null;
         }
-        return WebViewCache.getInstance().getWebResourceResponse(request.getUrl().toString(),mCacheStrategy);
+        return WebViewCache.getInstance().getWebResourceResponse(view,request.getUrl().toString(),mCacheStrategy);
     }
 
     @Override

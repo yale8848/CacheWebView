@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.util.LruCache;
 import android.webkit.MimeTypeMap;
 import android.webkit.WebResourceResponse;
+import android.webkit.WebView;
 
 import com.jakewharton.disklrucache.DiskLruCache;
 
@@ -83,10 +84,10 @@ public class WebViewCache {
         if (mDiskLruCache==null){
             mDiskLruCache = DiskLruCache.open(mCacheFile, AppUtils.getVersionCode(mContext),2,mCacheSize);
         }
-        initLruCache();
+        ensureLruCache();
         return this;
     }
-    private void initLruCache(){
+    private void ensureLruCache(){
         if(mLruCache==null){
             synchronized (WebViewCache.class){
                 if (mLruCache == null){
@@ -94,7 +95,7 @@ public class WebViewCache {
                         @Override
                         protected int sizeOf(String key, RamObject value) {
 
-                            return value.getInputStreamSize();
+                            return value.getInputStreamSize()+value.getHttpFlag().getBytes().length;
                         }
                     };
                 }
@@ -180,7 +181,7 @@ public class WebViewCache {
         }
     }
 
-    public InputStream httpRequest(String url) {
+    public InputStream httpRequest(WebView view,String url) {
 
         try {
             URL urlRequest = new URL(url);
@@ -206,6 +207,14 @@ public class WebViewCache {
                     httpURLConnection.setRequestProperty("If-None-Match",local.getEtag());
                 }
             }
+
+            CacheWebView cacheWebView = (CacheWebView) view;
+            if (cacheWebView!=null){
+                httpURLConnection.setRequestProperty("Origin",cacheWebView.getOriginUrl());
+                httpURLConnection.setRequestProperty("Referer",cacheWebView.getRefererUrl());
+                httpURLConnection.setRequestProperty("User-Agent",cacheWebView.getUserAgent());
+            }
+
             httpURLConnection.connect();
             HttpCache remote = new HttpCache(httpURLConnection);
 
@@ -313,11 +322,11 @@ public class WebViewCache {
         }
         return inputStream;
     }
-    public WebResourceResponse getWebResourceResponse(String url){
+    public WebResourceResponse getWebResourceResponse(WebView view,String url){
 
-        return getWebResourceResponse(url,CacheStrategy.NORMAL);
+        return getWebResourceResponse(view,url,CacheStrategy.NORMAL);
     }
-    public WebResourceResponse getWebResourceResponse(String url,CacheStrategy cacheStrategy){
+    public WebResourceResponse getWebResourceResponse(WebView view,String url, CacheStrategy cacheStrategy){
 
         if(mDiskLruCache==null){
             return null;
@@ -340,12 +349,11 @@ public class WebViewCache {
         }
         InputStream inputStream = null;
 
-
         if (extension.equals("html")||extension.equals("htm")){
             cacheStrategy = CacheStrategy.NORMAL;
         }
 
-        initLruCache();
+        ensureLruCache();
 
         if (NetworkUtils.isConnected(mContext)){
 
@@ -362,7 +370,7 @@ public class WebViewCache {
             inputStream = getCacheInputStream(url);
         }
         if (inputStream==null){
-            inputStream = httpRequest(url);
+            inputStream = httpRequest(view,url);
         }
 
         if (inputStream !=null){

@@ -7,7 +7,7 @@
 ### 引入库
 
 ```
-compile 'ren.yale.android:cachewebviewlib:0.8.2'
+compile 'ren.yale.android:cachewebviewlib:0.9.0'
 ```
 
 ### 修改代码
@@ -103,9 +103,16 @@ CacheWebView webview;
 webview.setEnableCache(true);
 ```
 
+- 设置User-Agent
+
+```
+CacheWebView webview;
+webview.setUserAgent("Android");
+```
+
 ### 流程图
 
-![CacheWebView流程图](https://static.oschina.net/uploads/img/201709/27155537_DDjg.png?v=1)
+![CacheWebView流程图](https://camo.githubusercontent.com/12ced3091bbca10ffd7ad0be3d4e3e90370192cc/68747470733a2f2f7374617469632e6f736368696e612e6e65742f75706c6f6164732f696d672f3230313730392f32373135353533375f44446a672e706e673f763d31)
 
 
 ### 博客
