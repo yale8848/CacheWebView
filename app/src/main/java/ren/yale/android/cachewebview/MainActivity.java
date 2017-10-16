@@ -19,8 +19,8 @@ import ren.yale.android.cachewebviewlib.WebViewCache;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String URL1 ="http://m.baidu.com";
-    private static final String URL ="http://121.42.232.14:5600/converter/public/dxh/dest/page/quest.html";
+    private static final String URL ="http://m.baidu.com";
+    private static final String URL1 ="http://121.42.232.14:5600/converter/public/dxh/dest/page/quest.html";
     private CacheWebView webview;
     private long mStart = 0;
 

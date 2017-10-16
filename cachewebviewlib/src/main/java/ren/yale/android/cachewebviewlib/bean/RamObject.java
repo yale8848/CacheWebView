@@ -9,6 +9,16 @@ import java.io.InputStream;
 public class RamObject {
     private String httpFlag="";
     private InputStream stream;
+    private int inputStreamSize = 0;
+
+    public int getInputStreamSize() {
+        return inputStreamSize;
+    }
+
+    public void setInputStreamSize(int inputStreamSize) {
+        this.inputStreamSize = inputStreamSize;
+    }
+
     public InputStream getStream() {
         return stream;
     }

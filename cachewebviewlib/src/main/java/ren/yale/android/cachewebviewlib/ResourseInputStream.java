@@ -110,11 +110,16 @@ class ResourseInputStream extends InputStream {
             String flag = mHttpCache.getCacheFlagString();
 
             if (mRamArray!=null){
-                RamObject ram = new RamObject();
-                ram.setStream(new ByteArrayInputStream(mRamArray.toByteArray()));
-                ram.setHttpFlag(flag);
-                mLruCache.put(WebViewCache.getKey(mUrl),ram);
-                CacheWebViewLog.d(mUrl +" ram cached");
+                try {
+                    RamObject ram = new RamObject();
+                    byte[] buffer = mRamArray.toByteArray();
+                    ram.setStream(new ByteArrayInputStream(buffer));
+                    ram.setHttpFlag(flag);
+                    ram.setInputStreamSize(buffer.length);
+                    mLruCache.put(WebViewCache.getKey(mUrl),ram);
+                    CacheWebViewLog.d(mUrl +" ram cached");
+                }catch (Exception e){
+                }
             }
             mOutputStream.flush();
             mOutputStreamProperty.write(flag.getBytes());

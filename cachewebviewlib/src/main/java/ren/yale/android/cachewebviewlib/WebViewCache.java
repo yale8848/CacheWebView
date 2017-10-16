@@ -90,7 +90,13 @@ public class WebViewCache {
         if(mLruCache==null){
             synchronized (WebViewCache.class){
                 if (mLruCache == null){
-                    mLruCache = new LruCache((int) mCacheRamSize);
+                    mLruCache = new LruCache<String,RamObject>((int) mCacheRamSize){
+                        @Override
+                        protected int sizeOf(String key, RamObject value) {
+
+                            return value.getInputStreamSize();
+                        }
+                    };
                 }
             }
         }
