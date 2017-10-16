@@ -41,4 +41,11 @@ public class Main2Activity extends AppCompatActivity {
             Collections.synchronizedList(new ArrayList());
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        mCacheWebView.destroy();
+    }
 }

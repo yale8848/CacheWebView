@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         //webview.setEnableCache(false);
-        webview.setUserAgent("Android");
+        //webview.setUserAgent("Android");
     }
 
     private Map getHeaderMap(String url){
