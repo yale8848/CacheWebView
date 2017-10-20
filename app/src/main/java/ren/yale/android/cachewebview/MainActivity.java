@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -64,6 +65,12 @@ public class MainActivity extends AppCompatActivity {
         });
         //webview.setEnableCache(false);
         //webview.setUserAgent("Android");
+    }
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        CacheWebView.cacheWebView(MainActivity.this)
+                .loadUrl(URL);
     }
 
     private Map getHeaderMap(String url){

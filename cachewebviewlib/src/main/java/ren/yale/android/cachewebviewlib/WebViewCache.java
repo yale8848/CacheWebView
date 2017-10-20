@@ -335,6 +335,7 @@ public class WebViewCache {
         if (TextUtils.isEmpty(url)){
             return null;
         }
+        CacheWebViewLog.d(url +" visit");
         if (!url.startsWith("http")){
             return null;
         }
