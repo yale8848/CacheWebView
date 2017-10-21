@@ -95,5 +95,28 @@ public class StaticRes {
         remove(STATIC_RAM,extension);
         return this;
     }
+    public  boolean isCanGetEncoding(String extension){
+        if (TextUtils.isEmpty(extension)){
+            return false;
+        }
+        if (isHtml(extension)){
+            return true;
+        }
+        if (extension.toLowerCase().equals("js")||
+                extension.toLowerCase().equals("css")){
+            return true;
+        }
+        return false;
+    }
+    public  boolean isHtml(String extension){
+        if (TextUtils.isEmpty(extension)){
+            return false;
+        }
+        if (extension.toLowerCase().equals("html")||
+                extension.toLowerCase().equals("htm")){
+            return true;
+        }
+        return false;
+    }
 
 }

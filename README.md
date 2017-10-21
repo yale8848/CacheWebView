@@ -9,7 +9,7 @@
 ### 引入库
 
 ```
-compile 'ren.yale.android:cachewebviewlib:0.9.0'
+compile 'ren.yale.android:cachewebviewlib:1.0.0'
 ```
 
 ### 修改代码

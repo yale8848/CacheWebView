@@ -94,6 +94,7 @@ class HttpCache {
         return false;
     }
 
+
     public String getCacheFlagString(){
         JsonWrapper jsonWrapper = new JsonWrapper();
 

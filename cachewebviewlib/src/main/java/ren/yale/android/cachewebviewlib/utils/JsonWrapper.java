@@ -19,10 +19,13 @@ public class JsonWrapper extends JSONObject {
     public String obj2JosnStr(Object obj,Class cls) throws Exception{
         Field[] fs = cls.getDeclaredFields();
         for (int i = 0; i < fs.length; i++) {
-            String name = fs[i].getName();
-            fs[i].setAccessible(true);
-            String value = (String) fs[i].get(obj);
-            this.put(name,value);
+            try {
+                String name = fs[i].getName();
+                fs[i].setAccessible(true);
+                String value = (String) fs[i].get(obj);
+                this.put(name,value);
+            }catch ( Exception e){
+            }
         }
         return this.toString();
     }

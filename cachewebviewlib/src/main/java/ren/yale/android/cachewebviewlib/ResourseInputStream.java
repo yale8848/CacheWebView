@@ -10,8 +10,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.IllegalFormatCodePointException;
 
 import ren.yale.android.cachewebviewlib.bean.RamObject;
+import ren.yale.android.cachewebviewlib.encode.Encoding;
 
 /**
  * Created by yale on 2017/9/22.
@@ -31,14 +33,20 @@ class ResourseInputStream extends InputStream {
 
     public ResourseInputStream(String url,InputStream inputStream,
                                DiskLruCache.Editor content,HttpCache httpCache,LruCache lrucache){
-
-
         mUrl = url;
         mInnerInputStream = inputStream;
         mHttpCache = httpCache;
         mEditorContent = content;
         mLruCache = lrucache;
         getStream(content);
+    }
+
+    public void setInnerInputStream(InputStream innerInputStream){
+        mInnerInputStream = innerInputStream;
+    }
+
+    public InputStream getInnerInputStream(){
+        return mInnerInputStream;
     }
 
     public HttpCache getHttpCache(){
@@ -101,9 +109,9 @@ class ResourseInputStream extends InputStream {
     public int available() throws IOException {
         return mInnerInputStream.available();
     }
-
     @Override
     public void close() throws IOException {
+
         mInnerInputStream.close();
 
         if (mOutputStream!=null&&mOutputStreamProperty!=null){

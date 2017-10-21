@@ -23,8 +23,10 @@ import java.util.Map;
 
 import ren.yale.android.cachewebviewlib.bean.HttpCacheFlag;
 import ren.yale.android.cachewebviewlib.bean.RamObject;
+import ren.yale.android.cachewebviewlib.encode.BytesEncodingDetect;
 import ren.yale.android.cachewebviewlib.utils.AppUtils;
 import ren.yale.android.cachewebviewlib.utils.FileUtil;
+import ren.yale.android.cachewebviewlib.utils.InputStreamCopy;
 import ren.yale.android.cachewebviewlib.utils.JsonWrapper;
 import ren.yale.android.cachewebviewlib.utils.MD5Utils;
 import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
@@ -46,11 +48,18 @@ public class WebViewCache {
 
     private LruCache<String,RamObject> mLruCache;
 
+    private BytesEncodingDetect mEncodingDetect;
+
     private static class InstanceHolder {
         public static final WebViewCache INSTANCE = new WebViewCache();
     }
     private WebViewCache(){
         mStaticRes = new StaticRes();
+        mEncodingDetect = new BytesEncodingDetect();
+    }
+
+    public BytesEncodingDetect getEncodingDetect(){
+        return mEncodingDetect;
     }
     public StaticRes getStaticRes(){
         return mStaticRes;
@@ -213,6 +222,7 @@ public class WebViewCache {
                 httpURLConnection.setRequestProperty("Origin",cacheWebView.getOriginUrl());
                 httpURLConnection.setRequestProperty("Referer",cacheWebView.getRefererUrl());
                 httpURLConnection.setRequestProperty("User-Agent",cacheWebView.getUserAgent());
+                httpURLConnection.setRequestProperty("Host",cacheWebView.getHost());
             }
 
             httpURLConnection.connect();
@@ -327,11 +337,9 @@ public class WebViewCache {
         return getWebResourceResponse(view,url,CacheStrategy.NORMAL);
     }
     public WebResourceResponse getWebResourceResponse(WebView view,String url, CacheStrategy cacheStrategy){
-
         if(mDiskLruCache==null){
             return null;
         }
-
         if (TextUtils.isEmpty(url)){
             return null;
         }
@@ -350,7 +358,7 @@ public class WebViewCache {
         }
         InputStream inputStream = null;
 
-        if (extension.equals("html")||extension.equals("htm")){
+        if (mStaticRes.isHtml(extension)){
             cacheStrategy = CacheStrategy.NORMAL;
         }
 
@@ -373,18 +381,38 @@ public class WebViewCache {
         if (inputStream==null){
             inputStream = httpRequest(view,url);
         }
-
+        String encode = "UTF-8";
         if (inputStream !=null){
             if (inputStream instanceof ResourseInputStream){
 
                 ResourseInputStream resourseInputStream= (ResourseInputStream) inputStream;
-                WebResourceResponse webResourceResponse=   new WebResourceResponse(mimeType,"utf-8",inputStream);
+
+                if (mStaticRes.isCanGetEncoding(extension)){
+                    InputStreamCopy inputStreamCopy = new InputStreamCopy(resourseInputStream.getInnerInputStream());
+                    InputStream copyInputStream = inputStreamCopy.copy();
+                    if (copyInputStream == null){
+                        return null;
+                    }
+                    resourseInputStream.setInnerInputStream(copyInputStream);
+                    encode = inputStreamCopy.getEncoding();
+                }
+                WebResourceResponse webResourceResponse=   new WebResourceResponse(mimeType,encode
+                        ,inputStream);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     webResourceResponse.setResponseHeaders(resourseInputStream.getHttpCache().getResponseHeader());
                 }
                 return webResourceResponse;
             }else{
-                return new WebResourceResponse(mimeType,"utf-8",inputStream);
+                if (mStaticRes.isCanGetEncoding(extension)){
+                    InputStreamCopy inputStreamCopy = new InputStreamCopy(inputStream);
+                    InputStream copyInputStream = inputStreamCopy.copy();
+                    if (copyInputStream == null){
+                        return null;
+                    }
+                    inputStream = copyInputStream;
+                    encode = inputStreamCopy.getEncoding();
+                }
+                return new WebResourceResponse(mimeType,encode,inputStream);
             }
 
         }

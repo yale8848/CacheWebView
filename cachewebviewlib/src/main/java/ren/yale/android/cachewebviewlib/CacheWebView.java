@@ -86,10 +86,24 @@ public class CacheWebView extends WebView {
     }
     public String getRefererUrl(){
         try {
-            return mVectorUrl.get(mVectorUrl.size()-2);
+            if (mVectorUrl.size() == 1){
+                return mVectorUrl.get(0);
+            }
+            return mVectorUrl.get(mVectorUrl.size()-1);
         }catch (Exception e){
         }
         return "";
+    }
+
+    public String getHost(){
+        String ou = "";
+        try {
+            ou =  mVectorUrl.lastElement();
+            URL url = new URL(ou);
+            ou=  url.getHost();
+        }catch (Exception e){
+        }
+        return ou;
     }
     public static WebViewCache getWebViewCache(){
         return WebViewCache.getInstance();

@@ -21,8 +21,8 @@ import ren.yale.android.cachewebviewlib.WebViewCache;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String URL ="http://m.baidu.com";
-    private static final String URL1 ="http://121.42.232.14:5600/converter/public/dxh/dest/page/quest.html";
+    private static final String URL ="http://www.baidu.com";
+    private static final String URL1 ="http://m.mm131.com/xinggan/3320_3.html";
     private CacheWebView webview;
     private long mStart = 0;
 
@@ -69,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        CacheWebView.cacheWebView(MainActivity.this)
-                .loadUrl(URL);
+       // CacheWebView.cacheWebView(MainActivity.this)
+       //         .loadUrl(URL);
     }
 
     private Map getHeaderMap(String url){
