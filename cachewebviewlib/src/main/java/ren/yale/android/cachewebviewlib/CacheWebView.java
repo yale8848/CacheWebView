@@ -42,11 +42,13 @@ public class CacheWebView extends WebView {
 
 
     public CacheWebView(Context context) {
-        this(context,null,0);
+        super(context);
+        init();
     }
 
     public CacheWebView(Context context, AttributeSet attrs) {
-        this(context,attrs,0);
+        super(context,attrs);
+        init();
     }
 
     public CacheWebView(Context context, AttributeSet attrs, int defStyleAttr) {
