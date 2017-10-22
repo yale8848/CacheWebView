@@ -11,10 +11,13 @@ import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import ren.yale.android.cachewebviewlib.CacheStatus;
 import ren.yale.android.cachewebviewlib.CacheWebView;
 import ren.yale.android.cachewebviewlib.WebViewCache;
 
@@ -94,6 +97,14 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.btn_start2:
                 startActivity(new Intent(MainActivity.this,Main2Activity.class));
+                break;
+            case R.id.btn_get_file:
+                CacheStatus cacheStatus = CacheWebView.getWebViewCache().getCacheFile("https://m.baidu.com/static/search/baiduapp_icon.png");
+                if (cacheStatus.isExist()){
+                   File file = cacheStatus.getPath();
+                    String extension = cacheStatus.getExtension();
+                }
+
                 break;
         }
     }

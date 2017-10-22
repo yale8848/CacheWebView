@@ -32,7 +32,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="onClick"
+        android:visibility="gone"
         android:text="start2"/>
+    <Button
+        android:id="@+id/btn_get_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="get cache file"/>
     <ren.yale.android.cachewebview.TestWebView
         android:id="@+id/webview"
         android:layout_width="match_parent"

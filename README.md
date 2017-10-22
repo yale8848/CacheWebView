@@ -9,7 +9,7 @@
 ### 引入库
 
 ```
-compile 'ren.yale.android:cachewebviewlib:1.0.0'
+compile 'ren.yale.android:cachewebviewlib:1.0.1'
 ```
 
 ### 修改代码
@@ -110,6 +110,16 @@ webview.setEnableCache(true);
 ```
 CacheWebView webview;
 webview.setUserAgent("Android");
+```
+
+- 获取缓存文件
+
+```
+ CacheStatus cacheStatus = CacheWebView.getWebViewCache().getCacheFile(URL);
+ if (cacheStatus.isExist()){
+    File file = cacheStatus.getPath();
+    String extension = cacheStatus.getExtension();
+ }
 ```
 
 ### 流程图

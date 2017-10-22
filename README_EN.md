@@ -8,7 +8,7 @@
 ### use lib
 
 ```
-compile 'ren.yale.android:cachewebviewlib:1.0.0'
+compile 'ren.yale.android:cachewebviewlib:1.0.1'
 ```
 
 ### Change code
@@ -111,4 +111,14 @@ webview.setEnableCache(true);
 ```
 CacheWebView webview;
 webview.setUserAgent("Android");
+```
+
+- Get cache file
+
+```
+ CacheStatus cacheStatus = CacheWebView.getWebViewCache().getCacheFile(URL);
+ if (cacheStatus.isExist()){
+    File file = cacheStatus.getPath();
+    String extension = cacheStatus.getExtension();
+ }
 ```

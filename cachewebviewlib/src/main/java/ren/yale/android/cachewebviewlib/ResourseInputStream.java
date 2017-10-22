@@ -3,7 +3,6 @@ package ren.yale.android.cachewebviewlib;
 import android.util.LruCache;
 import android.webkit.MimeTypeMap;
 
-import com.jakewharton.disklrucache.DiskLruCache;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,6 +12,7 @@ import java.io.OutputStream;
 import java.util.IllegalFormatCodePointException;
 
 import ren.yale.android.cachewebviewlib.bean.RamObject;
+import ren.yale.android.cachewebviewlib.disklru.DiskLruCache;
 import ren.yale.android.cachewebviewlib.encode.Encoding;
 
 /**

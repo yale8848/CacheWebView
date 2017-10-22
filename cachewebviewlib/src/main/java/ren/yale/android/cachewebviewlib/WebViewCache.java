@@ -8,7 +8,6 @@ import android.webkit.MimeTypeMap;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 
-import com.jakewharton.disklrucache.DiskLruCache;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -23,6 +22,7 @@ import java.util.Map;
 
 import ren.yale.android.cachewebviewlib.bean.HttpCacheFlag;
 import ren.yale.android.cachewebviewlib.bean.RamObject;
+import ren.yale.android.cachewebviewlib.disklru.DiskLruCache;
 import ren.yale.android.cachewebviewlib.encode.BytesEncodingDetect;
 import ren.yale.android.cachewebviewlib.utils.AppUtils;
 import ren.yale.android.cachewebviewlib.utils.FileUtil;
@@ -222,18 +222,19 @@ public class WebViewCache {
                 httpURLConnection.setRequestProperty("Origin",cacheWebView.getOriginUrl());
                 httpURLConnection.setRequestProperty("Referer",cacheWebView.getRefererUrl());
                 httpURLConnection.setRequestProperty("User-Agent",cacheWebView.getUserAgent());
-                httpURLConnection.setRequestProperty("Host",cacheWebView.getHost());
+
             }
 
             httpURLConnection.connect();
             HttpCache remote = new HttpCache(httpURLConnection);
 
-            if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK){
+            int responseCode = httpURLConnection.getResponseCode();
+            if ( responseCode== HttpURLConnection.HTTP_OK){
 
                 return new ResourseInputStream(url,httpURLConnection.getInputStream(),
                         getEditor(getKey(url)),remote,mLruCache);
             }
-            if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_MODIFIED){
+            if (responseCode == HttpURLConnection.HTTP_NOT_MODIFIED){
                 InputStream  inputStream = getCacheInputStream(url);
                 ResourseInputStream resourseInputStream = null;
                 if (inputStream == null){
@@ -311,7 +312,21 @@ public class WebViewCache {
         }
         return null;
     }
+    public CacheStatus getCacheFile(String url){
+        if (TextUtils.isEmpty(url)){
+            return null;
+        }
+        File file = mDiskLruCache.getCacheFile(getKey(url),CacheIndexType.CONTENT.ordinal());
+        CacheStatus cacheStatus = new CacheStatus();
+        if (file!=null&&file.exists()){
+            cacheStatus.setPath(file);
+            cacheStatus.setExist(true);
+        }
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url.toLowerCase());
+        cacheStatus.setExtension(extension);
+        return cacheStatus;
 
+    }
     private InputStream getCacheInputStream(String url){
         InputStream inputStream = getRamCache(url);
         if (inputStream!=null){
@@ -343,10 +358,11 @@ public class WebViewCache {
         if (TextUtils.isEmpty(url)){
             return null;
         }
-        CacheWebViewLog.d(url +" visit");
         if (!url.startsWith("http")){
             return null;
         }
+        CacheWebViewLog.d(url +" visit");
+
         String extension = MimeTypeMap.getFileExtensionFromUrl(url.toLowerCase());
         String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
 

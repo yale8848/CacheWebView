@@ -86,10 +86,9 @@ public class CacheWebView extends WebView {
     }
     public String getRefererUrl(){
         try {
-            if (mVectorUrl.size() == 1){
-                return mVectorUrl.get(0);
+            if (mVectorUrl.size()>0){
+                return mVectorUrl.get(mVectorUrl.size()-1);
             }
-            return mVectorUrl.get(mVectorUrl.size()-1);
         }catch (Exception e){
         }
         return "";
