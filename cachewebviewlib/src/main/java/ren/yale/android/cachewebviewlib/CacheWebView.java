@@ -96,11 +96,10 @@ public class CacheWebView extends WebView {
         return "";
     }
 
-    public String getHost(){
+    public String getHost(String u){
         String ou = "";
         try {
-            ou =  mVectorUrl.lastElement();
-            URL url = new URL(ou);
+            URL url = new URL(u);
             ou=  url.getHost();
         }catch (Exception e){
         }

@@ -24,8 +24,9 @@ import ren.yale.android.cachewebviewlib.WebViewCache;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String URL ="http://www.baidu.com";
-    private static final String URL1 ="http://m.mm131.com/xinggan/3320_3.html";
+    private static final String URL1 ="http://www.baidu.com";
+    private static final String URL ="https://github.com/";
+    private static final String URL2 ="http://m.mm131.com/xinggan/3320_3.html";
     private CacheWebView webview;
     private long mStart = 0;
 
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
         webview.setEnableCache(true);
         webview.setBlockNetworkImage(false);
-
+        //webview.setEnableCache(false);
         webview.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
