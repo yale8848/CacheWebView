@@ -313,11 +313,13 @@ public class WebViewCache {
         return null;
     }
     public CacheStatus getCacheFile(String url){
+        CacheStatus cacheStatus = new CacheStatus();
+
         if (TextUtils.isEmpty(url)){
-            return null;
+            return cacheStatus;
         }
         File file = mDiskLruCache.getCacheFile(getKey(url),CacheIndexType.CONTENT.ordinal());
-        CacheStatus cacheStatus = new CacheStatus();
+
         if (file!=null&&file.exists()){
             cacheStatus.setPath(file);
             cacheStatus.setExist(true);
