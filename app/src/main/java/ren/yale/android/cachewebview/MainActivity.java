@@ -1,17 +1,18 @@
 package ren.yale.android.cachewebview;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import java.io.File;
 import java.util.HashMap;
@@ -22,10 +23,10 @@ import ren.yale.android.cachewebviewlib.CacheWebView;
 import ren.yale.android.cachewebviewlib.WebViewCache;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
-    private static final String URL1 ="http://www.baidu.com";
-    private static final String URL ="https://github.com/";
+    private static final String URL ="https://www.vip.com/";
+    private static final String URL1 ="https://github.com/";
     private static final String URL2 ="http://m.mm131.com/xinggan/3320_3.html";
     private CacheWebView webview;
     private long mStart = 0;
@@ -40,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
         webview.setEnableCache(true);
         webview.setBlockNetworkImage(false);
-        //webview.setEnableCache(false);
         webview.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -67,14 +67,21 @@ public class MainActivity extends AppCompatActivity {
                 handler.proceed();
             }
         });
-        //webview.setEnableCache(false);
+        CheckBox checkBox = (CheckBox) findViewById(R.id.checkbox);
+       webview.setEnableCache(checkBox.isChecked());
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                webview.setEnableCache(isChecked);
+            }
+        });
         //webview.setUserAgent("Android");
     }
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-       // CacheWebView.cacheWebView(MainActivity.this)
-       //         .loadUrl(URL);
+      //CacheWebView.cacheWebView(MainActivity.this)
+      //         .loadUrl(URL);
     }
 
     private Map getHeaderMap(String url){
