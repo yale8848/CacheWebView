@@ -8,6 +8,9 @@ import java.io.InputStream;
 
 public class RamObject {
     private String httpFlag="";
+    private String allHttpFlag = "";
+
+
     private InputStream stream;
     private int inputStreamSize = 0;
 
@@ -31,5 +34,12 @@ public class RamObject {
 
     public void setHttpFlag(String httpFlag) {
         this.httpFlag = httpFlag;
+    }
+    public String getAllHttpFlag() {
+        return allHttpFlag;
+    }
+
+    public void setAllHttpFlag(String allHttpFlag) {
+        this.allHttpFlag = allHttpFlag;
     }
 }

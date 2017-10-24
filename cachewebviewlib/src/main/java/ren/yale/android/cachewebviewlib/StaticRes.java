@@ -119,4 +119,16 @@ public class StaticRes {
         return false;
     }
 
+    public void clearAll(){
+        clearRamExtension();
+        clearDiskExtension();
+    }
+    public void clearRamExtension(){
+
+        STATIC_RAM.clear();
+    }
+    public void clearDiskExtension(){
+        STATIC.clear();
+    }
+
 }

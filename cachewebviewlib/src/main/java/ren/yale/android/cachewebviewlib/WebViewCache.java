@@ -8,7 +8,6 @@ import android.webkit.MimeTypeMap;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +24,7 @@ import ren.yale.android.cachewebviewlib.disklru.DiskLruCache;
 import ren.yale.android.cachewebviewlib.encode.BytesEncodingDetect;
 import ren.yale.android.cachewebviewlib.utils.AppUtils;
 import ren.yale.android.cachewebviewlib.utils.FileUtil;
-import ren.yale.android.cachewebviewlib.utils.InputStreamCopy;
+import ren.yale.android.cachewebviewlib.utils.InputStreamUtils;
 import ren.yale.android.cachewebviewlib.utils.JsonWrapper;
 import ren.yale.android.cachewebviewlib.utils.MD5Utils;
 import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
@@ -48,6 +47,8 @@ public class WebViewCache {
     private LruCache<String,RamObject> mLruCache;
 
     private BytesEncodingDetect mEncodingDetect;
+
+    private boolean mDebug = true;
 
     private static class InstanceHolder {
         public static final WebViewCache INSTANCE = new WebViewCache();
@@ -90,7 +91,7 @@ public class WebViewCache {
             mHeaderMaps = new HashMap<>();
         }
         if (mDiskLruCache==null){
-            mDiskLruCache = DiskLruCache.open(mCacheFile, AppUtils.getVersionCode(mContext),2,mCacheSize);
+            mDiskLruCache = DiskLruCache.open(mCacheFile, AppUtils.getVersionCode(mContext),3,mCacheSize);
         }
         ensureLruCache();
         return this;
@@ -102,8 +103,8 @@ public class WebViewCache {
                     mLruCache = new LruCache<String,RamObject>((int) mCacheRamSize){
                         @Override
                         protected int sizeOf(String key, RamObject value) {
-
-                            return value.getInputStreamSize()+value.getHttpFlag().getBytes().length;
+                            return value.getInputStreamSize()+value.getHttpFlag().getBytes().length+
+                                    value.getAllHttpFlag().getBytes().length;
                         }
                     };
                 }
@@ -146,6 +147,14 @@ public class WebViewCache {
      */
     public WebViewCache init(Context context, File directory){
         return  init(context,directory,Integer.MAX_VALUE,20*1024*1024);
+    }
+
+    public WebViewCache enableDebug(boolean enable){
+        mDebug = enable;
+        return this;
+    }
+    public boolean isDebug(){
+        return mDebug;
     }
     public void clean(){
         if (mDiskLruCache!=null){
@@ -221,9 +230,6 @@ public class WebViewCache {
                 httpURLConnection.setRequestProperty("Origin",cacheWebView.getOriginUrl());
                 httpURLConnection.setRequestProperty("Referer",cacheWebView.getRefererUrl());
                 httpURLConnection.setRequestProperty("User-Agent",cacheWebView.getUserAgent());
-                //httpURLConnection.setRequestProperty("Referrer-Policy","origin-when-cross-origin");
-                //httpURLConnection.setRequestProperty("Remote-Address","151.101.72.133:443");
-                //httpURLConnection.setRequestProperty("Host",cacheWebView.getHost(url));
 
             }
 
@@ -260,7 +266,25 @@ public class WebViewCache {
 
         return null;
     }
+    private Map getAllHttpHeaders(String url){
 
+        Map  map = getRamAllHttpHeaders(url);
+        if (map!=null){
+            return map;
+        }
+        InputStream inputStream = null;
+        try {
+            DiskLruCache.Snapshot snapshot=  mDiskLruCache.get(getKey(url));
+            if (snapshot!=null){
+                inputStream =  snapshot.getInputStream(CacheIndexType.ALL_PROPERTY.ordinal());
+                return JsonWrapper.str2Map(InputStreamUtils.inputStream2Str(inputStream));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     private HttpCacheFlag getCacheFlag(String url){
 
         HttpCacheFlag  httpCacheFlag = getRamCacheFlag(url);
@@ -272,19 +296,23 @@ public class WebViewCache {
             DiskLruCache.Snapshot snapshot=  mDiskLruCache.get(getKey(url));
             if (snapshot!=null){
                 inputStream =  snapshot.getInputStream(CacheIndexType.PROPERTY.ordinal());
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-                StringBuffer sb = new StringBuffer();
-                byte buffer[] = new byte[1024];
-                int len = 0;
-                while ((len = bufferedInputStream.read(buffer,0,1024))>0){
-                    sb.append(new String(buffer,0,len));
-                }
-                bufferedInputStream.close();
-                return new JsonWrapper(sb.toString()).getBean(HttpCacheFlag.class);
+                return new JsonWrapper(InputStreamUtils.inputStream2Str(inputStream)).getBean(HttpCacheFlag.class);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        return null;
+    }
+    private Map getRamAllHttpHeaders(String url){
+
+        RamObject ramObject = mLruCache.get(getKey(url));
+        if (ramObject!=null&&!TextUtils.isEmpty(ramObject.getAllHttpFlag())){
+            try {
+                return JsonWrapper.str2Map(ramObject.getAllHttpFlag());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
@@ -351,11 +379,10 @@ public class WebViewCache {
         }
         return inputStream;
     }
-    public WebResourceResponse getWebResourceResponse(WebView view,String url){
 
-        return getWebResourceResponse(view,url,CacheStrategy.NORMAL);
-    }
-    public WebResourceResponse getWebResourceResponse(WebView view,String url, CacheStrategy cacheStrategy){
+    public WebResourceResponse getWebResourceResponse(WebView view,String url,
+                                                      CacheStrategy cacheStrategy,
+                                                      String encoding,CacheInterceptor cacheInterceptor){
         if(mDiskLruCache==null){
             return null;
         }
@@ -367,6 +394,11 @@ public class WebViewCache {
         }
         CacheWebViewLog.d(url +" visit");
 
+        if (cacheInterceptor!=null){
+            if (!cacheInterceptor.canCache(url)){
+                return null;
+            }
+        }
         String extension = MimeTypeMap.getFileExtensionFromUrl(url.toLowerCase());
         String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
 
@@ -376,6 +408,7 @@ public class WebViewCache {
         if (!mStaticRes.canCache(extension)){
             return null;
         }
+
         InputStream inputStream = null;
 
         if (mStaticRes.isHtml(extension)){
@@ -402,37 +435,52 @@ public class WebViewCache {
             inputStream = httpRequest(view,url);
         }
         String encode = "UTF-8";
+        if (!TextUtils.isEmpty(encoding)){
+            encode = encoding;
+        }
         if (inputStream !=null){
             if (inputStream instanceof ResourseInputStream){
 
                 ResourseInputStream resourseInputStream= (ResourseInputStream) inputStream;
 
-                if (mStaticRes.isCanGetEncoding(extension)){
-                    InputStreamCopy inputStreamCopy = new InputStreamCopy(resourseInputStream.getInnerInputStream());
-                    InputStream copyInputStream = inputStreamCopy.copy();
+                if (mStaticRes.isCanGetEncoding(extension)&&TextUtils.isEmpty(encoding)){
+                    InputStreamUtils inputStreamUtils = new InputStreamUtils(resourseInputStream.getInnerInputStream());
+                    long start = System.currentTimeMillis();
+                    InputStream copyInputStream = inputStreamUtils.copy();
+                    CacheWebViewLog.d(url+" encoding timecost: "+(System.currentTimeMillis()-start));
                     if (copyInputStream == null){
                         return null;
                     }
                     resourseInputStream.setInnerInputStream(copyInputStream);
-                    encode = inputStreamCopy.getEncoding();
+                    encode = inputStreamUtils.getEncoding();
+                    CacheWebViewLog.d(encode+" "+ url);
                 }
                 WebResourceResponse webResourceResponse=   new WebResourceResponse(mimeType,encode
                         ,inputStream);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     webResourceResponse.setResponseHeaders(resourseInputStream.getHttpCache().getResponseHeader());
                 }
+
                 return webResourceResponse;
             }else{
-                if (mStaticRes.isCanGetEncoding(extension)){
-                    InputStreamCopy inputStreamCopy = new InputStreamCopy(inputStream);
-                    InputStream copyInputStream = inputStreamCopy.copy();
+                if (mStaticRes.isCanGetEncoding(extension)&&TextUtils.isEmpty(encoding)){
+                    InputStreamUtils inputStreamUtils = new InputStreamUtils(inputStream);
+                    long start = System.currentTimeMillis();
+                    InputStream copyInputStream = inputStreamUtils.copy();
+                    CacheWebViewLog.d(url+" encoding timecost: "+(System.currentTimeMillis()-start));
                     if (copyInputStream == null){
                         return null;
                     }
                     inputStream = copyInputStream;
-                    encode = inputStreamCopy.getEncoding();
+                    encode = inputStreamUtils.getEncoding();
+                    CacheWebViewLog.d(encode+" "+ url);
                 }
-                return new WebResourceResponse(mimeType,encode,inputStream);
+                Map map = getAllHttpHeaders(url);
+                WebResourceResponse webResourceResponse= new  WebResourceResponse(mimeType,encode,inputStream);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    webResourceResponse.setResponseHeaders(map);
+                }
+                return webResourceResponse;
             }
 
         }

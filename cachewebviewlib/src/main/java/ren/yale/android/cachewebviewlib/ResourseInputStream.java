@@ -3,17 +3,15 @@ package ren.yale.android.cachewebviewlib;
 import android.util.LruCache;
 import android.webkit.MimeTypeMap;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.IllegalFormatCodePointException;
 
 import ren.yale.android.cachewebviewlib.bean.RamObject;
 import ren.yale.android.cachewebviewlib.disklru.DiskLruCache;
-import ren.yale.android.cachewebviewlib.encode.Encoding;
+import ren.yale.android.cachewebviewlib.utils.JsonWrapper;
 
 /**
  * Created by yale on 2017/9/22.
@@ -23,6 +21,7 @@ class ResourseInputStream extends InputStream {
 
     private OutputStream mOutputStream;
     private OutputStream mOutputStreamProperty;
+    private OutputStream mOutputStreamAllProperty;
     private InputStream mInnerInputStream;
     private int mCurrenReadLength;
     private DiskLruCache.Editor mEditorContent;
@@ -60,7 +59,7 @@ class ResourseInputStream extends InputStream {
         try {
             mOutputStream = content.newOutputStream(CacheIndexType.CONTENT.ordinal());
             mOutputStreamProperty = content.newOutputStream(CacheIndexType.PROPERTY.ordinal());
-
+            mOutputStreamAllProperty = content.newOutputStream(CacheIndexType.ALL_PROPERTY.ordinal());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -117,12 +116,14 @@ class ResourseInputStream extends InputStream {
         if (mOutputStream!=null&&mOutputStreamProperty!=null){
             String flag = mHttpCache.getCacheFlagString();
 
+            String allFlag = JsonWrapper.map2Str(mHttpCache.getResponseHeader());
             if (mRamArray!=null){
                 try {
                     RamObject ram = new RamObject();
                     byte[] buffer = mRamArray.toByteArray();
                     ram.setStream(new ByteArrayInputStream(buffer));
                     ram.setHttpFlag(flag);
+                    ram.setAllHttpFlag(allFlag);
                     ram.setInputStreamSize(buffer.length);
                     mLruCache.put(WebViewCache.getKey(mUrl),ram);
                     CacheWebViewLog.d(mUrl +" ram cached");
@@ -130,11 +131,14 @@ class ResourseInputStream extends InputStream {
                 }
             }
             mOutputStream.flush();
+            mOutputStreamAllProperty.write(allFlag.getBytes());
+            mOutputStreamAllProperty.flush();
             mOutputStreamProperty.write(flag.getBytes());
             mOutputStreamProperty.flush();
             mEditorContent.commit();
             mOutputStreamProperty.close();
             mOutputStream.close();
+            mOutputStreamAllProperty.close();
             CacheWebViewLog.d(mUrl +" disk cached");
         }else if (mEditorContent!=null){
             mEditorContent.abort();

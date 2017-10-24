@@ -67,12 +67,32 @@ public class BytesEncodingDetect extends Encoding {
             System.out.println(nicename[result]);
         }
     }
+    public String detectEncodingStr(byte[] rawtext,int len){
+        String strEnc ="UTF-8";
+        byte[] buffer = new byte[len];
+        System.arraycopy(rawtext,0,buffer,0,len);
+        try{
+            int enc = detectEncoding(buffer);
+            if (enc!=-1){
+                String encStr =  Encoding.htmlname[enc];
+                if (!encStr.equals("ASCII")){
+                    strEnc = encStr;
+                }
+            }
+        }catch (Exception e){
+
+        }
+        return strEnc;
+    }
     public String detectEncodingStr(byte[] rawtext){
         String strEnc ="UTF-8";
         try{
             int enc = detectEncoding(rawtext);
             if (enc!=-1){
-                return Encoding.htmlname[enc];
+                String encStr =  Encoding.htmlname[enc];
+                if (!encStr.equals("ASCII")){
+                    strEnc = encStr;
+                }
             }
         }catch (Exception e){
 

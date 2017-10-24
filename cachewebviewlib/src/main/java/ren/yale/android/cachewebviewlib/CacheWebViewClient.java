@@ -27,9 +27,18 @@ final class CacheWebViewClient extends WebViewClient {
     private boolean mIsEnableCache = true;
     private boolean mIsBlockImageLoad = false;
     private WebViewCache.CacheStrategy mCacheStrategy = WebViewCache.CacheStrategy.NORMAL;
+    private String mEncoding = "";
+    private CacheInterceptor mCacheInterceptor;
 
     public void setCustomWebViewClient(WebViewClient webViewClient){
         mCustomWebViewClient = webViewClient;
+    }
+
+    public void setEncoding(String encoding){
+        mEncoding = encoding;
+    }
+    public void setCacheInterceptor(CacheInterceptor interceptor){
+        mCacheInterceptor = interceptor;
     }
 
     @Override
@@ -134,7 +143,8 @@ final class CacheWebViewClient extends WebViewClient {
         if (!mIsEnableCache){
             return null;
         }
-        return WebViewCache.getInstance().getWebResourceResponse(view,url,mCacheStrategy);
+        return WebViewCache.getInstance().getWebResourceResponse(view,url,mCacheStrategy,
+                mEncoding,mCacheInterceptor);
 
     }
 
@@ -152,7 +162,8 @@ final class CacheWebViewClient extends WebViewClient {
         if (!mIsEnableCache){
             return null;
         }
-        return WebViewCache.getInstance().getWebResourceResponse(view,request.getUrl().toString(),mCacheStrategy);
+        return WebViewCache.getInstance().getWebResourceResponse(view,request.getUrl().toString(),
+                mCacheStrategy,mEncoding,mCacheInterceptor);
     }
 
     @Override

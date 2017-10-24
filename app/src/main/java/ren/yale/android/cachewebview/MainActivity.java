@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import ren.yale.android.cachewebviewlib.CacheInterceptor;
 import ren.yale.android.cachewebviewlib.CacheStatus;
 import ren.yale.android.cachewebviewlib.CacheWebView;
 import ren.yale.android.cachewebviewlib.WebViewCache;
@@ -25,11 +26,11 @@ import ren.yale.android.cachewebviewlib.WebViewCache;
 
 public class MainActivity extends Activity {
 
-    private static final String URL1 ="http://ubook.qq.com/8/index.html";
-    private static final String URL4 ="http://m.dmzj.com/info/zaidiyubianyuannahan.html";
+    private static final String URL4 ="http://ubook.qq.com/8/index.html";
+    private static final String URL2 ="http://m.dmzj.com/info/zaidiyubianyuannahan.html";
     private static final String URL3 ="https://www.vip.com/";
-    private static final String URL ="https://github.com/";
-    private static final String URL2 ="http://m.mm131.com/xinggan/3320_3.html";
+    private static final String URL1 ="https://github.com/";
+    private static final String URL ="http://m.mm131.com/xinggan/3320_3.html";
     private CacheWebView webview;
     private long mStart = 0;
 
@@ -75,6 +76,13 @@ public class MainActivity extends Activity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 webview.setEnableCache(isChecked);
+            }
+        });
+       // webview.setEncoding("");
+        webview.setCacheInterceptor(new CacheInterceptor() {
+            @Override
+            public boolean canCache(String url) {
+                return true;
             }
         });
         //webview.setUserAgent("Android");

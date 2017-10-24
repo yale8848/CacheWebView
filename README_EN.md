@@ -8,7 +8,7 @@
 ### use lib
 
 ```
-compile 'ren.yale.android:cachewebviewlib:1.0.4'
+compile 'ren.yale.android:cachewebviewlib:1.1.0'
 ```
 
 ### Change code
@@ -26,7 +26,7 @@ compile 'ren.yale.android:cachewebviewlib:1.0.4'
  ```
 
 File cacheFile = new File(this.getCacheDir(),"cache_path_name");
-CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100,1024*1024*10);//100M disk space ,10M ram sapce
+CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100,1024*1024*10).enableDebug(true);//100M disk space ,10M ram sapce
 
 
  ```
@@ -58,6 +58,19 @@ webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
 ```
 CacheWebView.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
                 .addRamExtension("png").removeRamExtension("html");
+```
+
+
+- set cache interceptor , whether cache each url
+
+```
+webview.setCacheInterceptor(new CacheInterceptor() {
+            @Override
+            public boolean canCache(String url) {
+                return true;
+            }
+ });
+
 ```
 
 - Delete cache

@@ -2,6 +2,7 @@ package ren.yale.android.cachewebviewlib;
 
 import android.content.Context;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -73,6 +74,16 @@ public class CacheWebView extends WebView {
             e.printStackTrace();
         }
 
+    }
+
+    public void setEncoding(String encoding){
+        if (TextUtils.isEmpty(encoding)){
+            encoding = "UTF-8";
+        }
+        mCacheWebViewClient.setEncoding(encoding);
+    }
+    public void setCacheInterceptor(CacheInterceptor interceptor){
+        mCacheWebViewClient.setCacheInterceptor(interceptor);
     }
 
     public String getOriginUrl(){

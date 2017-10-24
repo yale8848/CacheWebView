@@ -9,7 +9,7 @@
 ### 引入库
 
 ```
-compile 'ren.yale.android:cachewebviewlib:1.0.4'
+compile 'ren.yale.android:cachewebviewlib:1.1.0'
 ```
 
 ### 修改代码
@@ -26,7 +26,7 @@ compile 'ren.yale.android:cachewebviewlib:1.0.4'
  ```
 
 File cacheFile = new File(this.getCacheDir(),"cache_path_name");
-CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100,1024*1024*10);//100M 磁盘缓存空间,10M 内存缓存空间
+CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100,1024*1024*10).enableDebug(true);//100M 磁盘缓存空间,10M 内存缓存空间
 
 
  ```
@@ -57,6 +57,18 @@ webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
 ```
 CacheWebView.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
                 .addRamExtension("png").removeRamExtension("html");
+```
+
+- 设置缓存拦截器，可以针对每一个url是否拦截缓存
+
+```
+webview.setCacheInterceptor(new CacheInterceptor() {
+            @Override
+            public boolean canCache(String url) {
+                return true;
+            }
+ });
+
 ```
 
 - 删除缓存
