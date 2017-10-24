@@ -143,7 +143,7 @@ final class CacheWebViewClient extends WebViewClient {
         if (!mIsEnableCache){
             return null;
         }
-        return WebViewCache.getInstance().getWebResourceResponse(view,url,mCacheStrategy,
+        return WebViewCache.getInstance().getWebResourceResponseMutiThread(view,url,mCacheStrategy,
                 mEncoding,mCacheInterceptor);
 
     }
@@ -162,7 +162,7 @@ final class CacheWebViewClient extends WebViewClient {
         if (!mIsEnableCache){
             return null;
         }
-        return WebViewCache.getInstance().getWebResourceResponse(view,request.getUrl().toString(),
+        return WebViewCache.getInstance().getWebResourceResponseMutiThread(view,request.getUrl().toString(),
                 mCacheStrategy,mEncoding,mCacheInterceptor);
     }
 

@@ -111,6 +111,7 @@ class ResourseInputStream extends InputStream {
     @Override
     public void close() throws IOException {
 
+        CacheWebViewLog.d("thread: "+Thread.currentThread().getId());
         mInnerInputStream.close();
 
         if (mOutputStream!=null&&mOutputStreamProperty!=null){

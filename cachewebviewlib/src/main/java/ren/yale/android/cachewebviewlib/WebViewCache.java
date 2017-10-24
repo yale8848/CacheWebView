@@ -11,12 +11,16 @@ import android.webkit.WebView;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ren.yale.android.cachewebviewlib.bean.HttpCacheFlag;
 import ren.yale.android.cachewebviewlib.bean.RamObject;
@@ -49,6 +53,7 @@ public class WebViewCache {
     private BytesEncodingDetect mEncodingDetect;
 
     private boolean mDebug = true;
+    private ExecutorService mExecutorService;
 
     private static class InstanceHolder {
         public static final WebViewCache INSTANCE = new WebViewCache();
@@ -56,6 +61,7 @@ public class WebViewCache {
     private WebViewCache(){
         mStaticRes = new StaticRes();
         mEncodingDetect = new BytesEncodingDetect();
+        mExecutorService = Executors.newFixedThreadPool(5);
     }
 
     public BytesEncodingDetect getEncodingDetect(){
@@ -380,6 +386,81 @@ public class WebViewCache {
         return inputStream;
     }
 
+    public WebResourceResponse getWebResourceResponseMutiThread(final WebView view, final String url,
+                                                                CacheStrategy cacheStrategy,
+                                                                String encoding, CacheInterceptor cacheInterceptor){
+        if(mDiskLruCache==null){
+            return null;
+        }
+        if (TextUtils.isEmpty(url)){
+            return null;
+        }
+        if (!url.startsWith("http")){
+            return null;
+        }
+        CacheWebViewLog.d(url +" visit");
+
+        if (cacheInterceptor!=null){
+            if (!cacheInterceptor.canCache(url)){
+                return null;
+            }
+        }
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url.toLowerCase());
+        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+
+        if (TextUtils.isEmpty(extension)){
+            return null;
+        }
+        if (!mStaticRes.canCache(extension)){
+            return null;
+        }
+        WebResourceResponse webResourceResponse = getWebResourceResponse(view,url,cacheStrategy,encoding,cacheInterceptor);
+        if (webResourceResponse!=null){
+            return webResourceResponse;
+        }
+        if (extension.equals("jpg")||extension.equals("gif")||extension.equals("png")){
+            final PipedOutputStream pipedOutputStream = new PipedOutputStream();
+            try {
+                PipedInputStream pipedInputStream = new PipedInputStream(pipedOutputStream);
+
+                mExecutorService.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        InputStream inputStream = httpRequest(view,url);
+                        int len =0 ;
+                        byte buffer[] = new byte[1024];
+                        try {
+                            while ((len = inputStream.read(buffer))>0){
+                                pipedOutputStream.write(buffer,0,len);
+                            }
+                            inputStream.close();
+                            pipedOutputStream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                WebResourceResponse webResourceResponse1= new  WebResourceResponse(mimeType,"UTF-8",pipedInputStream);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    //webResourceResponse.setResponseHeaders(null);
+                }
+                return webResourceResponse1;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+
+            }
+            return null;
+        }else{
+            return getWebResourceResponse(view,url,cacheStrategy,encoding,cacheInterceptor);
+        }
+
+
+
+
+    }
+
     public WebResourceResponse getWebResourceResponse(WebView view,String url,
                                                       CacheStrategy cacheStrategy,
                                                       String encoding,CacheInterceptor cacheInterceptor){
@@ -432,7 +513,10 @@ public class WebViewCache {
             inputStream = getCacheInputStream(url);
         }
         if (inputStream==null){
-            inputStream = httpRequest(view,url);
+            if (!extension.equals("jpg")&&!extension.equals("gif")&&!extension.equals("png")){
+                inputStream = httpRequest(view,url);
+            }
+
         }
         String encode = "UTF-8";
         if (!TextUtils.isEmpty(encoding)){
