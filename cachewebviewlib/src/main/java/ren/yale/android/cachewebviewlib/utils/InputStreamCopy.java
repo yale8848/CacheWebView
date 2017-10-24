@@ -26,7 +26,7 @@ public class InputStreamCopy {
 
     public InputStream copy(){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[10240];
         int len;
         boolean read =false;
         try {

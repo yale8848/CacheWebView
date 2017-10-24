@@ -25,7 +25,9 @@ import ren.yale.android.cachewebviewlib.WebViewCache;
 
 public class MainActivity extends Activity {
 
-    private static final String URL ="https://www.vip.com/";
+    private static final String URL ="http://ubook.qq.com/8/index.html";
+    private static final String URL4 ="http://m.dmzj.com/info/zaidiyubianyuannahan.html";
+    private static final String URL3 ="https://www.vip.com/";
     private static final String URL1 ="https://github.com/";
     private static final String URL2 ="http://m.mm131.com/xinggan/3320_3.html";
     private CacheWebView webview;
