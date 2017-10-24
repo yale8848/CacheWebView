@@ -28,9 +28,13 @@ public class MainActivity extends Activity {
 
     private static final String URL4 ="http://ubook.qq.com/8/index.html";
     private static final String URL2 ="http://m.dmzj.com/info/zaidiyubianyuannahan.html";
-    private static final String URL3 ="https://www.vip.com/";
+    private static final String URL5 ="https://www.vip.com/";
+    private static final String URL6 ="https://www.yahoo.co.jp/";
+    private static final String URL7 ="https://www.naver.com/";
+    private static final String URL8 =" http://www.bbc.com/arabic";
+    private static final String URL =" http://www.izda.com/";
     private static final String URL1 ="https://github.com/";
-    private static final String URL ="http://m.mm131.com/xinggan/3320_3.html";
+    private static final String URL3 ="http://m.mm131.com/xinggan/3320_3.html";
     private CacheWebView webview;
     private long mStart = 0;
 
