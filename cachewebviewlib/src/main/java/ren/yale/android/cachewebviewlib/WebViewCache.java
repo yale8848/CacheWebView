@@ -3,12 +3,10 @@ package ren.yale.android.cachewebviewlib;
 import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.LruCache;
 import android.webkit.MimeTypeMap;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
-
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -223,8 +221,9 @@ public class WebViewCache {
                 httpURLConnection.setRequestProperty("Origin",cacheWebView.getOriginUrl());
                 httpURLConnection.setRequestProperty("Referer",cacheWebView.getRefererUrl());
                 httpURLConnection.setRequestProperty("User-Agent",cacheWebView.getUserAgent());
-               // httpURLConnection.setRequestProperty("Referrer-Policy","no-referrer");
-               // httpURLConnection.setRequestProperty("Host",cacheWebView.getHost(url));
+                //httpURLConnection.setRequestProperty("Referrer-Policy","origin-when-cross-origin");
+                //httpURLConnection.setRequestProperty("Remote-Address","151.101.72.133:443");
+                //httpURLConnection.setRequestProperty("Host",cacheWebView.getHost(url));
 
             }
 
