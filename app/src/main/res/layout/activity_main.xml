@@ -58,6 +58,13 @@
             android:layout_height="wrap_content"
             android:onClick="onClick"
             android:text="get cache file"/>
+
+        <Spinner
+            android:id="@+id/spnner"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:entries="@array/urls"
+            android:layout_height="wrap_content"></Spinner>
     </LinearLayout>
     <ren.yale.android.cachewebview.TestWebView
         android:id="@+id/webview"

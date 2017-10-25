@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="urls">
+        <item>https://m.baidu.com</item>
+        <item>http://m.mm131.com/xinggan/3320_3.html</item>
+        <item>http://ubook.qq.com/8/index.html</item>
+        <item>http://m.dmzj.com/info/zaidiyubianyuannahan.html</item>
+        <item>https://github.com/</item>
+        <item>https://www.vip.com/</item>
+        <item>https://www.yahoo.co.jp/</item>
+        <item>https://www.naver.com/</item>
+        <item>http://www.bbc.com/arabic</item>
+        <item>http://www.izda.com/</item>
+    </string-array>
+</resources>

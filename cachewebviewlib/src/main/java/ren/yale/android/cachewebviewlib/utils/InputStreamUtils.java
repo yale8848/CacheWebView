@@ -16,11 +16,17 @@ public class InputStreamUtils {
 
     private InputStream mInputStream;
     private String mEncoding = "UTF-8";
+    private static int mEncodeBuffer = 500;
 
     public InputStreamUtils(InputStream inputStream){
         mInputStream = inputStream;
     }
 
+    public void setEncodeBuffer(int bufferSize){
+        if (bufferSize>mEncodeBuffer){
+            mEncodeBuffer = bufferSize;
+        }
+    }
     public String getEncoding(){
         return mEncoding;
     }
@@ -46,12 +52,12 @@ public class InputStreamUtils {
 
     public InputStream copy(){
         int len;
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[mEncodeBuffer];
         if (mInputStream instanceof ByteArrayInputStream){
             try {
                 len = mInputStream.read(buffer);
                 if (len>0){
-                    if (len == 1024){
+                    if (len == mEncodeBuffer){
                         mEncoding = WebViewCache.getInstance().getEncodingDetect().detectEncodingStr(buffer);
                     }else{
                         mEncoding = WebViewCache.getInstance().getEncodingDetect().detectEncodingStr(buffer,len);

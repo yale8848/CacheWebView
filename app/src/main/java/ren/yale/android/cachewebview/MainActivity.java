@@ -11,8 +11,10 @@ import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Spinner;
 
 import java.io.File;
 import java.util.HashMap;
@@ -26,15 +28,8 @@ import ren.yale.android.cachewebviewlib.WebViewCache;
 
 public class MainActivity extends Activity {
 
-    private static final String URL4 ="http://ubook.qq.com/8/index.html";
-    private static final String URL2 ="http://m.dmzj.com/info/zaidiyubianyuannahan.html";
-    private static final String URL5 ="https://www.vip.com/";
-    private static final String URL6 ="https://www.yahoo.co.jp/";
-    private static final String URL7 ="https://www.naver.com/";
-    private static final String URL8 =" http://www.bbc.com/arabic";
-    private static final String URL =" http://www.izda.com/";
-    private static final String URL1 ="https://github.com/";
-    private static final String URL3 ="http://m.mm131.com/xinggan/3320_3.html";
+
+    private String URL ="";
     private CacheWebView webview;
     private long mStart = 0;
 
@@ -44,6 +39,19 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
         TestWebView testWebView = (TestWebView) findViewById(R.id.webview);
+        Spinner spinner = (Spinner) findViewById(R.id.spnner);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String[] urls = getResources().getStringArray(R.array.urls);
+                URL = urls[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         webview = testWebView.getDXHWebView();
         webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
         webview.setEnableCache(true);
@@ -63,9 +71,7 @@ public class MainActivity extends Activity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 CacheWebView v = (CacheWebView) view;
-                if (url.startsWith("http")){
-                    view.loadUrl(url,getHeaderMap(url));
-                }
+                view.loadUrl(url,getHeaderMap(url));
                 return true;
             }
 
@@ -94,20 +100,18 @@ public class MainActivity extends Activity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-      //CacheWebView.cacheWebView(MainActivity.this)
-      //         .loadUrl(URL);
+
     }
 
     private Map getHeaderMap(String url){
         HashMap<String,String> map = new HashMap<>();
-        map.put("aaa",url);
         return map;
 
     }
     public void onClick(View v){
         switch (v.getId()){
             case R.id.btn_load:
-
+                webview.stopLoading();
                 webview.loadUrl(URL);
                 break;
             case R.id.btn_preload:

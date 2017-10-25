@@ -48,6 +48,7 @@ public class WebViewCache {
     private BytesEncodingDetect mEncodingDetect;
 
     private boolean mDebug = true;
+    private int mEncodeBufferSize = 0;
 
     private static class InstanceHolder {
         public static final WebViewCache INSTANCE = new WebViewCache();
@@ -148,6 +149,9 @@ public class WebViewCache {
         return  init(context,directory,Integer.MAX_VALUE,20*1024*1024);
     }
 
+    public void setEncodeBuffer(int size){
+        mEncodeBufferSize = size;
+    }
     public WebViewCache enableDebug(boolean enable){
         mDebug = enable;
         return this;
@@ -441,6 +445,7 @@ public class WebViewCache {
 
                 if (mStaticRes.isCanGetEncoding(extension)&&TextUtils.isEmpty(encoding)){
                     InputStreamUtils inputStreamUtils = new InputStreamUtils(resourseInputStream.getInnerInputStream());
+                    inputStreamUtils.setEncodeBuffer(mEncodeBufferSize);
                     long start = System.currentTimeMillis();
                     InputStream copyInputStream = inputStreamUtils.copy();
                     CacheWebViewLog.d(url+" get encoding timecost: "+(System.currentTimeMillis()-start));
@@ -461,6 +466,7 @@ public class WebViewCache {
             }else{
                 if (mStaticRes.isCanGetEncoding(extension)&&TextUtils.isEmpty(encoding)){
                     InputStreamUtils inputStreamUtils = new InputStreamUtils(inputStream);
+                    inputStreamUtils.setEncodeBuffer(mEncodeBufferSize);
                     long start = System.currentTimeMillis();
                     InputStream copyInputStream = inputStreamUtils.copy();
                     CacheWebViewLog.d(url+" get encoding timecost: "+(System.currentTimeMillis()-start));
