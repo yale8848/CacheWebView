@@ -8,7 +8,7 @@
 ### use lib
 
 ```
-compile 'ren.yale.android:cachewebviewlib:1.1.0'
+compile 'ren.yale.android:cachewebviewlib:1.1.1'
 ```
 
 ### Change code

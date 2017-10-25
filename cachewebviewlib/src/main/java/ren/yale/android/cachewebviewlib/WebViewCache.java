@@ -15,7 +15,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import ren.yale.android.cachewebviewlib.bean.HttpCacheFlag;
@@ -165,10 +164,7 @@ public class WebViewCache {
             }
         }
         if (mLruCache!=null){
-            Map<String,RamObject> map = (LinkedHashMap) mLruCache.snapshot();
-            if (map!=null){
-                map.clear();
-            }
+            mLruCache.evictAll();
             mLruCache = null;
         }
     }
@@ -447,7 +443,7 @@ public class WebViewCache {
                     InputStreamUtils inputStreamUtils = new InputStreamUtils(resourseInputStream.getInnerInputStream());
                     long start = System.currentTimeMillis();
                     InputStream copyInputStream = inputStreamUtils.copy();
-                    CacheWebViewLog.d(url+" encoding timecost: "+(System.currentTimeMillis()-start));
+                    CacheWebViewLog.d(url+" get encoding timecost: "+(System.currentTimeMillis()-start));
                     if (copyInputStream == null){
                         return null;
                     }
@@ -467,7 +463,7 @@ public class WebViewCache {
                     InputStreamUtils inputStreamUtils = new InputStreamUtils(inputStream);
                     long start = System.currentTimeMillis();
                     InputStream copyInputStream = inputStreamUtils.copy();
-                    CacheWebViewLog.d(url+" encoding timecost: "+(System.currentTimeMillis()-start));
+                    CacheWebViewLog.d(url+" get encoding timecost: "+(System.currentTimeMillis()-start));
                     if (copyInputStream == null){
                         return null;
                     }

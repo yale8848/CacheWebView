@@ -246,7 +246,7 @@ public class CacheWebView extends WebView {
     }
 
     public void clearCache(){
-
+        CacheWebViewLog.d("clearCache");
         mVectorUrl.clear();
 
         FileUtil.deleteDirs(mAppCachePath,false);
@@ -254,6 +254,8 @@ public class CacheWebView extends WebView {
     }
 
     public void destroy(){
+
+        CacheWebViewLog.d("destroy");
 
         mVectorUrl.clear();
         mVectorUrl = null;
