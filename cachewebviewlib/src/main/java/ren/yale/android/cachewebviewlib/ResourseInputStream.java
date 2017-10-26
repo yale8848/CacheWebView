@@ -126,7 +126,7 @@ class ResourseInputStream extends InputStream {
                     ram.setAllHttpFlag(allFlag);
                     ram.setInputStreamSize(buffer.length);
                     mLruCache.put(WebViewCache.getKey(mUrl),ram);
-                    CacheWebViewLog.d(mUrl +" ram cached");
+                    CacheWebViewLog.d("ram cached "+mUrl);
                 }catch (Exception e){
                 }
             }
@@ -139,7 +139,7 @@ class ResourseInputStream extends InputStream {
             mOutputStreamProperty.close();
             mOutputStream.close();
             mOutputStreamAllProperty.close();
-            CacheWebViewLog.d(mUrl +" disk cached");
+            CacheWebViewLog.d("disk cached "+mUrl);
         }else if (mEditorContent!=null){
             mEditorContent.abort();
         }
