@@ -16,6 +16,11 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
+
 /**
  * Created by yale on 2017/9/15.
  */
@@ -29,9 +34,34 @@ final class CacheWebViewClient extends WebViewClient {
     private WebViewCache.CacheStrategy mCacheStrategy = WebViewCache.CacheStrategy.NORMAL;
     private String mEncoding = "";
     private CacheInterceptor mCacheInterceptor;
+    private Vector<String> mVisitVectorUrl = null;
+    private String mUserAgent="";
+    private HashMap<String,Map> mHeaderMaps;
+
+    public CacheWebViewClient(){
+        mHeaderMaps = new HashMap<>();
+        mVisitVectorUrl = new Vector<>();
+    }
 
     public void setCustomWebViewClient(WebViewClient webViewClient){
         mCustomWebViewClient = webViewClient;
+    }
+    public void setUserAgent(String agent){
+        mUserAgent = agent;
+    }
+    public String getUserAgent(){
+        return mUserAgent;
+    }
+    public void addHeaderMap(String url ,Map<String, String> additionalHttpHeaders){
+        if(mHeaderMaps!=null&&additionalHttpHeaders!=null){
+            mHeaderMaps.put(url,additionalHttpHeaders);
+        }
+    }
+    public Map<String,String> getHeader(String url){
+        if(mHeaderMaps!=null){
+            return mHeaderMaps.get(url);
+        }
+        return null;
     }
 
     public void setEncoding(String encoding){
@@ -40,7 +70,59 @@ final class CacheWebViewClient extends WebViewClient {
     public void setCacheInterceptor(CacheInterceptor interceptor){
         mCacheInterceptor = interceptor;
     }
+    public void addVisitUrl(String url){
+        if (!mVisitVectorUrl.contains(url)){
+            mVisitVectorUrl.add(url);
+        }
+    }
 
+    public void clear(){
+        if (mVisitVectorUrl!=null){
+            mVisitVectorUrl.clear();
+            mVisitVectorUrl = null;
+        }
+        if (mHeaderMaps!=null){
+            mHeaderMaps.clear();
+            mHeaderMaps = null;
+        }
+
+    }
+    public String getOriginUrl(){
+        String ou = "";
+        if (mVisitVectorUrl == null){
+            return ou;
+        }
+        try {
+            ou =  mVisitVectorUrl.lastElement();
+            URL url = new URL(ou);
+            int port = url.getPort();
+            ou=  url.getProtocol()+"://"+url.getHost()+(port==-1?"":":"+port);
+        }catch (Exception e){
+        }
+        return ou;
+    }
+    public String getRefererUrl(){
+        if (mVisitVectorUrl == null){
+            return "";
+        }
+        try {
+            if (mVisitVectorUrl.size()>0){
+                return mVisitVectorUrl.get(mVisitVectorUrl.size()-1);
+            }
+        }catch (Exception e){
+        }
+        return "";
+    }
+
+    public String getHost(String u){
+        String ou = "";
+        try {
+            URL url = new URL(u);
+            ou=  url.getHost();
+        }catch (Exception e){
+        }
+        return ou;
+    }
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
@@ -143,7 +225,7 @@ final class CacheWebViewClient extends WebViewClient {
         if (!mIsEnableCache){
             return null;
         }
-        return WebViewCache.getInstance().getWebResourceResponse(view,url,mCacheStrategy,
+        return WebViewCache.getInstance().getWebResourceResponse(this,url,mCacheStrategy,
                 mEncoding,mCacheInterceptor);
 
     }
@@ -162,7 +244,7 @@ final class CacheWebViewClient extends WebViewClient {
         if (!mIsEnableCache){
             return null;
         }
-        return WebViewCache.getInstance().getWebResourceResponse(view,request.getUrl().toString(),
+        return WebViewCache.getInstance().getWebResourceResponse(this,request.getUrl().toString(),
                 mCacheStrategy,mEncoding,mCacheInterceptor);
     }
 

@@ -14,10 +14,7 @@ import android.webkit.WebViewClient;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 import ren.yale.android.cachewebviewlib.utils.FileUtil;
 import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
@@ -31,16 +28,8 @@ public class CacheWebView extends WebView {
 
     private static final String CACHE_NAME = "CacheWebView";
     private static final int CACHE_SIZE = 200*1024*1024;
-
     private String mAppCachePath = "";
-
     private CacheWebViewClient mCacheWebViewClient;
-
-    private HashMap<String,Map> mHeaderMaps;
-    private Vector<String> mVectorUrl = null;
-
-    private String mUserAgent="";
-
 
     public CacheWebView(Context context) {
         super(context);
@@ -63,9 +52,6 @@ public class CacheWebView extends WebView {
     }
 
     private void initData() {
-        mHeaderMaps = new HashMap<>();
-        mVectorUrl = new Vector<>();
-
         File cacheFile = new File(getContext().getCacheDir(),CACHE_NAME);
         try {
             CacheWebView.getWebViewCache().openCache(getContext(),cacheFile,CACHE_SIZE);
@@ -73,7 +59,6 @@ public class CacheWebView extends WebView {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void setEncoding(String encoding){
@@ -86,36 +71,7 @@ public class CacheWebView extends WebView {
         mCacheWebViewClient.setCacheInterceptor(interceptor);
     }
 
-    public String getOriginUrl(){
-        String ou = "";
-        try {
-            ou =  mVectorUrl.lastElement();
-            URL url = new URL(ou);
-            int port = url.getPort();
-            ou=  url.getProtocol()+"://"+url.getHost()+(port==-1?"":":"+port);
-        }catch (Exception e){
-        }
-        return ou;
-    }
-    public String getRefererUrl(){
-        try {
-            if (mVectorUrl.size()>0){
-                return mVectorUrl.get(mVectorUrl.size()-1);
-            }
-        }catch (Exception e){
-        }
-        return "";
-    }
 
-    public String getHost(String u){
-        String ou = "";
-        try {
-            URL url = new URL(u);
-            ou=  url.getHost();
-        }catch (Exception e){
-        }
-        return ou;
-    }
     public static WebViewCache getWebViewCache(){
         return WebViewCache.getInstance();
     }
@@ -127,6 +83,7 @@ public class CacheWebView extends WebView {
     private void initWebViewClient() {
         mCacheWebViewClient = new CacheWebViewClient();
        super.setWebViewClient(mCacheWebViewClient);
+        mCacheWebViewClient.setUserAgent(this.getSettings().getUserAgentString());
     }
 
     public void setCacheStrategy(WebViewCache.CacheStrategy cacheStrategy){
@@ -141,35 +98,16 @@ public class CacheWebView extends WebView {
         mCacheWebViewClient.setEnableCache(enableCache);
     }
     public void loadUrl(String url){
-        if (!mVectorUrl.contains(url)){
-            mVectorUrl.add(url);
-        }
+        mCacheWebViewClient.addVisitUrl(url);
         super.loadUrl(url);
-
     }
-
     public void loadUrl(String url, Map<String, String> additionalHttpHeaders) {
-        if (!mVectorUrl.contains(url)){
-            mVectorUrl.add(url);
-        }
-        mHeaderMaps.put(url,additionalHttpHeaders);
-        getWebViewCache().addHeaderMap(url,additionalHttpHeaders);
+        mCacheWebViewClient.addVisitUrl(url);
+        mCacheWebViewClient.addHeaderMap(url,additionalHttpHeaders);
         super.loadUrl(url,additionalHttpHeaders);
     }
     public void setBlockNetworkImage(boolean isBlock){
        mCacheWebViewClient.setBlockNetworkImage(isBlock);
-    }
-
-    @Override
-    public void goBack() {
-
-        try {
-            if (!mVectorUrl.isEmpty()){
-                mVectorUrl.remove(mVectorUrl.size()-1);
-            }
-        }catch (Exception e){
-        }
-        super.goBack();
     }
 
     private void initSettings(){
@@ -204,24 +142,21 @@ public class CacheWebView extends WebView {
             webSettings.setCacheMode(
                     WebSettings.LOAD_CACHE_ELSE_NETWORK);
         }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             webSettings.setMixedContentMode(
                     WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         }
-
-        mUserAgent = webSettings.getUserAgentString();
         setCachePath();
 
     }
     public String getUserAgent(){
-        return mUserAgent;
+        return  this.getSettings().getUserAgentString();
     }
 
     public void setUserAgent(String userAgent){
-        mUserAgent = userAgent;
         WebSettings webSettings = this.getSettings();
         webSettings.setUserAgentString(userAgent);
+        mCacheWebViewClient.setUserAgent(userAgent);
     }
 
     private void setCachePath(){
@@ -241,14 +176,9 @@ public class CacheWebView extends WebView {
         webSettings.setDatabaseEnabled(true);
         webSettings.setDatabasePath(path);
     }
-    public String getAppCachePath(){
-        return mAppCachePath;
-    }
 
     public void clearCache(){
         CacheWebViewLog.d("clearCache");
-        mVectorUrl.clear();
-
         FileUtil.deleteDirs(mAppCachePath,false);
         getWebViewCache().clean();
     }
@@ -256,14 +186,7 @@ public class CacheWebView extends WebView {
     public void destroy(){
 
         CacheWebViewLog.d("destroy");
-
-        mVectorUrl.clear();
-        mVectorUrl = null;
-
-        getWebViewCache().clearHeaderMap(mHeaderMaps);
-        mHeaderMaps.clear();
-        mHeaderMaps = null;
-
+        mCacheWebViewClient.clear();
         ViewParent viewParent = this.getParent();
         if (viewParent == null){
             super.destroy();

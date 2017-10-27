@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.util.LruCache;
 import android.webkit.MimeTypeMap;
 import android.webkit.WebResourceResponse;
-import android.webkit.WebView;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +13,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 
 import ren.yale.android.cachewebviewlib.bean.HttpCacheFlag;
@@ -36,7 +34,6 @@ public class WebViewCache {
 
     private DiskLruCache mDiskLruCache;
     private StaticRes mStaticRes;
-    private HashMap<String,Map> mHeaderMaps;
 
     private Context mContext;
     private File mCacheFile;
@@ -49,6 +46,7 @@ public class WebViewCache {
 
     private boolean mDebug = true;
     private int mEncodeBufferSize = 0;
+
 
     private static class InstanceHolder {
         public static final WebViewCache INSTANCE = new WebViewCache();
@@ -86,9 +84,6 @@ public class WebViewCache {
         }
         if (mCacheRamSize<=0){
             mCacheRamSize = maxRamSize;
-        }
-        if (mHeaderMaps==null){
-            mHeaderMaps = new HashMap<>();
         }
         if (mDiskLruCache==null){
             mDiskLruCache = DiskLruCache.open(mCacheFile, AppUtils.getVersionCode(mContext),3,mCacheSize);
@@ -156,6 +151,7 @@ public class WebViewCache {
         mDebug = enable;
         return this;
     }
+
     public boolean isDebug(){
         return mDebug;
     }
@@ -185,20 +181,7 @@ public class WebViewCache {
         }
         return null;
     }
-    public void addHeaderMap(String url, Map<String, String> additionalHttpHeaders){
-        if(mHeaderMaps!=null&&additionalHttpHeaders!=null){
-            mHeaderMaps.put(url,additionalHttpHeaders);
-        }
-    }
-    public void clearHeaderMap(HashMap<String,Map> map){
-        if(mHeaderMaps!=null&&map!=null){
-            for (Map.Entry entry : map.entrySet()){
-                mHeaderMaps.remove(entry.getKey());
-            }
-        }
-    }
-
-    public InputStream httpRequest(WebView view,String url) {
+    public InputStream httpRequest(CacheWebViewClient client,String url) {
 
         try {
             URL urlRequest = new URL(url);
@@ -209,7 +192,7 @@ public class WebViewCache {
             httpURLConnection.setConnectTimeout(30000);
             httpURLConnection.setReadTimeout(30000);
 
-            Map<String,Object> header = mHeaderMaps.get(url);
+            Map<String,String> header = client.getHeader(url);
             if (header!=null){
                 for (Map.Entry entry: header.entrySet()){
                     httpURLConnection.setRequestProperty((String)entry.getKey(),(String)entry.getValue());
@@ -225,13 +208,9 @@ public class WebViewCache {
                 }
             }
 
-            CacheWebView cacheWebView = (CacheWebView) view;
-            if (cacheWebView!=null){
-                httpURLConnection.setRequestProperty("Origin",cacheWebView.getOriginUrl());
-                httpURLConnection.setRequestProperty("Referer",cacheWebView.getRefererUrl());
-                httpURLConnection.setRequestProperty("User-Agent",cacheWebView.getUserAgent());
-
-            }
+            httpURLConnection.setRequestProperty("Origin",client.getOriginUrl());
+            httpURLConnection.setRequestProperty("Referer",client.getRefererUrl());
+            httpURLConnection.setRequestProperty("User-Agent",client.getUserAgent());
 
             httpURLConnection.connect();
             HttpCache remote = new HttpCache(httpURLConnection);
@@ -251,8 +230,6 @@ public class WebViewCache {
                 }else{
                     CacheWebViewLog.d("304 from cache "+url);
                     return inputStream;
-                    //resourseInputStream = new ResourseInputStream(url,inputStream,
-                    //        null,remote,mLruCache);
                 }
                 return resourseInputStream;
             }
@@ -381,7 +358,7 @@ public class WebViewCache {
         return inputStream;
     }
 
-    public WebResourceResponse getWebResourceResponse(WebView view,String url,
+    public WebResourceResponse getWebResourceResponse(CacheWebViewClient client,String url,
                                                       CacheStrategy cacheStrategy,
                                                       String encoding,CacheInterceptor cacheInterceptor){
         if(mDiskLruCache==null){
@@ -433,7 +410,7 @@ public class WebViewCache {
             inputStream = getCacheInputStream(url);
         }
         if (inputStream==null){
-            inputStream = httpRequest(view,url);
+            inputStream = httpRequest(client,url);
         }
         String encode = "UTF-8";
         if (!TextUtils.isEmpty(encoding)){
