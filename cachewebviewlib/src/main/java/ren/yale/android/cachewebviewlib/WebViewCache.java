@@ -177,6 +177,7 @@ public class WebViewCache {
             DiskLruCache.Editor editor = mDiskLruCache.edit(key);
             return editor;
         } catch (IOException e) {
+            CacheWebViewLog.d(e.toString());
             e.printStackTrace();
         }
         return null;
@@ -235,10 +236,13 @@ public class WebViewCache {
             }
 
         } catch (MalformedURLException e) {
+            CacheWebViewLog.d(e.toString()+" "+url);
             e.printStackTrace();
         } catch (IOException e) {
+            CacheWebViewLog.d(e.toString()+" "+url);
             e.printStackTrace();
         } catch (Exception e){
+            CacheWebViewLog.d(e.toString()+" "+url);
             e.printStackTrace();
         }
 
@@ -337,6 +341,29 @@ public class WebViewCache {
         return cacheStatus;
 
     }
+    private void disk2ram(String url,DiskLruCache.Snapshot snapshot,InputStream inputStream){
+        if (inputStream !=null){
+            String extension = MimeTypeMap.getFileExtensionFromUrl(url.toLowerCase());
+            if (mStaticRes.canRamCache(extension)){
+                InputStream cacheHeader =  snapshot.getInputStream(CacheIndexType.PROPERTY.ordinal());
+                InputStream allHeader = snapshot.getInputStream(CacheIndexType.ALL_PROPERTY.ordinal());
+
+                RamObject ramObject = new RamObject();
+                String httpFlag = InputStreamUtils.inputStream2Str(cacheHeader);
+                String httpAllFlag = InputStreamUtils.inputStream2Str(allHeader);
+                ramObject.setHttpFlag(httpFlag);
+                ramObject.setAllHttpFlag(httpAllFlag);
+                ramObject.setStream(inputStream);
+                int size= 0;
+                try {
+                    size = inputStream.available();
+                }catch (Exception e){
+                }
+                ramObject.setInputStreamSize(size);
+                mLruCache.put(getKey(url),ramObject);
+            }
+        }
+    }
     private InputStream getCacheInputStream(String url){
         InputStream inputStream = getRamCache(url);
         if (inputStream!=null){
@@ -348,7 +375,6 @@ public class WebViewCache {
             if (snapshot!=null){
                 inputStream =  snapshot.getInputStream(CacheIndexType.CONTENT.ordinal());
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }

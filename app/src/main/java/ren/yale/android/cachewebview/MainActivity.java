@@ -18,7 +18,6 @@ import android.widget.Spinner;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
 
 import ren.yale.android.cachewebviewlib.CacheInterceptor;
 import ren.yale.android.cachewebviewlib.CacheStatus;
@@ -103,8 +102,9 @@ public class MainActivity extends Activity {
 
     }
 
-    private Map getHeaderMap(String url){
+    private HashMap getHeaderMap(String url){
         HashMap<String,String> map = new HashMap<>();
+        map.put("key","value");
         return map;
 
     }
@@ -115,7 +115,8 @@ public class MainActivity extends Activity {
                 webview.loadUrl(URL);
                 break;
             case R.id.btn_preload:
-                CacheWebView.cacheWebView(this).loadUrl(URL);
+                //CacheWebView.cacheWebView(this).loadUrl(URL);
+                CacheWebView.servicePreload(MainActivity.this,URL,null);
                 break;
             case R.id.btn_clearcache:
                 clearCache();
@@ -148,6 +149,10 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
+        if (webview.canGoBack()){
+            webview.goBack();
+            return;
+        }
         super.onBackPressed();
     }
 }

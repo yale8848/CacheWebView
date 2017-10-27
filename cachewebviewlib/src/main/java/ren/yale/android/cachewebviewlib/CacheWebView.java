@@ -1,6 +1,7 @@
 package ren.yale.android.cachewebviewlib;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -14,6 +15,7 @@ import android.webkit.WebViewClient;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import ren.yale.android.cachewebviewlib.utils.FileUtil;
@@ -93,6 +95,20 @@ public class CacheWebView extends WebView {
     public static CacheWebView cacheWebView(Context context){
         return new CacheWebView(context);
     }
+    public static void servicePreload(Context context,String url){
+        servicePreload(context,url,null);
+    }
+    public static void servicePreload(Context context,String url,HashMap<String,String> headerMap){
+        if (context==null||TextUtils.isEmpty(url)){
+            return;
+        }
+        Intent intent = new Intent(context, CachePreLoadService.class);
+        intent.putExtra(CachePreLoadService.KEY_URL,url);
+        if (headerMap!=null){
+            intent.putExtra(CachePreLoadService.KEY_URL_HEADER,headerMap);
+        }
+        context.startService(intent);
+    }
 
     public void setEnableCache(boolean enableCache){
         mCacheWebViewClient.setEnableCache(enableCache);
@@ -103,8 +119,13 @@ public class CacheWebView extends WebView {
     }
     public void loadUrl(String url, Map<String, String> additionalHttpHeaders) {
         mCacheWebViewClient.addVisitUrl(url);
-        mCacheWebViewClient.addHeaderMap(url,additionalHttpHeaders);
-        super.loadUrl(url,additionalHttpHeaders);
+        if (additionalHttpHeaders!=null){
+            mCacheWebViewClient.addHeaderMap(url,additionalHttpHeaders);
+            super.loadUrl(url,additionalHttpHeaders);
+        }else{
+            super.loadUrl(url);
+        }
+
     }
     public void setBlockNetworkImage(boolean isBlock){
        mCacheWebViewClient.setBlockNetworkImage(isBlock);
@@ -196,6 +217,15 @@ public class CacheWebView extends WebView {
         parent.removeView(this);
         super.destroy();
     }
+
+    @Override
+    public void goBack() {
+        if (canGoBack()){
+            mCacheWebViewClient.clearLastUrl();
+            super.goBack();
+        }
+    }
+
     public void evaluateJS(String strJsFunction){
         this.evaluateJS(strJsFunction,null);
     }

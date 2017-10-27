@@ -57,6 +57,7 @@ final class CacheWebViewClient extends WebViewClient {
             mHeaderMaps.put(url,additionalHttpHeaders);
         }
     }
+
     public Map<String,String> getHeader(String url){
         if(mHeaderMaps!=null){
             return mHeaderMaps.get(url);
@@ -73,6 +74,12 @@ final class CacheWebViewClient extends WebViewClient {
     public void addVisitUrl(String url){
         if (!mVisitVectorUrl.contains(url)){
             mVisitVectorUrl.add(url);
+        }
+    }
+
+    public void clearLastUrl(){
+        if (mVisitVectorUrl.size()>0){
+            mVisitVectorUrl.remove(mVisitVectorUrl.size()-1);
         }
     }
 

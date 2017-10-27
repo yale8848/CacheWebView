@@ -31,12 +31,19 @@ CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100,1024*1024*10).e
 
  ```
 
-- 预加载，为了访问更快，可以将常用的页面预加载，要放在UI线程
+- 预加载，为了访问更快，可以将常用的页面预加载
 
 ```
-CacheWebView.cacheWebView(this).loadUrl(URL);
+CacheWebView.cacheWebView(this).loadUrl(URL);//要放在UI线程
 
 ```
+
+或者
+
+```
+ CacheWebView.servicePreload(this,URL);//通过启动Service来预加载，不影响UI线程
+```
+
 
 - 强制缓存，默认是普通缓存，和http缓存模式一样。setCacheStrategy(WebViewCache.CacheStrategy.FORCE),这样对于静态资源直接走缓存，不需要和服务器沟通走304缓存，这样会更快；如果静态资源要更新，
 请让web前端同学修改静态资源链接，如给链接加md5值，或者加版本等等方式；
