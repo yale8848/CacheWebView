@@ -1,6 +1,6 @@
 # CacheWebView
 
-  CacheWebView is a custom implement of Android WebView, through intercept each request to create ram cache and disk cache. It beyond system WebView cache space
+  CacheWebView is a custom implement of Android WebView, through intercept each request to create ram cache(LRU) and disk cache(LRU). It beyond system WebView cache space
   limit, let cache config more simple ,fast and flexible.
 
 ## Usage
@@ -8,7 +8,7 @@
 ### use lib
 
 ```
-compile 'ren.yale.android:cachewebviewlib:1.1.4'
+compile 'ren.yale.android:cachewebviewlib:1.1.6'
 ```
 
 ### Change code
@@ -31,11 +31,17 @@ CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100,1024*1024*10).e
 
  ```
 
-- Preload , preload usually request url it will be more fast, this method must call in UI thread
+- Preload , preload usually request url it will be more fast
 
 ```
-CacheWebView.cacheWebView(this).loadUrl(URL);
+CacheWebView.cacheWebView(this).loadUrl(URL);//this method must call in UI thread
 
+```
+
+or
+
+```
+ CacheWebView.servicePreload(this,URL);//start a Service to preload
 ```
 
 - Force cache. Default is Normal cache mode like HTTP cache. Call `setCacheStrategy(WebViewCache.CacheStrategy.FORCE)`, it will force cache every static resource, and it will not connect with server, so it

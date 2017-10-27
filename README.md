@@ -2,14 +2,14 @@
 
   [English](https://github.com/yale8848/CacheWebView/blob/master/README_EN.md)
 
-  CacheWebView是Android WebView 缓存的自定义实现，通过拦截静态资源进行内存和磁盘2级缓存实现缓存。突破系统WebView缓存的空间限制，让缓存更简单、更快、更灵活。
+  CacheWebView是Android WebView 缓存的自定义实现，通过拦截静态资源进行内存(LRU)和磁盘(LRU)2级缓存实现缓存。突破系统WebView缓存的空间限制，让缓存更简单、更快、更灵活。
 
 ## 使用方式
 
 ### 引入库
 
 ```
-compile 'ren.yale.android:cachewebviewlib:1.1.4'
+compile 'ren.yale.android:cachewebviewlib:1.1.6'
 ```
 
 ### 修改代码
