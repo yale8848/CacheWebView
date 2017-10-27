@@ -135,3 +135,11 @@ webview.setUserAgent("Android");
     String extension = cacheStatus.getExtension();
  }
 ```
+
+- destroy
+
+```
+CacheWebView webview;
+webview.destroy();
+
+```
