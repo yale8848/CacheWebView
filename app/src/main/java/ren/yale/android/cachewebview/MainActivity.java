@@ -55,6 +55,7 @@ public class MainActivity extends Activity {
         webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
         webview.setEnableCache(true);
         webview.setBlockNetworkImage(false);
+        webview.getWebViewCache().setEncodeBufferSize(1024);
         webview.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {

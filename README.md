@@ -9,7 +9,7 @@
 ### 引入库
 
 ```
-compile 'ren.yale.android:cachewebviewlib:1.1.6'
+compile 'ren.yale.android:cachewebviewlib:1.1.7'
 ```
 
 ### 修改代码
@@ -149,7 +149,11 @@ webview.destroy();
 
 ```
 
+- 页面乱码；默认判断页面编码的buffer大小是500，如果有些中文网站乱码，可以把这个size设置大些
 
+```
+webview.getWebViewCache().setEncodeBufferSize(1024);
+```
 
 ### 流程图
 

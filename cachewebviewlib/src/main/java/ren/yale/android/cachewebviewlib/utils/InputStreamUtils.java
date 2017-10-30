@@ -22,7 +22,7 @@ public class InputStreamUtils {
         mInputStream = inputStream;
     }
 
-    public void setEncodeBuffer(int bufferSize){
+    public void setEncodeBufferSize(int bufferSize){
         if (bufferSize>mEncodeBuffer){
             mEncodeBuffer = bufferSize;
         }

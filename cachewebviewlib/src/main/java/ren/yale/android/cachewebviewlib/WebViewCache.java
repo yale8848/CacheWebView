@@ -144,7 +144,7 @@ public class WebViewCache {
         return  init(context,directory,Integer.MAX_VALUE,20*1024*1024);
     }
 
-    public void setEncodeBuffer(int size){
+    public void setEncodeBufferSize(int size){
         mEncodeBufferSize = size;
     }
     public WebViewCache enableDebug(boolean enable){
@@ -449,7 +449,7 @@ public class WebViewCache {
 
                 if (mStaticRes.isCanGetEncoding(extension)&&TextUtils.isEmpty(encoding)){
                     InputStreamUtils inputStreamUtils = new InputStreamUtils(resourseInputStream.getInnerInputStream());
-                    inputStreamUtils.setEncodeBuffer(mEncodeBufferSize);
+                    inputStreamUtils.setEncodeBufferSize(mEncodeBufferSize);
                     long start = System.currentTimeMillis();
                     InputStream copyInputStream = inputStreamUtils.copy();
                     if (copyInputStream == null){
@@ -469,7 +469,7 @@ public class WebViewCache {
             }else{
                 if (mStaticRes.isCanGetEncoding(extension)&&TextUtils.isEmpty(encoding)){
                     InputStreamUtils inputStreamUtils = new InputStreamUtils(inputStream);
-                    inputStreamUtils.setEncodeBuffer(mEncodeBufferSize);
+                    inputStreamUtils.setEncodeBufferSize(mEncodeBufferSize);
                     long start = System.currentTimeMillis();
                     InputStream copyInputStream = inputStreamUtils.copy();
                     if (copyInputStream == null){
