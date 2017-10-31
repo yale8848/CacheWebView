@@ -13,7 +13,7 @@ compile 'ren.yale.android:cachewebviewlib:1.1.7'
 
 ### Change code
 
- - Change WebView to CacheWebView
+ - Change WebView to CacheWebView in code or change <WebView to <ren.yale.android.cachewebviewlib.CacheWebView in layout xml
 
   It is over. CacheWebView default have disk cache space 200M , ram cache space 20M, and cache mode is the same with HTTP protocol cache [HTTP Caching](http://www.cnblogs.com/ppoo24/p/5963037.html).
 
