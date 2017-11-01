@@ -33,6 +33,9 @@ public class CacheWebView extends WebView {
     private String mAppCachePath = "";
     private CacheWebViewClient mCacheWebViewClient;
 
+
+    private WebViewCache mWebViewCache;
+
     public CacheWebView(Context context) {
         super(context);
         init();
@@ -54,9 +57,11 @@ public class CacheWebView extends WebView {
     }
 
     private void initData() {
+
+        mWebViewCache = new WebViewCache();
         File cacheFile = new File(getContext().getCacheDir(),CACHE_NAME);
         try {
-            CacheWebView.getWebViewCache().openCache(getContext(),cacheFile,CACHE_SIZE);
+            mWebViewCache.openCache(getContext(),cacheFile,CACHE_SIZE);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -73,6 +78,9 @@ public class CacheWebView extends WebView {
         mCacheWebViewClient.setCacheInterceptor(interceptor);
     }
 
+    public CacheConfig getCacheConfig(){
+        return CacheConfig.getInstance();
+    }
 
     public static WebViewCache getWebViewCache(){
         return WebViewCache.getInstance();

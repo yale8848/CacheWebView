@@ -51,7 +51,7 @@ public class WebViewCache {
     private static class InstanceHolder {
         public static final WebViewCache INSTANCE = new WebViewCache();
     }
-    private WebViewCache(){
+    public WebViewCache(){
         mStaticRes = new StaticRes();
         mEncodingDetect = new BytesEncodingDetect();
     }
@@ -73,6 +73,8 @@ public class WebViewCache {
     }
     public WebViewCache openCache(Context context, File directory, long maxDiskSize,long maxRamSize) throws IOException {
 
+
+
         if (mContext==null){
             mContext = context.getApplicationContext();
         }
@@ -84,6 +86,16 @@ public class WebViewCache {
         }
         if (mCacheRamSize<=0){
             mCacheRamSize = maxRamSize;
+        }
+        CacheConfig cacheConfig = CacheConfig.getInstance();
+        if (cacheConfig.getCacheFile()!=null){
+            mCacheFile = cacheConfig.getCacheFile();
+        }
+        if (cacheConfig.getDiskMaxSize()!=0){
+            mCacheSize = cacheConfig.getDiskMaxSize();
+        }
+        if (cacheConfig.getRamMaxSize()!=0){
+            mCacheRamSize = cacheConfig.getRamMaxSize();;
         }
         if (mDiskLruCache==null){
             mDiskLruCache = DiskLruCache.open(mCacheFile, AppUtils.getVersionCode(mContext),3,mCacheSize);
