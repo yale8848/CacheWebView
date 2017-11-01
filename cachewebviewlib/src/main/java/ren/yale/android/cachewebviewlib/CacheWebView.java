@@ -208,7 +208,12 @@ public class CacheWebView extends WebView {
 
         CacheWebViewLog.d("destroy");
         mCacheWebViewClient.clear();
+        this.stopLoading();
+        this.getSettings().setJavaScriptEnabled(false);
+        this.clearHistory();
+        this.removeAllViews();
         ViewParent viewParent = this.getParent();
+
         if (viewParent == null){
             super.destroy();
             return ;
