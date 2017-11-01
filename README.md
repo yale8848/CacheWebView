@@ -136,7 +136,7 @@ webview.setUserAgent("Android");
 ```
  CacheStatus cacheStatus = CacheWebView.getWebViewCache().getCacheFile(URL);
  if (cacheStatus.isExist()){
-    File file = cacheStatus.getPath();
+    File file = cacheStatus.getCacheFile();
     String extension = cacheStatus.getExtension();
  }
 ```

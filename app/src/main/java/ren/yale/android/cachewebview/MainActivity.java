@@ -129,7 +129,7 @@ public class MainActivity extends Activity {
             case R.id.btn_get_file:
                 CacheStatus cacheStatus = CacheWebView.getWebViewCache().getCacheFile("https://m.baidu.com/static/search/baiduapp_icon.png");
                 if (cacheStatus.isExist()){
-                   File file = cacheStatus.getPath();
+                   File file = cacheStatus.getCacheFile();
                     String extension = cacheStatus.getExtension();
                 }
 
