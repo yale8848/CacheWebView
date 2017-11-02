@@ -11,7 +11,7 @@ import android.util.Log;
 
 
     public static void d(String log){
-        if (WebViewCache.getInstance().isDebug()){
+        if (CacheConfig.getInstance().isDebug()){
             Log.d(TAG,log);
         }
     }

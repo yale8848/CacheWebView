@@ -6,7 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import ren.yale.android.cachewebviewlib.WebViewCache;
+import ren.yale.android.cachewebviewlib.encode.BytesEncodingDetect;
 
 /**
  * Created by yale on 2017/10/21.
@@ -16,7 +16,7 @@ public class InputStreamUtils {
 
     private InputStream mInputStream;
     private String mEncoding = "UTF-8";
-    private static int mEncodeBuffer = 500;
+    private int mEncodeBuffer = 500;
 
     public InputStreamUtils(InputStream inputStream){
         mInputStream = inputStream;
@@ -50,7 +50,7 @@ public class InputStreamUtils {
 
     }
 
-    public InputStream copy(){
+    public InputStream copy(BytesEncodingDetect detect){
         int len;
         byte[] buffer = new byte[mEncodeBuffer];
         if (mInputStream instanceof ByteArrayInputStream){
@@ -58,9 +58,9 @@ public class InputStreamUtils {
                 len = mInputStream.read(buffer);
                 if (len>0){
                     if (len == mEncodeBuffer){
-                        mEncoding = WebViewCache.getInstance().getEncodingDetect().detectEncodingStr(buffer);
+                        mEncoding = detect.detectEncodingStr(buffer);
                     }else{
-                        mEncoding = WebViewCache.getInstance().getEncodingDetect().detectEncodingStr(buffer,len);
+                        mEncoding = detect.detectEncodingStr(buffer,len);
                     }
 
                 }
@@ -83,7 +83,7 @@ public class InputStreamUtils {
             while ((len = mInputStream.read(buffer)) > -1 ) {
                 if (!read){
                     read = true;
-                    mEncoding = WebViewCache.getInstance().getEncodingDetect().detectEncodingStr(buffer,len);
+                    mEncoding = detect.detectEncodingStr(buffer,len);
                 }
                 baos.write(buffer, 0, len);
             }

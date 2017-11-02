@@ -9,7 +9,7 @@ import java.util.HashSet;
  */
 
 public class StaticRes {
-    private static HashSet STATIC = new HashSet(){
+    private  HashSet STATIC = new HashSet(){
         {
             add("html");
             add("htm");
@@ -35,7 +35,7 @@ public class StaticRes {
         }
     };
 
-    private static HashSet STATIC_RAM = new HashSet(){
+    private  HashSet STATIC_RAM = new HashSet(){
         {
             add("html");
             add("htm");

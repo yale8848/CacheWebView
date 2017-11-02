@@ -2,15 +2,13 @@ package ren.yale.android.cachewebviewlib;
 
 import android.content.Context;
 
-import java.io.File;
-
 /**
  * Created by yale on 2017/11/1.
  */
 
 public class CacheConfig {
 
-    private File cacheFile;
+    private String cacheFilePath;
     private long diskMaxSize = 200*1024*1024;
     private long ramMaxSize = diskMaxSize/10;
     private int encodeBufferSize = 500;
@@ -39,20 +37,21 @@ public class CacheConfig {
         }
         return mCacheConfig;
     }
-    public CacheConfig init(Context context, File directory, long maxDiskSize, long maxRamSize){
+    public CacheConfig init(Context context, String directory, long maxDiskSize, long maxRamSize){
 
         mContext = context.getApplicationContext();
-        cacheFile = directory;
+        cacheFilePath = directory;
         diskMaxSize = maxDiskSize;
         ramMaxSize =maxRamSize;
         return this;
     }
-    public File getCacheFile() {
-        return cacheFile;
+
+    public String getCacheFilePath() {
+        return cacheFilePath;
     }
 
-    public void setCacheFile(File cacheFile) {
-        this.cacheFile = cacheFile;
+    public void setCacheFilePath(String cacheFilePath) {
+        this.cacheFilePath = cacheFilePath;
     }
 
     public long getDiskMaxSize() {
@@ -84,7 +83,7 @@ public class CacheConfig {
         return debug;
     }
 
-    public CacheConfig setDebug(boolean debug) {
+    public CacheConfig enableDebug(boolean debug) {
         this.debug = debug;
         return this;
     }

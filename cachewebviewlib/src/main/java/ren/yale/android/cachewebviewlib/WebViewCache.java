@@ -34,71 +34,55 @@ public class WebViewCache {
 
     private DiskLruCache mDiskLruCache;
     private StaticRes mStaticRes;
-
     private Context mContext;
-    private File mCacheFile;
+    private String mCacheFilePath;
     private long mCacheSize;
     private long mCacheRamSize;
-
     private LruCache<String,RamObject> mLruCache;
-
     private BytesEncodingDetect mEncodingDetect;
-
-    private boolean mDebug = true;
-    private int mEncodeBufferSize = 0;
-
-
-    private static class InstanceHolder {
-        public static final WebViewCache INSTANCE = new WebViewCache();
-    }
     public WebViewCache(){
         mStaticRes = new StaticRes();
         mEncodingDetect = new BytesEncodingDetect();
     }
 
-    public BytesEncodingDetect getEncodingDetect(){
-        return mEncodingDetect;
+    public void release(){
+        if (mDiskLruCache!=null){
+            try {
+                mDiskLruCache.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        mStaticRes.clearAll();
+        mStaticRes = null;
+
+        if (mLruCache!=null){
+            mLruCache.evictAll();
+            mLruCache = null;
+        }
+
+        mEncodingDetect = null;
     }
+
     public StaticRes getStaticRes(){
         return mStaticRes;
     }
-    public static WebViewCache getInstance(){
-        return InstanceHolder.INSTANCE;
-    }
 
-
-    public WebViewCache openCache(Context context, File directory, long maxSize) throws IOException {
+    public WebViewCache openCache(Context context, String directory, long maxSize) throws IOException {
 
         return openCache(context,directory,maxSize,maxSize/10);
     }
-    public WebViewCache openCache(Context context, File directory, long maxDiskSize,long maxRamSize) throws IOException {
-
-
+    public WebViewCache openCache(Context context, String directory, long maxDiskSize,long maxRamSize) throws IOException {
 
         if (mContext==null){
             mContext = context.getApplicationContext();
         }
-        if (mCacheFile==null){
-            mCacheFile = directory;
-        }
-        if (mCacheSize<=0){
-            mCacheSize = maxDiskSize;
-        }
-        if (mCacheRamSize<=0){
-            mCacheRamSize = maxRamSize;
-        }
         CacheConfig cacheConfig = CacheConfig.getInstance();
-        if (cacheConfig.getCacheFile()!=null){
-            mCacheFile = cacheConfig.getCacheFile();
-        }
-        if (cacheConfig.getDiskMaxSize()!=0){
-            mCacheSize = cacheConfig.getDiskMaxSize();
-        }
-        if (cacheConfig.getRamMaxSize()!=0){
-            mCacheRamSize = cacheConfig.getRamMaxSize();;
-        }
+        mCacheFilePath = cacheConfig.getCacheFilePath()!=null?cacheConfig.getCacheFilePath():directory;
+        mCacheSize = cacheConfig.getDiskMaxSize()!=0?cacheConfig.getDiskMaxSize():maxDiskSize;
+        mCacheRamSize = cacheConfig.getRamMaxSize()!=0?cacheConfig.getRamMaxSize():maxRamSize;
         if (mDiskLruCache==null){
-            mDiskLruCache = DiskLruCache.open(mCacheFile, AppUtils.getVersionCode(mContext),3,mCacheSize);
+            mDiskLruCache = DiskLruCache.open(new File(mCacheFilePath), AppUtils.getVersionCode(mContext),3,mCacheSize);
         }
         ensureLruCache();
         return this;
@@ -125,10 +109,10 @@ public class WebViewCache {
      * @param maxDiskSize the maximum number of bytes this cache should use to store
      * @throws IOException if reading or writing the cache directory fails
      */
-    public WebViewCache init(Context context, File directory, long maxDiskSize){
+    public WebViewCache init(Context context, String directory, long maxDiskSize){
 
         mContext = context.getApplicationContext();
-        mCacheFile = directory;
+        mCacheFilePath = directory;
         mCacheSize = maxDiskSize;
         mCacheRamSize =maxDiskSize/10;
         return this;
@@ -139,10 +123,10 @@ public class WebViewCache {
      * @param maxDiskSize the maximum number of bytes this cache should use to store
      * @throws IOException if reading or writing the cache directory fails
      */
-    public WebViewCache init(Context context, File directory, long maxDiskSize,long maxRamSize){
+    public WebViewCache init(Context context, String directory, long maxDiskSize,long maxRamSize){
 
         mContext = context.getApplicationContext();
-        mCacheFile = directory;
+        mCacheFilePath = directory;
         mCacheSize = maxDiskSize;
         mCacheRamSize =maxRamSize;
         return this;
@@ -152,20 +136,8 @@ public class WebViewCache {
      * @param directory a writable directory
      * @throws IOException if reading or writing the cache directory fails
      */
-    public WebViewCache init(Context context, File directory){
+    public WebViewCache init(Context context, String directory){
         return  init(context,directory,Integer.MAX_VALUE,20*1024*1024);
-    }
-
-    public void setEncodeBufferSize(int size){
-        mEncodeBufferSize = size;
-    }
-    public WebViewCache enableDebug(boolean enable){
-        mDebug = enable;
-        return this;
-    }
-
-    public boolean isDebug(){
-        return mDebug;
     }
     public void clean(){
         if (mDiskLruCache!=null){
@@ -232,14 +204,14 @@ public class WebViewCache {
             if ( responseCode== HttpURLConnection.HTTP_OK){
 
                 return new ResourseInputStream(url,httpURLConnection.getInputStream(),
-                        getEditor(getKey(url)),remote,mLruCache);
+                        getEditor(getKey(url)),remote,mLruCache,mStaticRes);
             }
             if (responseCode == HttpURLConnection.HTTP_NOT_MODIFIED){
                 InputStream  inputStream = getCacheInputStream(url);
                 ResourseInputStream resourseInputStream = null;
                 if (inputStream == null){
                     resourseInputStream = new ResourseInputStream(url,httpURLConnection.getInputStream(),
-                            getEditor(getKey(url)),remote,mLruCache);
+                            getEditor(getKey(url)),remote,mLruCache,mStaticRes);
                 }else{
                     CacheWebViewLog.d("304 from cache "+url);
                     return inputStream;
@@ -461,15 +433,15 @@ public class WebViewCache {
 
                 if (mStaticRes.isCanGetEncoding(extension)&&TextUtils.isEmpty(encoding)){
                     InputStreamUtils inputStreamUtils = new InputStreamUtils(resourseInputStream.getInnerInputStream());
-                    inputStreamUtils.setEncodeBufferSize(mEncodeBufferSize);
+                    inputStreamUtils.setEncodeBufferSize(CacheConfig.getInstance().getEncodeBufferSize());
                     long start = System.currentTimeMillis();
-                    InputStream copyInputStream = inputStreamUtils.copy();
+                    InputStream copyInputStream = inputStreamUtils.copy(mEncodingDetect);
                     if (copyInputStream == null){
                         return null;
                     }
                     resourseInputStream.setInnerInputStream(copyInputStream);
                     encode = inputStreamUtils.getEncoding();
-                    CacheWebViewLog.d(encode+" "+"get encoding timecost: "+(System.currentTimeMillis()-start)+ " "+url);
+                    CacheWebViewLog.d(encode+" "+"get encoding timecost: "+(System.currentTimeMillis()-start)+ "ms "+url);
                 }
                 WebResourceResponse webResourceResponse=   new WebResourceResponse(mimeType,encode
                         ,inputStream);
@@ -481,15 +453,15 @@ public class WebViewCache {
             }else{
                 if (mStaticRes.isCanGetEncoding(extension)&&TextUtils.isEmpty(encoding)){
                     InputStreamUtils inputStreamUtils = new InputStreamUtils(inputStream);
-                    inputStreamUtils.setEncodeBufferSize(mEncodeBufferSize);
+                    inputStreamUtils.setEncodeBufferSize(CacheConfig.getInstance().getEncodeBufferSize());
                     long start = System.currentTimeMillis();
-                    InputStream copyInputStream = inputStreamUtils.copy();
+                    InputStream copyInputStream = inputStreamUtils.copy(mEncodingDetect);
                     if (copyInputStream == null){
                         return null;
                     }
                     inputStream = copyInputStream;
                     encode = inputStreamUtils.getEncoding();
-                    CacheWebViewLog.d(encode+" "+" get encoding timecost: "+(System.currentTimeMillis()-start)+ " "+url);
+                    CacheWebViewLog.d(encode+" "+" get encoding timecost: "+(System.currentTimeMillis()-start)+ "ms "+url);
                 }
                 Map map = getAllHttpHeaders(url);
                 WebResourceResponse webResourceResponse= new  WebResourceResponse(mimeType,encode,inputStream);

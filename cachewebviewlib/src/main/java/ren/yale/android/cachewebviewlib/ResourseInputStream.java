@@ -29,14 +29,16 @@ class ResourseInputStream extends InputStream {
     private String mUrl="";
     private LruCache mLruCache;
     private ByteArrayOutputStream mRamArray;
+    private StaticRes mStaticRes;
 
     public ResourseInputStream(String url,InputStream inputStream,
-                               DiskLruCache.Editor content,HttpCache httpCache,LruCache lrucache){
+                               DiskLruCache.Editor content,HttpCache httpCache,LruCache lrucache,StaticRes staticRes){
         mUrl = url;
         mInnerInputStream = inputStream;
         mHttpCache = httpCache;
         mEditorContent = content;
         mLruCache = lrucache;
+        mStaticRes = staticRes;
         getStream(content);
     }
 
@@ -64,7 +66,7 @@ class ResourseInputStream extends InputStream {
             e.printStackTrace();
         }
         String extension = MimeTypeMap.getFileExtensionFromUrl(mUrl.toLowerCase());
-        if (WebViewCache.getInstance().getStaticRes().canRamCache(extension)){
+        if (mStaticRes.canRamCache(extension)){
             mRamArray = new ByteArrayOutputStream();
         }
     }

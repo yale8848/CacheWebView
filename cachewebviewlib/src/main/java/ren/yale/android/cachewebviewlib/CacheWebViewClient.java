@@ -38,9 +38,15 @@ final class CacheWebViewClient extends WebViewClient {
     private String mUserAgent="";
     private HashMap<String,Map> mHeaderMaps;
 
+    private WebViewCache mWebViewCache;
+
     public CacheWebViewClient(){
         mHeaderMaps = new HashMap<>();
         mVisitVectorUrl = new Vector<>();
+    }
+
+    public void setWebViewCache(WebViewCache webViewCache){
+        mWebViewCache = webViewCache;
     }
 
     public void setCustomWebViewClient(WebViewClient webViewClient){
@@ -232,7 +238,7 @@ final class CacheWebViewClient extends WebViewClient {
         if (!mIsEnableCache){
             return null;
         }
-        return WebViewCache.getInstance().getWebResourceResponse(this,url,mCacheStrategy,
+        return mWebViewCache.getWebResourceResponse(this,url,mCacheStrategy,
                 mEncoding,mCacheInterceptor);
 
     }
@@ -251,7 +257,7 @@ final class CacheWebViewClient extends WebViewClient {
         if (!mIsEnableCache){
             return null;
         }
-        return WebViewCache.getInstance().getWebResourceResponse(this,request.getUrl().toString(),
+        return mWebViewCache.getWebResourceResponse(this,request.getUrl().toString(),
                 mCacheStrategy,mEncoding,mCacheInterceptor);
     }
 

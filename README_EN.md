@@ -8,7 +8,7 @@
 ### use lib
 
 ```
-compile 'ren.yale.android:cachewebviewlib:1.1.9'
+compile 'ren.yale.android:cachewebviewlib:1.2.0'
 ```
 
 ### Change code
@@ -26,7 +26,7 @@ compile 'ren.yale.android:cachewebviewlib:1.1.9'
  ```
 
 File cacheFile = new File(this.getCacheDir(),"cache_path_name");
-CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100,1024*1024*10).enableDebug(true);//100M disk space ,10M ram sapce
+CacheWebView.getCacheConfig().init(this,cacheFile,1024*1024*100,1024*1024*10).enableDebug(true);//100M disk space ,10M ram sapce
 
 
  ```
@@ -62,7 +62,7 @@ webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
 
 
 ```
-CacheWebView.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
+webview.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
                 .addRamExtension("png").removeRamExtension("html");
 ```
 
@@ -71,7 +71,7 @@ CacheWebView.getWebViewCache().getStaticRes().addExtension("swf").removeExtensio
 
 ```
 webview.setCacheInterceptor(new CacheInterceptor() {
-            @Override
+
             public boolean canCache(String url) {
                 return true;
             }
@@ -85,12 +85,6 @@ webview.setCacheInterceptor(new CacheInterceptor() {
 CacheWebView webview;
 webview.clearCache();
 
-```
-
-or
-
-```
-CacheWebView.getWebViewCache().clean();
 ```
 
 - Add header
@@ -135,7 +129,7 @@ webview.setUserAgent("Android");
 - Get cache file
 
 ```
- CacheStatus cacheStatus = CacheWebView.getWebViewCache().getCacheFile(URL);
+ CacheStatus cacheStatus = webview.getWebViewCache().getCacheFile(URL);
  if (cacheStatus.isExist()){
     File file = cacheStatus.getCacheFile();
     String extension = cacheStatus.getExtension();

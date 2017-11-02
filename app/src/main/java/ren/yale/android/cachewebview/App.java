@@ -17,7 +17,7 @@ public class App extends Application {
         super.onCreate();
 
         File cacheFile = new File(this.getCacheDir(),CACHE_NAME);
-        CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100,1024*1024*10)
+        CacheWebView.getCacheConfig().init(this,cacheFile.getAbsolutePath(),1024*1024*100,1024*1024*10)
                 .enableDebug(true);
 
 

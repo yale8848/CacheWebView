@@ -55,7 +55,11 @@ public class MainActivity extends Activity {
         webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
         webview.setEnableCache(true);
         webview.setBlockNetworkImage(false);
-        CacheWebView.getWebViewCache().setEncodeBufferSize(1024);
+        //CacheWebView.getCacheConfig().setEncodeBufferSize(1024);
+
+        //webview.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
+        //        .addRamExtension("png").removeRamExtension("html");
+
         webview.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -88,9 +92,8 @@ public class MainActivity extends Activity {
                 webview.setEnableCache(isChecked);
             }
         });
-       // webview.setEncoding("");
         webview.setCacheInterceptor(new CacheInterceptor() {
-            @Override
+
             public boolean canCache(String url) {
                 return true;
             }
@@ -127,7 +130,7 @@ public class MainActivity extends Activity {
                 startActivity(new Intent(MainActivity.this,Main2Activity.class));
                 break;
             case R.id.btn_get_file:
-                CacheStatus cacheStatus = CacheWebView.getWebViewCache().getCacheFile("https://m.baidu.com/static/search/baiduapp_icon.png");
+                CacheStatus cacheStatus = webview.getWebViewCache().getCacheFile("https://m.baidu.com/static/search/baiduapp_icon.png");
                 if (cacheStatus.isExist()){
                    File file = cacheStatus.getCacheFile();
                     String extension = cacheStatus.getExtension();
@@ -139,7 +142,7 @@ public class MainActivity extends Activity {
 
     private void clearCache(){
 
-        CacheWebView.getWebViewCache().clean();
+        webview.clearCache();
     }
 
     @Override

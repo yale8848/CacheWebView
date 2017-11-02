@@ -9,12 +9,12 @@
 ### 引入库
 
 ```
-compile 'ren.yale.android:cachewebviewlib:1.1.9'
+compile 'ren.yale.android:cachewebviewlib:1.2.0'
 ```
 
 ### 修改代码
 
- - 代码里将WebView改为CacheWebView或者layout xml里修改<WebView 为 <ren.yale.android.cachewebviewlib.CacheWebView
+ - 代码里将WebView改为CacheWebView或者layout xml里修改WebView为ren.yale.android.cachewebviewlib.CacheWebView
 
    完毕，其他都不用修改。CacheWebView默认会有内部cache200M 磁盘缓存空间，20M内存缓存空间。同时缓存模式是http默认的缓存模式
 
@@ -26,7 +26,7 @@ compile 'ren.yale.android:cachewebviewlib:1.1.9'
  ```
 
 File cacheFile = new File(this.getCacheDir(),"cache_path_name");
-CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100,1024*1024*10).enableDebug(true);//100M 磁盘缓存空间,10M 内存缓存空间
+CacheWebView.getCacheConfig().init(this,cacheFile,1024*1024*100,1024*1024*10).enableDebug(true);//100M 磁盘缓存空间,10M 内存缓存空间
 
 
  ```
@@ -62,7 +62,7 @@ webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
   默认内存缓存静态资源后缀有：html,htm,js,css,xml,txt,text,conf,可以添加删除,addRamExtension,removeRamExtension
 
 ```
-CacheWebView.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
+webview.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
                 .addRamExtension("png").removeRamExtension("html");
 ```
 
@@ -70,7 +70,6 @@ CacheWebView.getWebViewCache().getStaticRes().addExtension("swf").removeExtensio
 
 ```
 webview.setCacheInterceptor(new CacheInterceptor() {
-            @Override
             public boolean canCache(String url) {
                 return true;
             }
@@ -86,11 +85,6 @@ webview.clearCache();
 
 ```
 
-或者
-
-```
-CacheWebView.getWebViewCache().clean();
-```
 
 - 添加header
 
@@ -134,7 +128,7 @@ webview.setUserAgent("Android");
 - 获取缓存文件
 
 ```
- CacheStatus cacheStatus = CacheWebView.getWebViewCache().getCacheFile(URL);
+ CacheStatus cacheStatus =  webview.getWebViewCache().getCacheFile(URL);
  if (cacheStatus.isExist()){
     File file = cacheStatus.getCacheFile();
     String extension = cacheStatus.getExtension();
@@ -152,7 +146,7 @@ webview.destroy();
 - 页面乱码；默认判断页面编码的buffer大小是500，如果有些中文网站乱码，可以把这个size设置大些
 
 ```
-CacheWebView.getWebViewCache().setEncodeBufferSize(1024);
+CacheWebView.getCacheConfig().setEncodeBufferSize(1024);
 ```
 
 ### 流程图

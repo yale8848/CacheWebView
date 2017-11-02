@@ -61,7 +61,7 @@ public class CacheWebView extends WebView {
         mWebViewCache = new WebViewCache();
         File cacheFile = new File(getContext().getCacheDir(),CACHE_NAME);
         try {
-            mWebViewCache.openCache(getContext(),cacheFile,CACHE_SIZE);
+            mWebViewCache.openCache(getContext(),cacheFile.getAbsolutePath(),CACHE_SIZE);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,12 +78,12 @@ public class CacheWebView extends WebView {
         mCacheWebViewClient.setCacheInterceptor(interceptor);
     }
 
-    public CacheConfig getCacheConfig(){
+    public static CacheConfig getCacheConfig(){
         return CacheConfig.getInstance();
     }
 
-    public static WebViewCache getWebViewCache(){
-        return WebViewCache.getInstance();
+    public WebViewCache getWebViewCache(){
+        return mWebViewCache;
     }
 
     public void setWebViewClient(WebViewClient client){
@@ -94,6 +94,7 @@ public class CacheWebView extends WebView {
         mCacheWebViewClient = new CacheWebViewClient();
        super.setWebViewClient(mCacheWebViewClient);
         mCacheWebViewClient.setUserAgent(this.getSettings().getUserAgentString());
+        mCacheWebViewClient.setWebViewCache(mWebViewCache);
     }
 
     public void setCacheStrategy(WebViewCache.CacheStrategy cacheStrategy){
@@ -209,17 +210,20 @@ public class CacheWebView extends WebView {
     public void clearCache(){
         CacheWebViewLog.d("clearCache");
         FileUtil.deleteDirs(mAppCachePath,false);
-        getWebViewCache().clean();
+        mWebViewCache.clean();
     }
 
     public void destroy(){
 
         CacheWebViewLog.d("destroy");
         mCacheWebViewClient.clear();
+        mWebViewCache.release();
+
         this.stopLoading();
         this.getSettings().setJavaScriptEnabled(false);
         this.clearHistory();
         this.removeAllViews();
+
         ViewParent viewParent = this.getParent();
 
         if (viewParent == null){
