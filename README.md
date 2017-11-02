@@ -14,7 +14,8 @@ compile 'ren.yale.android:cachewebviewlib:1.2.0'
 
 ### 修改代码
 
- - 代码里将WebView改为CacheWebView或者layout xml里修改WebView为ren.yale.android.cachewebviewlib.CacheWebView
+ - 代码里将`WebView`改为`CacheWebView`或者layout xml里修改`WebView`为`ren.yale.android.cachewebviewlib.CacheWebView`
+
 
    完毕，其他都不用修改。CacheWebView默认会有内部cache200M 磁盘缓存空间，20M内存缓存空间。同时缓存模式是http默认的缓存模式
 
@@ -26,7 +27,8 @@ compile 'ren.yale.android:cachewebviewlib:1.2.0'
  ```
 
 File cacheFile = new File(this.getCacheDir(),"cache_path_name");
-CacheWebView.getCacheConfig().init(this,cacheFile,1024*1024*100,1024*1024*10).enableDebug(true);//100M 磁盘缓存空间,10M 内存缓存空间
+
+CacheWebView.getCacheConfig().init(this,cacheFile.getAbsolutePath(),1024*1024*100,1024*1024*10).enableDebug(true);//100M 磁盘缓存空间,10M 内存缓存空间
 
 
  ```
