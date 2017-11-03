@@ -28,7 +28,8 @@ compile 'ren.yale.android:cachewebviewlib:1.2.0'
 
 File cacheFile = new File(this.getCacheDir(),"cache_path_name");
 
-CacheWebView.getCacheConfig().init(this,cacheFile.getAbsolutePath(),1024*1024*100,1024*1024*10).enableDebug(true);//100M 磁盘缓存空间,10M 内存缓存空间
+CacheWebView.getCacheConfig().init(this,cacheFile.getAbsolutePath(),1024*1024*100,1024*1024*10)
+.enableDebug(true);//100M 磁盘缓存空间,10M 内存缓存空间
 
 
  ```
@@ -59,9 +60,13 @@ webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
 
 - 静态资源后缀映射
 
-  默认磁盘缓存静态资源后缀有：html,htm,js,ico,css,png,jpg,jpeg,gif,bmp,ttf,woff,woff2,otf,eot,svg,xml,swf,txt,text,conf,可以添加删除,addExtension,removeExtension
+  默认磁盘缓存静态资源后缀有：html,htm,js,ico,css,png,jpg,jpeg,gif,bmp,ttf,woff,woff2,otf,eot,svg,xml,swf,txt,text,conf
 
-  默认内存缓存静态资源后缀有：html,htm,js,css,xml,txt,text,conf,可以添加删除,addRamExtension,removeRamExtension
+  可以添加删除,addExtension,removeExtension
+
+  默认内存缓存静态资源后缀有：html,htm,js,css,xml,txt,text,conf
+
+  可以添加删除,addRamExtension,removeRamExtension
 
 ```
 webview.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
