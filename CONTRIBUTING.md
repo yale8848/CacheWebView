@@ -1,4 +1,4 @@
 - fork https://github.com/yale8848/CacheWebView.git
-- git checkout dev
+- git checkout **`dev`**
 - commit & push
 - pull request
