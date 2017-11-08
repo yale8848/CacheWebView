@@ -147,3 +147,8 @@ CacheWebView webview;
 webview.destroy();
 
 ```
+
+
+## How to contribute
+
+   [Contributing Guide](https://github.com/yale8848/CacheWebView/blob/master/CONTRIBUTING.md)
