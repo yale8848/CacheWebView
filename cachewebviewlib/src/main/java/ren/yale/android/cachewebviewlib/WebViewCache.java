@@ -54,14 +54,9 @@ public class WebViewCache {
             }
         }
         mStaticRes.clearAll();
-        mStaticRes = null;
-
         if (mLruCache!=null){
             mLruCache.evictAll();
-            mLruCache = null;
         }
-
-        mEncodingDetect = null;
     }
 
     public StaticRes getStaticRes(){
