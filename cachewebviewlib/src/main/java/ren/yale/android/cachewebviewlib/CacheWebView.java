@@ -202,7 +202,6 @@ public class CacheWebView extends WebView {
 
         WebSettings webSettings = this.getSettings();
         webSettings.setAppCacheEnabled(true);
-        webSettings.setAppCachePath(path);
         webSettings.setDatabaseEnabled(true);
         webSettings.setDatabasePath(path);
     }

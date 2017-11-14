@@ -16,7 +16,7 @@ public class InputStreamUtils {
 
     private InputStream mInputStream;
     private String mEncoding = "UTF-8";
-    private int mEncodeBuffer = 500;
+    private int mEncodeBuffer = 1024;
 
     public InputStreamUtils(InputStream inputStream){
         mInputStream = inputStream;

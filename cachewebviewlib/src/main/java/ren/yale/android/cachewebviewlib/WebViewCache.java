@@ -89,8 +89,8 @@ public class WebViewCache {
                     mLruCache = new LruCache<String,RamObject>((int) mCacheRamSize){
                         @Override
                         protected int sizeOf(String key, RamObject value) {
-                            return value.getInputStreamSize()+value.getHttpFlag().getBytes().length+
-                                    value.getAllHttpFlag().getBytes().length;
+                            return value.getInputStreamSize()+value.getHttpFlag().getBytes().length;
+
                         }
                     };
                 }
@@ -199,14 +199,14 @@ public class WebViewCache {
             if ( responseCode== HttpURLConnection.HTTP_OK){
 
                 return new ResourseInputStream(url,httpURLConnection.getInputStream(),
-                        getEditor(getKey(url)),remote,mLruCache,mStaticRes);
+                        getEditor(getKey(url)),remote,mLruCache,mStaticRes,mEncodingDetect);
             }
             if (responseCode == HttpURLConnection.HTTP_NOT_MODIFIED){
                 InputStream  inputStream = getCacheInputStream(url);
                 ResourseInputStream resourseInputStream = null;
                 if (inputStream == null){
                     resourseInputStream = new ResourseInputStream(url,httpURLConnection.getInputStream(),
-                            getEditor(getKey(url)),remote,mLruCache,mStaticRes);
+                            getEditor(getKey(url)),remote,mLruCache,mStaticRes,mEncodingDetect);
                 }else{
                     CacheWebViewLog.d("304 from cache "+url);
                     return inputStream;
@@ -268,12 +268,8 @@ public class WebViewCache {
     private Map getRamAllHttpHeaders(String url){
 
         RamObject ramObject = mLruCache.get(getKey(url));
-        if (ramObject!=null&&!TextUtils.isEmpty(ramObject.getAllHttpFlag())){
-            try {
-                return JsonWrapper.str2Map(ramObject.getAllHttpFlag());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (ramObject!=null){
+            ramObject.getHeaderMap();
         }
         return null;
     }
@@ -331,7 +327,6 @@ public class WebViewCache {
                 String httpFlag = InputStreamUtils.inputStream2Str(cacheHeader);
                 String httpAllFlag = InputStreamUtils.inputStream2Str(allHeader);
                 ramObject.setHttpFlag(httpFlag);
-                ramObject.setAllHttpFlag(httpAllFlag);
                 ramObject.setStream(inputStream);
                 int size= 0;
                 try {
@@ -399,11 +394,10 @@ public class WebViewCache {
         }
 
         ensureLruCache();
-
+        HttpCacheFlag  httpCacheFlag = getCacheFlag(url);
         if (NetworkUtils.isConnected(mContext)){
 
             if(cacheStrategy == CacheStrategy.NORMAL){
-                HttpCacheFlag httpCacheFlag = getCacheFlag(url);
                 if (httpCacheFlag!=null&&!httpCacheFlag.isLocalOutDate()){
                     inputStream = getCacheInputStream(url);
                 }
@@ -438,6 +432,7 @@ public class WebViewCache {
                     encode = inputStreamUtils.getEncoding();
                     CacheWebViewLog.d(encode+" "+"get encoding timecost: "+(System.currentTimeMillis()-start)+ "ms "+url);
                 }
+                encode = resourseInputStream.getHttpCache().getHttpCacheFlag().getEncode();
                 WebResourceResponse webResourceResponse=   new WebResourceResponse(mimeType,encode
                         ,inputStream);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -446,19 +441,12 @@ public class WebViewCache {
 
                 return webResourceResponse;
             }else{
-                if (mStaticRes.isCanGetEncoding(extension)&&TextUtils.isEmpty(encoding)){
-                    InputStreamUtils inputStreamUtils = new InputStreamUtils(inputStream);
-                    inputStreamUtils.setEncodeBufferSize(CacheConfig.getInstance().getEncodeBufferSize());
-                    long start = System.currentTimeMillis();
-                    InputStream copyInputStream = inputStreamUtils.copy(mEncodingDetect);
-                    if (copyInputStream == null){
-                        return null;
-                    }
-                    inputStream = copyInputStream;
-                    encode = inputStreamUtils.getEncoding();
-                    CacheWebViewLog.d(encode+" "+" get encoding timecost: "+(System.currentTimeMillis()-start)+ "ms "+url);
-                }
+
                 Map map = getAllHttpHeaders(url);
+
+                if (httpCacheFlag!=null){
+                    encode = httpCacheFlag.getEncode();
+                }
                 WebResourceResponse webResourceResponse= new  WebResourceResponse(mimeType,encode,inputStream);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     webResourceResponse.setResponseHeaders(map);

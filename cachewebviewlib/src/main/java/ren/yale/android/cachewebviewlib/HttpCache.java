@@ -36,6 +36,9 @@ class HttpCache {
         mHttpCacheFlag.setCurrentTime(TimeUtils.getCurrentTime());
         mHeaderMap =getInnerResponseHeader();
     }
+    public void setEncode(String encode){
+        mHttpCacheFlag.setEncode(encode);
+    }
     public int getStatusCode(){
         try {
             return mConnection.getResponseCode();

@@ -1,5 +1,6 @@
 package ren.yale.android.cachewebviewlib.encode;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -84,6 +85,29 @@ public class BytesEncodingDetect extends Encoding {
         }
         return strEnc;
     }
+
+    public String detectEncodingStr(ByteArrayInputStream inputStream,int len){
+        String strEnc ="UTF-8";
+        try{
+
+            byte buffers[] = new byte[len];
+
+            inputStream.read(buffers,0,len);
+            inputStream.reset();
+
+            int enc = detectEncoding(buffers);
+            if (enc!=-1){
+                String encStr =  Encoding.htmlname[enc];
+                if (!encStr.equals("ASCII")){
+                    strEnc = encStr;
+                }
+            }
+        }catch (Exception e){
+
+        }
+        return strEnc;
+    }
+
     public String detectEncodingStr(byte[] rawtext){
         String strEnc ="UTF-8";
         try{

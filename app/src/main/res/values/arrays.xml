@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="urls">
+        <item>http://www.ranwena.com/files/article/1/1268/5028890.html</item>
         <item>https://m.baidu.com</item>
         <item>http://m.mm131.com/xinggan/3320_3.html</item>
         <item>http://ubook.qq.com/8/index.html</item>
@@ -11,7 +12,6 @@
         <item>https://www.naver.com/</item>
         <item>http://www.bbc.com/arabic</item>
         <item>http://www.izda.com/</item>
-        <item>http://www.ranwena.com/files/article/1/1268/5028890.html</item>
         <item>http://m.lewen8.com/lw2408/2030224.html</item>
     </string-array>
 </resources>
