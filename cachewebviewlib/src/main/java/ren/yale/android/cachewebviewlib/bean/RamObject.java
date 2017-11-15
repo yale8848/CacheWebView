@@ -1,6 +1,7 @@
 package ren.yale.android.cachewebviewlib.bean;
 
 import java.io.InputStream;
+import java.util.HashMap;
 
 /**
  * Created by yale on 2017/10/10.
@@ -8,11 +9,17 @@ import java.io.InputStream;
 
 public class RamObject {
     private String httpFlag="";
-    private String allHttpFlag = "";
-
-
     private InputStream stream;
     private int inputStreamSize = 0;
+    private HashMap headerMap;
+
+    public HashMap getHeaderMap() {
+        return headerMap;
+    }
+
+    public void setHeaderMap(HashMap headerMap) {
+        this.headerMap = headerMap;
+    }
 
     public int getInputStreamSize() {
         return inputStreamSize;
@@ -35,11 +42,6 @@ public class RamObject {
     public void setHttpFlag(String httpFlag) {
         this.httpFlag = httpFlag;
     }
-    public String getAllHttpFlag() {
-        return allHttpFlag;
-    }
 
-    public void setAllHttpFlag(String allHttpFlag) {
-        this.allHttpFlag = allHttpFlag;
-    }
+
 }

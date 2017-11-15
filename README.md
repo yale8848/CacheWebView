@@ -11,7 +11,7 @@
 ### 引入库
 
 ```
-compile 'ren.yale.android:cachewebviewlib:1.2.1'
+compile 'ren.yale.android:cachewebviewlib:1.2.2'
 ```
 
 ### 修改代码

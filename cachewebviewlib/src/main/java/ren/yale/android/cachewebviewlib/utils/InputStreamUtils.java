@@ -62,7 +62,6 @@ public class InputStreamUtils {
                     }else{
                         mEncoding = detect.detectEncodingStr(buffer,len);
                     }
-
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -76,8 +75,6 @@ public class InputStreamUtils {
             return mInputStream;
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-
         boolean read =false;
         try {
             while ((len = mInputStream.read(buffer)) > -1 ) {

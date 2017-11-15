@@ -22,7 +22,7 @@ class HttpCache {
 
     private HttpCacheFlag mHttpCacheFlag;
     private HttpURLConnection mConnection;
-    private Map<String,String> mHeaderMap;
+    private HashMap<String,String> mHeaderMap;
 
 
     public HttpCache(HttpURLConnection connection){
@@ -36,6 +36,9 @@ class HttpCache {
         mHttpCacheFlag.setCurrentTime(TimeUtils.getCurrentTime());
         mHeaderMap =getInnerResponseHeader();
     }
+    public void setEncode(String encode){
+        mHttpCacheFlag.setEncode(encode);
+    }
     public int getStatusCode(){
         try {
             return mConnection.getResponseCode();
@@ -44,11 +47,11 @@ class HttpCache {
         }
         return 0;
     }
-    public  Map<String,String> getResponseHeader(){
+    public  HashMap<String,String> getResponseHeader(){
         return  mHeaderMap;
     }
-    private Map<String,String> getInnerResponseHeader(){
-        Map<String,String> map = new HashMap<>();
+    private HashMap<String,String> getInnerResponseHeader(){
+        HashMap<String,String> map = new HashMap<>();
         Map<String,List<String>> maps =  mConnection.getHeaderFields();
 
         if (maps==null||maps.size()==0){

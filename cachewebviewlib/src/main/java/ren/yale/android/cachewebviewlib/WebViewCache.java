@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 import ren.yale.android.cachewebviewlib.bean.HttpCacheFlag;
@@ -89,8 +90,8 @@ public class WebViewCache {
                     mLruCache = new LruCache<String,RamObject>((int) mCacheRamSize){
                         @Override
                         protected int sizeOf(String key, RamObject value) {
-                            return value.getInputStreamSize()+value.getHttpFlag().getBytes().length+
-                                    value.getAllHttpFlag().getBytes().length;
+                            return value.getInputStreamSize()+value.getHttpFlag().getBytes().length;
+
                         }
                     };
                 }
@@ -153,6 +154,9 @@ public class WebViewCache {
     }
     private DiskLruCache.Editor getEditor(String key){
         try {
+            if (mDiskLruCache.isClosed()){
+                return null;
+            }
             DiskLruCache.Editor editor = mDiskLruCache.edit(key);
             return editor;
         } catch (IOException e) {
@@ -227,14 +231,17 @@ public class WebViewCache {
 
         return null;
     }
-    private Map getAllHttpHeaders(String url){
+    private HashMap getAllHttpHeaders(String url){
 
-        Map  map = getRamAllHttpHeaders(url);
+        HashMap  map = getRamAllHttpHeaders(url);
         if (map!=null){
             return map;
         }
         InputStream inputStream = null;
         try {
+            if (mDiskLruCache.isClosed()){
+                return null;
+            }
             DiskLruCache.Snapshot snapshot=  mDiskLruCache.get(getKey(url));
             if (snapshot!=null){
                 inputStream =  snapshot.getInputStream(CacheIndexType.ALL_PROPERTY.ordinal());
@@ -254,6 +261,9 @@ public class WebViewCache {
         }
         InputStream inputStream = null;
         try {
+            if (mDiskLruCache.isClosed()){
+                return null;
+            }
             DiskLruCache.Snapshot snapshot=  mDiskLruCache.get(getKey(url));
             if (snapshot!=null){
                 inputStream =  snapshot.getInputStream(CacheIndexType.PROPERTY.ordinal());
@@ -265,15 +275,11 @@ public class WebViewCache {
         }
         return null;
     }
-    private Map getRamAllHttpHeaders(String url){
+    private HashMap getRamAllHttpHeaders(String url){
 
         RamObject ramObject = mLruCache.get(getKey(url));
-        if (ramObject!=null&&!TextUtils.isEmpty(ramObject.getAllHttpFlag())){
-            try {
-                return JsonWrapper.str2Map(ramObject.getAllHttpFlag());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (ramObject!=null){
+           return ramObject.getHeaderMap();
         }
         return null;
     }
@@ -331,7 +337,6 @@ public class WebViewCache {
                 String httpFlag = InputStreamUtils.inputStream2Str(cacheHeader);
                 String httpAllFlag = InputStreamUtils.inputStream2Str(allHeader);
                 ramObject.setHttpFlag(httpFlag);
-                ramObject.setAllHttpFlag(httpAllFlag);
                 ramObject.setStream(inputStream);
                 int size= 0;
                 try {
@@ -350,6 +355,9 @@ public class WebViewCache {
             return inputStream;
         }
         try {
+            if (mDiskLruCache.isClosed()){
+                return null;
+            }
             DiskLruCache.Snapshot snapshot=  mDiskLruCache.get(getKey(url));
             if (snapshot!=null){
                 inputStream =  snapshot.getInputStream(CacheIndexType.CONTENT.ordinal());
@@ -366,7 +374,8 @@ public class WebViewCache {
     public WebResourceResponse getWebResourceResponse(CacheWebViewClient client,String url,
                                                       CacheStrategy cacheStrategy,
                                                       String encoding,CacheInterceptor cacheInterceptor){
-        if(mDiskLruCache==null){
+
+        if(mDiskLruCache==null||mDiskLruCache.isClosed()){
             return null;
         }
         if (TextUtils.isEmpty(url)){
@@ -399,11 +408,10 @@ public class WebViewCache {
         }
 
         ensureLruCache();
-
+        HttpCacheFlag  httpCacheFlag = getCacheFlag(url);
         if (NetworkUtils.isConnected(mContext)){
 
             if(cacheStrategy == CacheStrategy.NORMAL){
-                HttpCacheFlag httpCacheFlag = getCacheFlag(url);
                 if (httpCacheFlag!=null&&!httpCacheFlag.isLocalOutDate()){
                     inputStream = getCacheInputStream(url);
                 }
@@ -438,7 +446,8 @@ public class WebViewCache {
                     encode = inputStreamUtils.getEncoding();
                     CacheWebViewLog.d(encode+" "+"get encoding timecost: "+(System.currentTimeMillis()-start)+ "ms "+url);
                 }
-                WebResourceResponse webResourceResponse=   new WebResourceResponse(mimeType,encode
+                resourseInputStream.setEncode(encode);
+                WebResourceResponse webResourceResponse=new WebResourceResponse(mimeType,encode
                         ,inputStream);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     webResourceResponse.setResponseHeaders(resourseInputStream.getHttpCache().getResponseHeader());
@@ -446,19 +455,12 @@ public class WebViewCache {
 
                 return webResourceResponse;
             }else{
-                if (mStaticRes.isCanGetEncoding(extension)&&TextUtils.isEmpty(encoding)){
-                    InputStreamUtils inputStreamUtils = new InputStreamUtils(inputStream);
-                    inputStreamUtils.setEncodeBufferSize(CacheConfig.getInstance().getEncodeBufferSize());
-                    long start = System.currentTimeMillis();
-                    InputStream copyInputStream = inputStreamUtils.copy(mEncodingDetect);
-                    if (copyInputStream == null){
-                        return null;
-                    }
-                    inputStream = copyInputStream;
-                    encode = inputStreamUtils.getEncoding();
-                    CacheWebViewLog.d(encode+" "+" get encoding timecost: "+(System.currentTimeMillis()-start)+ "ms "+url);
-                }
+
                 Map map = getAllHttpHeaders(url);
+
+                if (httpCacheFlag!=null){
+                    encode = httpCacheFlag.getEncode();
+                }
                 WebResourceResponse webResourceResponse= new  WebResourceResponse(mimeType,encode,inputStream);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     webResourceResponse.setResponseHeaders(map);

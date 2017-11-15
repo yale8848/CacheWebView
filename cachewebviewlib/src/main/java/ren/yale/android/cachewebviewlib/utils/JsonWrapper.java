@@ -24,8 +24,8 @@ public class JsonWrapper extends JSONObject {
         JSONObject object = new JSONObject(map);
         return object.toString();
     }
-    public static Map<String,String> str2Map(String jsonString){
-        Map<String,String> result = new HashMap();
+    public static HashMap<String,String> str2Map(String jsonString){
+        HashMap<String,String> result = new HashMap();
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
             Iterator iterator = jsonObject.keys();

@@ -31,6 +31,12 @@ class ResourseInputStream extends InputStream {
     private ByteArrayOutputStream mRamArray;
     private StaticRes mStaticRes;
 
+
+
+    private String mEncode;
+
+
+
     public ResourseInputStream(String url,InputStream inputStream,
                                DiskLruCache.Editor content,HttpCache httpCache,LruCache lrucache,StaticRes staticRes){
         mUrl = url;
@@ -40,6 +46,14 @@ class ResourseInputStream extends InputStream {
         mLruCache = lrucache;
         mStaticRes = staticRes;
         getStream(content);
+    }
+
+    public String getEncode() {
+        return mEncode;
+    }
+
+    public void setEncode(String encode) {
+        mEncode = encode;
     }
 
     public void setInnerInputStream(InputStream innerInputStream){
@@ -116,8 +130,8 @@ class ResourseInputStream extends InputStream {
         mInnerInputStream.close();
 
         if (mOutputStream!=null&&mOutputStreamProperty!=null){
+            mHttpCache.setEncode(mEncode);
             String flag = mHttpCache.getCacheFlagString();
-
             String allFlag = JsonWrapper.map2Str(mHttpCache.getResponseHeader());
             if (mRamArray!=null){
                 try {
@@ -125,13 +139,14 @@ class ResourseInputStream extends InputStream {
                     byte[] buffer = mRamArray.toByteArray();
                     ram.setStream(new ByteArrayInputStream(buffer));
                     ram.setHttpFlag(flag);
-                    ram.setAllHttpFlag(allFlag);
-                    ram.setInputStreamSize(buffer.length);
+                    ram.setHeaderMap(mHttpCache.getResponseHeader());
+                    ram.setInputStreamSize(buffer.length+allFlag.getBytes().length);
                     mLruCache.put(WebViewCache.getKey(mUrl),ram);
                     CacheWebViewLog.d("ram cached "+mUrl);
                 }catch (Exception e){
                 }
             }
+
             mOutputStream.flush();
             mOutputStreamAllProperty.write(allFlag.getBytes());
             mOutputStreamAllProperty.flush();
