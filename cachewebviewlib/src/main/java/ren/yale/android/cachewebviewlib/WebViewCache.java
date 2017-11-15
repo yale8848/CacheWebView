@@ -461,6 +461,7 @@ public class WebViewCache {
                 if (httpCacheFlag!=null){
                     encode = httpCacheFlag.getEncode();
                 }
+                CacheWebViewLog.d(encode +" "+url);
                 WebResourceResponse webResourceResponse= new  WebResourceResponse(mimeType,encode,inputStream);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     webResourceResponse.setResponseHeaders(map);
