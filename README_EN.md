@@ -3,14 +3,14 @@
 ![](https://img.shields.io/badge/jcenter-1.2.0-519dd9.svg)
 
   CacheWebView is a custom implement of Android WebView, through intercept each request to create ram cache(LRU) and disk cache(LRU). It beyond system WebView cache space
-  limit, let cache config more simple ,fast and flexible.
+  limit, let cache config more simple ,fast and flexible. Visit website by offline.
 
 ## Usage
 
 ### use lib
 
 ```
-compile 'ren.yale.android:cachewebviewlib:1.2.2'
+compile 'ren.yale.android:cachewebviewlib:1.2.3'
 ```
 
 ### Change code

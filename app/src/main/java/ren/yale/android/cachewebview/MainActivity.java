@@ -53,13 +53,6 @@ public class MainActivity extends Activity {
         });
         webview = testWebView.getDXHWebView();
         webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
-        webview.setEnableCache(true);
-        webview.setBlockNetworkImage(false);
-        //CacheWebView.getCacheConfig().setEncodeBufferSize(1024);
-
-        //webview.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
-        //        .addRamExtension("png").removeRamExtension("html");
-
         webview.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -68,7 +61,7 @@ public class MainActivity extends Activity {
             }
             @Override
             public void onPageFinished(WebView view, String url) {
-                Log.d("CacheWebView",(System.currentTimeMillis()-mStart)+"");
+                Log.d("CacheWebView",(System.currentTimeMillis()-mStart)+" "+url);
                 super.onPageFinished(view, url);
             }
 
@@ -98,7 +91,6 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
-        //webview.setUserAgent("Android");
     }
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
@@ -119,15 +111,11 @@ public class MainActivity extends Activity {
                 webview.loadUrl(URL);
                 break;
             case R.id.btn_preload:
-                //CacheWebView.cacheWebView(this).loadUrl(URL);
                 CacheWebView.servicePreload(MainActivity.this,URL,null);
                 break;
             case R.id.btn_clearcache:
                 clearCache();
 
-                break;
-            case R.id.btn_start2:
-                startActivity(new Intent(MainActivity.this,Main2Activity.class));
                 break;
             case R.id.btn_get_file:
                 CacheStatus cacheStatus = webview.getWebViewCache().getCacheFile("https://m.baidu.com/static/search/baiduapp_icon.png");
