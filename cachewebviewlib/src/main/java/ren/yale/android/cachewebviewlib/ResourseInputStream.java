@@ -11,7 +11,6 @@ import java.io.OutputStream;
 
 import ren.yale.android.cachewebviewlib.bean.RamObject;
 import ren.yale.android.cachewebviewlib.disklru.DiskLruCache;
-import ren.yale.android.cachewebviewlib.encode.BytesEncodingDetect;
 import ren.yale.android.cachewebviewlib.utils.JsonWrapper;
 
 /**
@@ -31,19 +30,30 @@ class ResourseInputStream extends InputStream {
     private LruCache mLruCache;
     private ByteArrayOutputStream mRamArray;
     private StaticRes mStaticRes;
-    private BytesEncodingDetect mEncodingDetect;
+
+
+
+    private String mEncode;
+
+
 
     public ResourseInputStream(String url,InputStream inputStream,
-                               DiskLruCache.Editor content,HttpCache httpCache,LruCache lrucache,StaticRes staticRes,
-                               BytesEncodingDetect encodingDetect){
+                               DiskLruCache.Editor content,HttpCache httpCache,LruCache lrucache,StaticRes staticRes){
         mUrl = url;
         mInnerInputStream = inputStream;
         mHttpCache = httpCache;
         mEditorContent = content;
         mLruCache = lrucache;
         mStaticRes = staticRes;
-        mEncodingDetect = encodingDetect;
         getStream(content);
+    }
+
+    public String getEncode() {
+        return mEncode;
+    }
+
+    public void setEncode(String encode) {
+        mEncode = encode;
     }
 
     public void setInnerInputStream(InputStream innerInputStream){
@@ -120,17 +130,14 @@ class ResourseInputStream extends InputStream {
         mInnerInputStream.close();
 
         if (mOutputStream!=null&&mOutputStreamProperty!=null){
+            mHttpCache.setEncode(mEncode);
             String flag = mHttpCache.getCacheFlagString();
             String allFlag = JsonWrapper.map2Str(mHttpCache.getResponseHeader());
             if (mRamArray!=null){
                 try {
                     RamObject ram = new RamObject();
                     byte[] buffer = mRamArray.toByteArray();
-
                     ram.setStream(new ByteArrayInputStream(buffer));
-
-                    flag = mHttpCache.getCacheFlagString();
-
                     ram.setHttpFlag(flag);
                     ram.setHeaderMap(mHttpCache.getResponseHeader());
                     ram.setInputStreamSize(buffer.length+allFlag.getBytes().length);

@@ -1,7 +1,7 @@
 package ren.yale.android.cachewebviewlib.bean;
 
 import java.io.InputStream;
-import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Created by yale on 2017/10/10.
@@ -11,13 +11,13 @@ public class RamObject {
     private String httpFlag="";
     private InputStream stream;
     private int inputStreamSize = 0;
-    private Map headerMap;
+    private HashMap headerMap;
 
-    public Map getHeaderMap() {
+    public HashMap getHeaderMap() {
         return headerMap;
     }
 
-    public void setHeaderMap(Map headerMap) {
+    public void setHeaderMap(HashMap headerMap) {
         this.headerMap = headerMap;
     }
 

@@ -16,7 +16,7 @@ public class InputStreamUtils {
 
     private InputStream mInputStream;
     private String mEncoding = "UTF-8";
-    private int mEncodeBuffer = 1024;
+    private int mEncodeBuffer = 500;
 
     public InputStreamUtils(InputStream inputStream){
         mInputStream = inputStream;
@@ -62,7 +62,6 @@ public class InputStreamUtils {
                     }else{
                         mEncoding = detect.detectEncodingStr(buffer,len);
                     }
-
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -76,8 +75,6 @@ public class InputStreamUtils {
             return mInputStream;
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-
         boolean read =false;
         try {
             while ((len = mInputStream.read(buffer)) > -1 ) {
