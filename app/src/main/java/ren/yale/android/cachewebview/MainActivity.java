@@ -38,11 +38,13 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
         TestWebView testWebView = (TestWebView) findViewById(R.id.webview);
+
+        final String[] urls = getResources().getStringArray(R.array.urls);
+        URL = urls[0];
         Spinner spinner = (Spinner) findViewById(R.id.spnner);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String[] urls = getResources().getStringArray(R.array.urls);
                 URL = urls[position];
             }
 
@@ -67,8 +69,11 @@ public class MainActivity extends Activity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                CacheWebView v = (CacheWebView) view;
-                view.loadUrl(url,getHeaderMap(url));
+
+                if (url.startsWith("http")){
+                    CacheWebView v = (CacheWebView) view;
+                    view.loadUrl(url,getHeaderMap(url));
+                }
                 return true;
             }
 
@@ -125,6 +130,12 @@ public class MainActivity extends Activity {
                 }
 
                 break;
+            case R.id.btn_start2:{
+                Intent intent = new Intent(MainActivity.this,Main2Activity.class);
+                intent.putExtra(Main2Activity.KEY_URL,URL);
+                startActivity(intent);
+                break;
+            }
         }
     }
 

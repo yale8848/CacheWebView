@@ -3,6 +3,8 @@
     <string-array name="urls">
 
         <item>http://element-cn.eleme.io/#/zh-CN</item>
+        <item>https://www.baidu.com/s?ie=UTF-8&amp;wd=m.taobao.com</item>
+        <item>https://m.taobao.com</item>
         <item>https://m.baidu.com</item>
         <item>http://www.ranwena.com/files/article/1/1268/5028890.html</item>
         <item>http://m.mm131.com/xinggan/3320_3.html</item>
