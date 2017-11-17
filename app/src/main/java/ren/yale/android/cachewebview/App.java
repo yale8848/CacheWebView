@@ -18,7 +18,7 @@ public class App extends Application {
 
         File cacheFile = new File(this.getCacheDir(),CACHE_NAME);
         CacheWebView.getCacheConfig().init(this,cacheFile.getAbsolutePath(),1024*1024*100,1024*1024*10)
-                .enableDebug(true).setEncodeBufferSize(1024);
+                .enableDebug(true);
 
 
     }

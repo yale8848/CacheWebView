@@ -5,7 +5,14 @@
   CacheWebView is a custom implement of Android WebView, through intercept each request to create ram cache(LRU) and disk cache(LRU). It beyond system WebView cache space
   limit, let cache config more simple ,fast and flexible. Visit website by offline.
 
-## Usage
+## Why use CacheWebView?
+
+- let WebView cache space more bigger, WebView default http protocol space only 18M, and it can not change
+- easy config cache,divide static resource and dynamic content,only cache static resource
+- if server do not config static file http cache header,CacheWebView also can cache it
+- want to get web page resource in cache, e.g , get pic in cache
+
+## Usage, :heart: Very simple :heart:
 
 ### use lib
 

@@ -96,6 +96,8 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
+
+        CacheWebView.getCacheConfig().setEncodeBufferSize(1024);
     }
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
