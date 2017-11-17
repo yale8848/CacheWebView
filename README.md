@@ -6,7 +6,14 @@
 
   CacheWebView是Android WebView 缓存的自定义实现，通过拦截静态资源进行内存(LRU)和磁盘(LRU)2级缓存实现缓存。突破系统WebView缓存的空间限制，让缓存更简单、更快、更灵活。让网站离线也能正常访问。
 
-## 使用方式
+## 为什么要用CacheWebView
+
+- 让WebView缓存空间更大，WebView默认的http协议缓存空间只有十几兆，并且不能修改
+- 缓存可以灵活配置，实现动态内容和静态内容分离，缓存静态内容
+- 对于服务端没有对静态资源的header配置http缓存字段时，可以强制缓存，这样会更快
+- 想方便的拿到web缓存资源，比如说从缓存中拿页面已经加载过的图片
+
+## 使用方式，:heart:很简单:heart:
 
 ### 引入库
 
@@ -19,7 +26,7 @@ compile 'ren.yale.android:cachewebviewlib:1.2.3'
  - 代码里将`WebView`改为`CacheWebView`或者layout xml里修改`WebView`为`ren.yale.android.cachewebviewlib.CacheWebView`
 
 
-   完毕，其他都不用修改。CacheWebView默认会有内部cache200M 磁盘缓存空间，20M内存缓存空间。同时缓存模式是http默认的缓存模式
+   完毕，因为CacheWebView继承WebView，其他都不用修改。CacheWebView默认会有内部cache200M 磁盘缓存空间，20M内存缓存空间。同时缓存模式是http默认的缓存模式。
 
 ---
 
