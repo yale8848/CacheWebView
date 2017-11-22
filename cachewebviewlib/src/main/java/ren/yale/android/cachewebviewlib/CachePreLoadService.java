@@ -34,6 +34,11 @@ public class CachePreLoadService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        if (intent == null){
+            return super.onStartCommand(intent, flags, startId);
+        }
+
         if (!NetworkUtils.isConnected(this.getApplicationContext())){
             return super.onStartCommand(intent, flags, startId);
         }
