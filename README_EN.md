@@ -16,7 +16,7 @@
 
 ### use lib
 
-```
+```groovy
 compile 'ren.yale.android:cachewebviewlib:1.2.4'
 ```
 
@@ -33,25 +33,21 @@ compile 'ren.yale.android:cachewebviewlib:1.2.4'
 
  - Modify cache path and size, it is usually call in Android Application
 
- ```
-
+ ```Java
 File cacheFile = new File(this.getCacheDir(),"cache_path_name");
 
 CacheWebView.getCacheConfig().init(this,cacheFile.getAbsolutePath(),1024*1024*100,1024*1024*10).enableDebug(true);//100M disk space ,10M ram sapce
-
-
  ```
 
 - Preload , preload usually request url it will be more fast
 
-```
+```Java
 CacheWebView.cacheWebView(this).loadUrl(URL);//this method must call in UI thread
-
 ```
 
 or
 
-```
+```Java
  CacheWebView.servicePreload(this,URL);//start a Service to preload
 ```
 
@@ -59,10 +55,9 @@ or
 will not have http 304 status, this mode is very fast. If static resource need to refresh, change static link like add MD5 value or version info etc.
 
 
-```
+```Java
 CacheWebView webview;
 webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
-
 ```
 
 - Static resource suffix map
@@ -72,7 +67,7 @@ webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
   default ram space static resource suffix:  html,htm,js,css,xml,txt,text,conf . Call addRamExtension and removeRamExtension to add and remove
 
 
-```
+```Java
 webview.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
                 .addRamExtension("png").removeRamExtension("html");
 ```
@@ -80,32 +75,30 @@ webview.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("sv
 
 - set cache interceptor , whether cache each url
 
-```
+```Java
 webview.setCacheInterceptor(new CacheInterceptor() {
 
             public boolean canCache(String url) {
                 return true;
             }
  });
-
 ```
 
 - Delete cache
 
-```
+```Java
 CacheWebView webview;
 webview.clearCache();
-
 ```
 
 - Add header
 
-```
+```Java
 CacheWebView webview;
 webview.loadUrl(URL,getHeaderMap(URL));
 ```
 
-```
+```Java
 @Override
  public boolean shouldOverrideUrlLoading(WebView view, String url) {
      CacheWebView v = (CacheWebView) view;
@@ -118,28 +111,28 @@ webview.loadUrl(URL,getHeaderMap(URL));
 
   Default is not block network image. After call `setBlockNetworkImage(true)`, When WebView onPageStarted it will be block, onPageFinished will unblock
 
-```
+```Java
 CacheWebView webview;
 webview.setBlockNetworkImage(true);
 ```
 
 - Disable CacheWebView cache function. Default is custom cache mode, call `setEnableCache(false)`, WebView will not these function, it just like normal WebView
 
-```
+```Java
 CacheWebView webview;
 webview.setEnableCache(true);
 ```
 
 - Setting User-Agent
 
-```
+```Java
 CacheWebView webview;
 webview.setUserAgent("Android");
 ```
 
 - Get cache file
 
-```
+```Java
  CacheStatus cacheStatus = webview.getWebViewCache().getCacheFile(URL);
  if (cacheStatus.isExist()){
     File file = cacheStatus.getCacheFile();
@@ -149,10 +142,9 @@ webview.setUserAgent("Android");
 
 - destroy
 
-```
+```Java
 CacheWebView webview;
 webview.destroy();
-
 ```
 
 

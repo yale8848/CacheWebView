@@ -17,7 +17,7 @@
 
 ### 引入库
 
-```
+```groovy
 compile 'ren.yale.android:cachewebviewlib:1.2.4'
 ```
 
@@ -33,26 +33,23 @@ compile 'ren.yale.android:cachewebviewlib:1.2.4'
 ### 进阶
 
  - 修改缓存路径和大小,最好在Application中初始化，初始化没有耗时操作
- ```
 
+ ```Java
 File cacheFile = new File(this.getCacheDir(),"cache_path_name");
 
 CacheWebView.getCacheConfig().init(this,cacheFile.getAbsolutePath(),1024*1024*100,1024*1024*10)
 .enableDebug(true);//100M 磁盘缓存空间,10M 内存缓存空间
-
-
  ```
 
 - 预加载，为了访问更快，可以将常用的页面预加载
 
-```
+```Java
 CacheWebView.cacheWebView(this).loadUrl(URL);//要放在UI线程
-
 ```
 
 或者
 
-```
+```Java
  CacheWebView.servicePreload(this,URL);//通过启动Service来预加载，不影响UI线程
 ```
 
@@ -60,10 +57,9 @@ CacheWebView.cacheWebView(this).loadUrl(URL);//要放在UI线程
 - 强制缓存，默认是普通缓存，和http缓存模式一样。setCacheStrategy(WebViewCache.CacheStrategy.FORCE),这样对于静态资源直接走缓存，不需要和服务器沟通走304缓存，这样会更快；如果静态资源要更新，
 请让web前端同学修改静态资源链接，如给链接加md5值，或者加版本等等方式；
 
-```
+```Java
 CacheWebView webview;
 webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
-
 ```
 
 
@@ -77,39 +73,37 @@ webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
 
   可以添加删除,addRamExtension,removeRamExtension
 
-```
+```Java
 webview.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
                 .addRamExtension("png").removeRamExtension("html");
 ```
 
 - 设置缓存拦截器，可以针对每一个url是否拦截缓存
 
-```
+```Java
 webview.setCacheInterceptor(new CacheInterceptor() {
             public boolean canCache(String url) {
                 return true;
             }
  });
-
 ```
 
 - 删除缓存
 
-```
+```Java
 CacheWebView webview;
 webview.clearCache();
-
 ```
 
 
 - 添加header
 
-```
+```Java
 CacheWebView webview;
 webview.loadUrl(URL,getHeaderMap(URL));
 ```
 
-```
+```Java
 @Override
  public boolean shouldOverrideUrlLoading(WebView view, String url) {
      CacheWebView v = (CacheWebView) view;
@@ -122,28 +116,28 @@ webview.loadUrl(URL,getHeaderMap(URL));
 
   默认没有阻塞图片加载，setBlockNetworkImage(true)后。在页面onPageStarted时阻塞图片加载，onPageFinished时打开图片加载
 
-```
+```Java
 CacheWebView webview;
 webview.setBlockNetworkImage(true);
 ```
 
 - 是否使用自定义缓存，默认是自定义缓存,如果是false，那就和正常的WebView使用一样
 
-```
+```Java
 CacheWebView webview;
 webview.setEnableCache(true);
 ```
 
 - 设置User-Agent
 
-```
+```Java
 CacheWebView webview;
 webview.setUserAgent("Android");
 ```
 
 - 获取缓存文件
 
-```
+```Java
  CacheStatus cacheStatus =  webview.getWebViewCache().getCacheFile(URL);
  if (cacheStatus.isExist()){
     File file = cacheStatus.getCacheFile();
@@ -153,15 +147,14 @@ webview.setUserAgent("Android");
 
 - destroy
 
-```
+```Java
 CacheWebView webview;
 webview.destroy();
-
 ```
 
 - 页面乱码；默认判断页面编码的buffer大小是500，如果有些中文网站乱码，可以把这个size设置大些
 
-```
+```Java
 CacheWebView.getCacheConfig().setEncodeBufferSize(1024);
 ```
 
