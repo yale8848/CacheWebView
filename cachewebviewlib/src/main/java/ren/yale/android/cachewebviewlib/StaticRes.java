@@ -86,14 +86,14 @@ public class StaticRes {
         if (TextUtils.isEmpty(extension)){
             return ;
         }
-        extension = extension.replaceAll(".","");
+        extension = extension.replaceAll("\\.","");
         set.add(extension.toLowerCase().trim());
     }
     private void remove(HashSet set,String extension){
         if (TextUtils.isEmpty(extension)){
             return;
         }
-        extension = extension.replaceAll(".","");
+        extension = extension.replaceAll("\\.","");
         set.remove(extension.toLowerCase().trim());
     }
     public StaticRes addExtension(String extension){
