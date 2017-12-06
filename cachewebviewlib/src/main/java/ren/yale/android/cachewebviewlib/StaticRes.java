@@ -34,7 +34,18 @@ public class StaticRes {
             add("conf");
         }
     };
-
+    private  HashSet NO_CACH = new HashSet(){
+        {
+            add("mp4");
+            add("mp3");
+            add("ogg");
+            add("avi");
+            add("wmv");
+            add("flv");
+            add("rmvb");
+            add("3gp");
+        }
+    };
     private  HashSet STATIC_RAM = new HashSet(){
         {
             add("html");
@@ -47,6 +58,13 @@ public class StaticRes {
             add("conf");
         }
     };
+
+    public boolean isMedia(String extension){
+        if (TextUtils.isEmpty(extension)){
+            return false;
+        }
+      return NO_CACH.contains(extension.toLowerCase().trim());
+    }
 
     public boolean canCache(String extension){
 

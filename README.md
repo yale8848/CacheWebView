@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-1.2.4-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.2.3)
+[![](https://img.shields.io/badge/jcenter-1.2.5-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.2.3)
 
   [English](https://github.com/yale8848/CacheWebView/blob/master/README_EN.md)
 
@@ -18,7 +18,7 @@
 ### 引入库
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:1.2.4'
+compile 'ren.yale.android:cachewebviewlib:1.2.5'
 ```
 
 ### 修改代码
@@ -63,7 +63,7 @@ webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
 ```
 
 
-- 静态资源后缀映射
+- 静态资源后缀缓存映射
 
   默认磁盘缓存静态资源后缀有：html,htm,js,ico,css,png,jpg,jpeg,gif,bmp,ttf,woff,woff2,otf,eot,svg,xml,swf,txt,text,conf
 
@@ -77,6 +77,8 @@ webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
 webview.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
                 .addRamExtension("png").removeRamExtension("html");
 ```
+
+- 不会缓存的有：mp4,mp3,ogg,avi,wmv,flv,rmvb,3gp
 
 - 设置缓存拦截器，可以针对每一个url是否拦截缓存
 

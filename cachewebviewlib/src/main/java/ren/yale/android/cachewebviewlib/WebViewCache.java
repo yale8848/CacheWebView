@@ -397,6 +397,10 @@ public class WebViewCache {
         if (TextUtils.isEmpty(extension)){
             return null;
         }
+
+        if (mStaticRes.isMedia(extension)){
+            return null;
+        }
         if (!mStaticRes.canCache(extension)){
             return null;
         }
