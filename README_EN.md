@@ -60,7 +60,7 @@ CacheWebView webview;
 webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
 ```
 
-- Static resource suffix map
+- Static resource suffix cache map
 
   default disk space static resource suffix:  html,htm,js,ico,css,png,jpg,jpeg,gif,bmp,ttf,woff,woff2,otf,eot,svg,xml,swf,txt,text,conf . Call addExtension and removeExtension to add and remove
 
@@ -72,6 +72,7 @@ webview.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("sv
                 .addRamExtension("png").removeRamExtension("html");
 ```
 
+- Do not cache: mp4,mp3,ogg,avi,wmv,flv,rmvb,3gp
 
 - set cache interceptor , whether cache each url
 
