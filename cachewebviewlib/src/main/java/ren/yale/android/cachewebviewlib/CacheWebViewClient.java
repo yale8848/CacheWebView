@@ -78,13 +78,16 @@ final class CacheWebViewClient extends WebViewClient {
         mCacheInterceptor = interceptor;
     }
     public void addVisitUrl(String url){
-        if (!mVisitVectorUrl.contains(url)){
-            mVisitVectorUrl.add(url);
+        if (mVisitVectorUrl != null){
+            if (!mVisitVectorUrl.contains(url)){
+                mVisitVectorUrl.add(url);
+            }
         }
+
     }
 
     public void clearLastUrl(){
-        if (mVisitVectorUrl.size()>0){
+        if (mVisitVectorUrl!=null&&mVisitVectorUrl.size()>0){
             mVisitVectorUrl.remove(mVisitVectorUrl.size()-1);
         }
     }
