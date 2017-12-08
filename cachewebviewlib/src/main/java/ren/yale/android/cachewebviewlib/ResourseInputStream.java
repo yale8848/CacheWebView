@@ -124,9 +124,8 @@ class ResourseInputStream extends InputStream {
     public int available() throws IOException {
         return mInnerInputStream.available();
     }
-    @Override
-    public void close() throws IOException {
 
+    private void streamClose() throws Exception{
         mInnerInputStream.close();
 
         if (mOutputStream!=null&&mOutputStreamProperty!=null){
@@ -153,12 +152,22 @@ class ResourseInputStream extends InputStream {
             mOutputStreamProperty.write(flag.getBytes());
             mOutputStreamProperty.flush();
             mEditorContent.commit();
+
             mOutputStreamProperty.close();
             mOutputStream.close();
             mOutputStreamAllProperty.close();
             CacheWebViewLog.d("disk cached "+mUrl);
         }else if (mEditorContent!=null){
             mEditorContent.abort();
+        }
+    }
+    @Override
+    public void close() throws IOException {
+
+        try {
+            streamClose();
+        }catch (Exception e){
+
         }
     }
 
