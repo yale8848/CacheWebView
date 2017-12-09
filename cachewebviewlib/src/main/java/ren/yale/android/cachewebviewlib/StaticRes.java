@@ -8,8 +8,11 @@ import java.util.HashSet;
  * Created by yale on 2017/9/26.
  */
 
-public class StaticRes {
-    private  HashSet STATIC = new HashSet(){
+public class StaticRes
+{
+    //全局默认的
+    private static HashSet STATIC = new HashSet()
+    {
         {
             add("html");
             add("htm");
@@ -34,7 +37,8 @@ public class StaticRes {
             add("conf");
         }
     };
-    private  HashSet NO_CACH = new HashSet(){
+    private static HashSet NO_CACH = new HashSet()
+    {
         {
             add("mp4");
             add("mp3");
@@ -46,7 +50,8 @@ public class StaticRes {
             add("3gp");
         }
     };
-    private  HashSet STATIC_RAM = new HashSet(){
+    private static HashSet STATIC_RAM = new HashSet()
+    {
         {
             add("html");
             add("htm");
@@ -58,93 +63,152 @@ public class StaticRes {
             add("conf");
         }
     };
+    //单独webview实例的
+    private HashSet statics = new HashSet(STATIC);
+    private HashSet no_cache = new HashSet(NO_CACH);
+    private HashSet statics_ram = new HashSet(STATIC_RAM);
 
-    public boolean isMedia(String extension){
-        if (TextUtils.isEmpty(extension)){
-            return false;
-        }
-      return NO_CACH.contains(extension.toLowerCase().trim());
+    public static void addGlobalExtension(String extension)
+    {
+        add(STATIC, extension);
     }
 
-    public boolean canCache(String extension){
-
-        if (TextUtils.isEmpty(extension)){
-            return false;
-        }
-        return STATIC.contains(extension.toLowerCase().trim());
-
+    public static void removeGlobalExtension(String extension)
+    {
+        remove(STATIC, extension);
     }
-    public boolean canRamCache(String extension){
 
-        if (TextUtils.isEmpty(extension)){
-            return false;
-        }
-        return STATIC_RAM.contains(extension.toLowerCase().trim());
+    public static void addGlobalRamExtension(String extension)
+    {
+        add(STATIC_RAM, extension);
+    }
 
+    public static void removeGlobalRamExtension(String extension)
+    {
+        remove(STATIC_RAM, extension);
     }
-    private void add(HashSet set,String extension){
-        if (TextUtils.isEmpty(extension)){
-            return ;
-        }
-        set.add(extension.replace(".","").toLowerCase().trim());
-    }
-    private void remove(HashSet set,String extension){
-        if (TextUtils.isEmpty(extension)){
+
+    private static void add(HashSet set, String extension)
+    {
+        if (TextUtils.isEmpty(extension))
+        {
             return;
         }
-        set.remove(extension.replace(".","").toLowerCase().trim());
+        set.add(extension.replace(".", "").toLowerCase().trim());
     }
-    public StaticRes addExtension(String extension){
-        add(STATIC,extension);
-        return this;
+
+    private static void remove(HashSet set, String extension)
+    {
+        if (TextUtils.isEmpty(extension))
+        {
+            return;
+        }
+        set.remove(extension.replace(".", "").toLowerCase().trim());
     }
-    public StaticRes removeExtension(String extension){
-        remove(STATIC,extension);
-        return this;
+
+    public boolean isMedia(String extension)
+    {
+        if (TextUtils.isEmpty(extension))
+        {
+            return false;
+        }
+        return no_cache.contains(extension.toLowerCase().trim());
     }
-    public StaticRes addRamExtension(String extension){
-        add(STATIC_RAM,extension);
+
+    public boolean canCache(String extension)
+    {
+
+        if (TextUtils.isEmpty(extension))
+        {
+            return false;
+        }
+        return statics.contains(extension.toLowerCase().trim());
+
+    }
+
+    public boolean canRamCache(String extension)
+    {
+
+        if (TextUtils.isEmpty(extension))
+        {
+            return false;
+        }
+        return statics_ram.contains(extension.toLowerCase().trim());
+
+    }
+
+    public StaticRes addExtension(String extension)
+    {
+        add(statics, extension);
         return this;
     }
 
-    public StaticRes removeRamExtension(String extension){
-        remove(STATIC_RAM,extension);
+    public StaticRes removeExtension(String extension)
+    {
+        remove(statics, extension);
         return this;
     }
-    public  boolean isCanGetEncoding(String extension){
-        if (TextUtils.isEmpty(extension)){
+
+    public StaticRes addRamExtension(String extension)
+    {
+        add(statics_ram, extension);
+        return this;
+    }
+
+    public StaticRes removeRamExtension(String extension)
+    {
+        remove(statics_ram, extension);
+        return this;
+    }
+
+
+    public boolean isCanGetEncoding(String extension)
+    {
+        if (TextUtils.isEmpty(extension))
+        {
             return false;
         }
-        if (isHtml(extension)){
+        if (isHtml(extension))
+        {
             return true;
         }
-        if (extension.toLowerCase().equals("js")||
-                extension.toLowerCase().equals("css")){
+        if (extension.toLowerCase().equals("js") ||
+                extension.toLowerCase().equals("css"))
+        {
             return true;
         }
         return false;
     }
-    public  boolean isHtml(String extension){
-        if (TextUtils.isEmpty(extension)){
+
+    public boolean isHtml(String extension)
+    {
+        if (TextUtils.isEmpty(extension))
+        {
             return false;
         }
-        if (extension.toLowerCase().equals("html")||
-                extension.toLowerCase().equals("htm")){
+        if (extension.toLowerCase().equals("html") ||
+                extension.toLowerCase().equals("htm"))
+        {
             return true;
         }
         return false;
     }
 
-    public void clearAll(){
+    public void clearAll()
+    {
         clearRamExtension();
         clearDiskExtension();
     }
-    public void clearRamExtension(){
 
-        STATIC_RAM.clear();
+    public void clearRamExtension()
+    {
+
+        statics_ram.clear();
     }
-    public void clearDiskExtension(){
-        STATIC.clear();
+
+    public void clearDiskExtension()
+    {
+        statics.clear();
     }
 
 }
