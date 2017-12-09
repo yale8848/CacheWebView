@@ -17,11 +17,12 @@ import android.webkit.WebViewClient;
 
 import java.io.File;
 
+import ren.yale.android.cachewebviewlib.CacheWebView;
 import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
 
 public class Main2Activity extends Activity {
 
-    private WebView mWebView;
+    private CacheWebView mWebView;
     public static final String KEY_URL="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,14 +49,14 @@ public class Main2Activity extends Activity {
             @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                view.loadUrl(request.getUrl().toString());
-                return true;
+                //view.loadUrl(request.getUrl().toString());
+                return super.shouldOverrideUrlLoading(view,request);
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                view.loadUrl(url);
-                return true;
+                //view.loadUrl(url);
+                return super.shouldOverrideUrlLoading(view,url);
             }
 
 

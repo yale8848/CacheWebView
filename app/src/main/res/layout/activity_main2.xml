@@ -7,10 +7,10 @@
     android:layout_height="match_parent"
     tools:context="ren.yale.android.cachewebview.Main2Activity">
 
-    <WebView
+    <ren.yale.android.cachewebviewlib.CacheWebView
         android:id="@+id/webview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </WebView>
+    </ren.yale.android.cachewebviewlib.CacheWebView>
 
 </LinearLayout>
