@@ -3,17 +3,15 @@ package ren.yale.android.cachewebviewlib;
 import android.util.LruCache;
 import android.webkit.MimeTypeMap;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.IllegalFormatCodePointException;
 
 import ren.yale.android.cachewebviewlib.bean.RamObject;
 import ren.yale.android.cachewebviewlib.disklru.DiskLruCache;
-import ren.yale.android.cachewebviewlib.encode.Encoding;
+import ren.yale.android.cachewebviewlib.utils.JsonWrapper;
 
 /**
  * Created by yale on 2017/9/22.
@@ -23,6 +21,7 @@ class ResourseInputStream extends InputStream {
 
     private OutputStream mOutputStream;
     private OutputStream mOutputStreamProperty;
+    private OutputStream mOutputStreamAllProperty;
     private InputStream mInnerInputStream;
     private int mCurrenReadLength;
     private DiskLruCache.Editor mEditorContent;
@@ -30,15 +29,31 @@ class ResourseInputStream extends InputStream {
     private String mUrl="";
     private LruCache mLruCache;
     private ByteArrayOutputStream mRamArray;
+    private StaticRes mStaticRes;
+
+
+
+    private String mEncode;
+
+
 
     public ResourseInputStream(String url,InputStream inputStream,
-                               DiskLruCache.Editor content,HttpCache httpCache,LruCache lrucache){
+                               DiskLruCache.Editor content,HttpCache httpCache,LruCache lrucache,StaticRes staticRes){
         mUrl = url;
         mInnerInputStream = inputStream;
         mHttpCache = httpCache;
         mEditorContent = content;
         mLruCache = lrucache;
+        mStaticRes = staticRes;
         getStream(content);
+    }
+
+    public String getEncode() {
+        return mEncode;
+    }
+
+    public void setEncode(String encode) {
+        mEncode = encode;
     }
 
     public void setInnerInputStream(InputStream innerInputStream){
@@ -60,12 +75,12 @@ class ResourseInputStream extends InputStream {
         try {
             mOutputStream = content.newOutputStream(CacheIndexType.CONTENT.ordinal());
             mOutputStreamProperty = content.newOutputStream(CacheIndexType.PROPERTY.ordinal());
-
+            mOutputStreamAllProperty = content.newOutputStream(CacheIndexType.ALL_PROPERTY.ordinal());
         } catch (IOException e) {
             e.printStackTrace();
         }
         String extension = MimeTypeMap.getFileExtensionFromUrl(mUrl.toLowerCase());
-        if (WebViewCache.getInstance().getStaticRes().canRamCache(extension)){
+        if (mStaticRes.canRamCache(extension)){
             mRamArray = new ByteArrayOutputStream();
         }
     }
@@ -109,35 +124,50 @@ class ResourseInputStream extends InputStream {
     public int available() throws IOException {
         return mInnerInputStream.available();
     }
-    @Override
-    public void close() throws IOException {
 
+    private void streamClose() throws Exception{
         mInnerInputStream.close();
 
         if (mOutputStream!=null&&mOutputStreamProperty!=null){
+            mHttpCache.setEncode(mEncode);
             String flag = mHttpCache.getCacheFlagString();
-
+            String allFlag = JsonWrapper.map2Str(mHttpCache.getResponseHeader());
             if (mRamArray!=null){
                 try {
                     RamObject ram = new RamObject();
                     byte[] buffer = mRamArray.toByteArray();
                     ram.setStream(new ByteArrayInputStream(buffer));
                     ram.setHttpFlag(flag);
-                    ram.setInputStreamSize(buffer.length);
+                    ram.setHeaderMap(mHttpCache.getResponseHeader());
+                    ram.setInputStreamSize(buffer.length+allFlag.getBytes().length);
                     mLruCache.put(WebViewCache.getKey(mUrl),ram);
-                    CacheWebViewLog.d(mUrl +" ram cached");
+                    CacheWebViewLog.d("ram cached "+mUrl);
                 }catch (Exception e){
                 }
             }
+
             mOutputStream.flush();
+            mOutputStreamAllProperty.write(allFlag.getBytes());
+            mOutputStreamAllProperty.flush();
             mOutputStreamProperty.write(flag.getBytes());
             mOutputStreamProperty.flush();
             mEditorContent.commit();
+
             mOutputStreamProperty.close();
             mOutputStream.close();
-            CacheWebViewLog.d(mUrl +" disk cached");
+            mOutputStreamAllProperty.close();
+            CacheWebViewLog.d("disk cached "+mUrl);
         }else if (mEditorContent!=null){
             mEditorContent.abort();
+        }
+    }
+    @Override
+    public void close() throws IOException {
+
+        try {
+            streamClose();
+        }catch (Exception e){
+
         }
     }
 

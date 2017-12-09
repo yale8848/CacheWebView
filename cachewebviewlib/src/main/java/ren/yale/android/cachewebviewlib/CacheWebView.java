@@ -1,7 +1,9 @@
 package ren.yale.android.cachewebviewlib;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -13,10 +15,8 @@ import android.webkit.WebViewClient;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 import ren.yale.android.cachewebviewlib.utils.FileUtil;
 import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
@@ -30,16 +30,11 @@ public class CacheWebView extends WebView {
 
     private static final String CACHE_NAME = "CacheWebView";
     private static final int CACHE_SIZE = 200*1024*1024;
-
     private String mAppCachePath = "";
-
     private CacheWebViewClient mCacheWebViewClient;
 
-    private HashMap<String,Map> mHeaderMaps;
-    private Vector<String> mVectorUrl = null;
 
-    private String mUserAgent="";
-
+    private WebViewCache mWebViewCache;
 
     public CacheWebView(Context context) {
         super(context);
@@ -62,51 +57,33 @@ public class CacheWebView extends WebView {
     }
 
     private void initData() {
-        mHeaderMaps = new HashMap<>();
-        mVectorUrl = new Vector<>();
 
+        mWebViewCache = new WebViewCache();
         File cacheFile = new File(getContext().getCacheDir(),CACHE_NAME);
         try {
-            CacheWebView.getWebViewCache().openCache(getContext(),cacheFile,CACHE_SIZE);
+            mWebViewCache.openCache(getContext(),cacheFile.getAbsolutePath(),CACHE_SIZE);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
-    public String getOriginUrl(){
-        String ou = "";
-        try {
-            ou =  mVectorUrl.lastElement();
-            URL url = new URL(ou);
-            int port = url.getPort();
-            ou=  url.getProtocol()+"://"+url.getHost()+(port==-1?"":":"+port);
-        }catch (Exception e){
+    public void setEncoding(String encoding){
+        if (TextUtils.isEmpty(encoding)){
+            encoding = "UTF-8";
         }
-        return ou;
+        mCacheWebViewClient.setEncoding(encoding);
     }
-    public String getRefererUrl(){
-        try {
-            if (mVectorUrl.size()>0){
-                return mVectorUrl.get(mVectorUrl.size()-1);
-            }
-        }catch (Exception e){
-        }
-        return "";
+    public void setCacheInterceptor(CacheInterceptor interceptor){
+        mCacheWebViewClient.setCacheInterceptor(interceptor);
     }
 
-    public String getHost(String u){
-        String ou = "";
-        try {
-            URL url = new URL(u);
-            ou=  url.getHost();
-        }catch (Exception e){
-        }
-        return ou;
+    public static CacheConfig getCacheConfig(){
+        return CacheConfig.getInstance();
     }
-    public static WebViewCache getWebViewCache(){
-        return WebViewCache.getInstance();
+
+    public WebViewCache getWebViewCache(){
+        return mWebViewCache;
     }
 
     public void setWebViewClient(WebViewClient client){
@@ -116,6 +93,8 @@ public class CacheWebView extends WebView {
     private void initWebViewClient() {
         mCacheWebViewClient = new CacheWebViewClient();
        super.setWebViewClient(mCacheWebViewClient);
+        mCacheWebViewClient.setUserAgent(this.getSettings().getUserAgentString());
+        mCacheWebViewClient.setWebViewCache(mWebViewCache);
     }
 
     public void setCacheStrategy(WebViewCache.CacheStrategy cacheStrategy){
@@ -125,40 +104,40 @@ public class CacheWebView extends WebView {
     public static CacheWebView cacheWebView(Context context){
         return new CacheWebView(context);
     }
+    public static void servicePreload(Context context,String url){
+        servicePreload(context,url,null);
+    }
+    public static void servicePreload(Context context,String url,HashMap<String,String> headerMap){
+        if (context==null||TextUtils.isEmpty(url)){
+            return;
+        }
+        Intent intent = new Intent(context, CachePreLoadService.class);
+        intent.putExtra(CachePreLoadService.KEY_URL,url);
+        if (headerMap!=null){
+            intent.putExtra(CachePreLoadService.KEY_URL_HEADER,headerMap);
+        }
+        context.startService(intent);
+    }
 
     public void setEnableCache(boolean enableCache){
         mCacheWebViewClient.setEnableCache(enableCache);
     }
     public void loadUrl(String url){
-        if (!mVectorUrl.contains(url)){
-            mVectorUrl.add(url);
-        }
+        mCacheWebViewClient.addVisitUrl(url);
         super.loadUrl(url);
-
     }
-
     public void loadUrl(String url, Map<String, String> additionalHttpHeaders) {
-        if (!mVectorUrl.contains(url)){
-            mVectorUrl.add(url);
+        mCacheWebViewClient.addVisitUrl(url);
+        if (additionalHttpHeaders!=null){
+            mCacheWebViewClient.addHeaderMap(url,additionalHttpHeaders);
+            super.loadUrl(url,additionalHttpHeaders);
+        }else{
+            super.loadUrl(url);
         }
-        mHeaderMaps.put(url,additionalHttpHeaders);
-        getWebViewCache().addHeaderMap(url,additionalHttpHeaders);
-        super.loadUrl(url,additionalHttpHeaders);
+
     }
     public void setBlockNetworkImage(boolean isBlock){
        mCacheWebViewClient.setBlockNetworkImage(isBlock);
-    }
-
-    @Override
-    public void goBack() {
-
-        try {
-            if (!mVectorUrl.isEmpty()){
-                mVectorUrl.remove(mVectorUrl.size()-1);
-            }
-        }catch (Exception e){
-        }
-        super.goBack();
     }
 
     private void initSettings(){
@@ -193,24 +172,21 @@ public class CacheWebView extends WebView {
             webSettings.setCacheMode(
                     WebSettings.LOAD_CACHE_ELSE_NETWORK);
         }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             webSettings.setMixedContentMode(
                     WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         }
-
-        mUserAgent = webSettings.getUserAgentString();
         setCachePath();
 
     }
     public String getUserAgent(){
-        return mUserAgent;
+        return  this.getSettings().getUserAgentString();
     }
 
     public void setUserAgent(String userAgent){
-        mUserAgent = userAgent;
         WebSettings webSettings = this.getSettings();
         webSettings.setUserAgentString(userAgent);
+        mCacheWebViewClient.setUserAgent(userAgent);
     }
 
     private void setCachePath(){
@@ -226,32 +202,29 @@ public class CacheWebView extends WebView {
 
         WebSettings webSettings = this.getSettings();
         webSettings.setAppCacheEnabled(true);
-        webSettings.setAppCachePath(path);
         webSettings.setDatabaseEnabled(true);
         webSettings.setDatabasePath(path);
     }
-    public String getAppCachePath(){
-        return mAppCachePath;
-    }
 
     public void clearCache(){
-
-        mVectorUrl.clear();
-
+        CacheWebViewLog.d("clearCache");
         FileUtil.deleteDirs(mAppCachePath,false);
-        getWebViewCache().clean();
+        mWebViewCache.clean();
     }
 
     public void destroy(){
 
-        mVectorUrl.clear();
-        mVectorUrl = null;
+        CacheWebViewLog.d("destroy");
+        mCacheWebViewClient.clear();
+        mWebViewCache.release();
 
-        getWebViewCache().clearHeaderMap(mHeaderMaps);
-        mHeaderMaps.clear();
-        mHeaderMaps = null;
+        this.stopLoading();
+        this.getSettings().setJavaScriptEnabled(false);
+        this.clearHistory();
+        this.removeAllViews();
 
         ViewParent viewParent = this.getParent();
+
         if (viewParent == null){
             super.destroy();
             return ;
@@ -260,6 +233,15 @@ public class CacheWebView extends WebView {
         parent.removeView(this);
         super.destroy();
     }
+
+    @Override
+    public void goBack() {
+        if (canGoBack()){
+            mCacheWebViewClient.clearLastUrl();
+            super.goBack();
+        }
+    }
+
     public void evaluateJS(String strJsFunction){
         this.evaluateJS(strJsFunction,null);
     }

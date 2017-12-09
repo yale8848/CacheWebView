@@ -13,7 +13,11 @@ public class CacheStatus {
     private String extension="";
 
 
+    @Deprecated
     public File getPath() {
+        return path;
+    }
+    public File getCacheFile(){
         return path;
     }
 

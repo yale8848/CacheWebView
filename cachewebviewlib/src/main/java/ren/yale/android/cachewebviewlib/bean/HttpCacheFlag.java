@@ -21,6 +21,16 @@ public class HttpCacheFlag {
     private String pragma="";
     private String currentTime;
 
+    private String encode="UTF-8";
+
+    public String getEncode() {
+        return encode;
+    }
+
+    public void setEncode(String encode) {
+        this.encode = encode;
+    }
+
     public String getCurrentTime() {
         return currentTime;
     }

@@ -11,13 +11,14 @@ import ren.yale.android.cachewebviewlib.CacheWebView;
  */
 
 public class App extends Application {
-    private static final String CACHE_NAME = "cahce_path";
+    private static final String CACHE_NAME = "cache_path";
     @Override
     public void onCreate() {
         super.onCreate();
 
         File cacheFile = new File(this.getCacheDir(),CACHE_NAME);
-        CacheWebView.getWebViewCache().init(this,cacheFile,1024*1024*100,1024*1024*10);
+        CacheWebView.getCacheConfig().init(this,cacheFile.getAbsolutePath(),1024*1024*100,1024*1024*10)
+                .enableDebug(true);
 
 
     }

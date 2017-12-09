@@ -22,6 +22,7 @@ class HttpCache {
 
     private HttpCacheFlag mHttpCacheFlag;
     private HttpURLConnection mConnection;
+    private HashMap<String,String> mHeaderMap;
 
 
     public HttpCache(HttpURLConnection connection){
@@ -33,6 +34,10 @@ class HttpCache {
         mHttpCacheFlag.setLastModified(connection.getHeaderField(CacheFlag.Last_Modified.value()));
         mHttpCacheFlag.setPragma(connection.getHeaderField(CacheFlag.Pragma.value()));
         mHttpCacheFlag.setCurrentTime(TimeUtils.getCurrentTime());
+        mHeaderMap =getInnerResponseHeader();
+    }
+    public void setEncode(String encode){
+        mHttpCacheFlag.setEncode(encode);
     }
     public int getStatusCode(){
         try {
@@ -42,8 +47,11 @@ class HttpCache {
         }
         return 0;
     }
-    public Map<String,String> getResponseHeader(){
-        Map<String,String> map = new HashMap<>();
+    public  HashMap<String,String> getResponseHeader(){
+        return  mHeaderMap;
+    }
+    private HashMap<String,String> getInnerResponseHeader(){
+        HashMap<String,String> map = new HashMap<>();
         Map<String,List<String>> maps =  mConnection.getHeaderFields();
 
         if (maps==null||maps.size()==0){
@@ -51,7 +59,6 @@ class HttpCache {
         }
 
         for (Map.Entry entry: maps.entrySet()){
-
 
             if (entry == null){
                 continue;

@@ -9,7 +9,7 @@ import java.util.HashSet;
  */
 
 public class StaticRes {
-    private static HashSet STATIC = new HashSet(){
+    private  HashSet STATIC = new HashSet(){
         {
             add("html");
             add("htm");
@@ -34,8 +34,19 @@ public class StaticRes {
             add("conf");
         }
     };
-
-    private static HashSet STATIC_RAM = new HashSet(){
+    private  HashSet NO_CACH = new HashSet(){
+        {
+            add("mp4");
+            add("mp3");
+            add("ogg");
+            add("avi");
+            add("wmv");
+            add("flv");
+            add("rmvb");
+            add("3gp");
+        }
+    };
+    private  HashSet STATIC_RAM = new HashSet(){
         {
             add("html");
             add("htm");
@@ -47,6 +58,13 @@ public class StaticRes {
             add("conf");
         }
     };
+
+    public boolean isMedia(String extension){
+        if (TextUtils.isEmpty(extension)){
+            return false;
+        }
+      return NO_CACH.contains(extension.toLowerCase().trim());
+    }
 
     public boolean canCache(String extension){
 
@@ -68,14 +86,14 @@ public class StaticRes {
         if (TextUtils.isEmpty(extension)){
             return ;
         }
-        extension = extension.replaceAll(".","");
+        extension = extension.replaceAll("\\.","");
         set.add(extension.toLowerCase().trim());
     }
     private void remove(HashSet set,String extension){
         if (TextUtils.isEmpty(extension)){
             return;
         }
-        extension = extension.replaceAll(".","");
+        extension = extension.replaceAll("\\.","");
         set.remove(extension.toLowerCase().trim());
     }
     public StaticRes addExtension(String extension){
@@ -117,6 +135,18 @@ public class StaticRes {
             return true;
         }
         return false;
+    }
+
+    public void clearAll(){
+        clearRamExtension();
+        clearDiskExtension();
+    }
+    public void clearRamExtension(){
+
+        STATIC_RAM.clear();
+    }
+    public void clearDiskExtension(){
+        STATIC.clear();
     }
 
 }

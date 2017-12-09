@@ -11,6 +11,8 @@ import android.util.Log;
 
 
     public static void d(String log){
-        Log.d(TAG,log);
+        if (CacheConfig.getInstance().isDebug()){
+            Log.d(TAG,log);
+        }
     }
 }

@@ -5,5 +5,5 @@ package ren.yale.android.cachewebviewlib;
  */
 
 enum  CacheIndexType {
-    CONTENT,PROPERTY
+    CONTENT,PROPERTY,ALL_PROPERTY
 }

@@ -1,32 +1,34 @@
 package ren.yale.android.cachewebview;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
+import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.Spinner;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
 
+import ren.yale.android.cachewebviewlib.CacheInterceptor;
 import ren.yale.android.cachewebviewlib.CacheStatus;
 import ren.yale.android.cachewebviewlib.CacheWebView;
 import ren.yale.android.cachewebviewlib.WebViewCache;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
-    private static final String URL1 ="http://www.baidu.com";
-    private static final String URL ="https://github.com/";
-    private static final String URL2 ="http://m.mm131.com/xinggan/3320_3.html";
+
+    private String URL ="";
     private CacheWebView webview;
     private long mStart = 0;
 
@@ -36,11 +38,23 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
         TestWebView testWebView = (TestWebView) findViewById(R.id.webview);
+
+        final String[] urls = getResources().getStringArray(R.array.urls);
+        URL = urls[0];
+        Spinner spinner = (Spinner) findViewById(R.id.spnner);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                URL = urls[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         webview = testWebView.getDXHWebView();
         webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
-        webview.setEnableCache(true);
-        webview.setBlockNetworkImage(false);
-        //webview.setEnableCache(false);
         webview.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -49,14 +63,15 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onPageFinished(WebView view, String url) {
-                Log.d("CacheWebView",(System.currentTimeMillis()-mStart)+"");
+                Log.d("CacheWebView",(System.currentTimeMillis()-mStart)+" "+url);
                 super.onPageFinished(view, url);
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                CacheWebView v = (CacheWebView) view;
+
                 if (url.startsWith("http")){
+                    CacheWebView v = (CacheWebView) view;
                     view.loadUrl(url,getHeaderMap(url));
                 }
                 return true;
@@ -67,52 +82,68 @@ public class MainActivity extends AppCompatActivity {
                 handler.proceed();
             }
         });
-        //webview.setEnableCache(false);
-        //webview.setUserAgent("Android");
+        CheckBox checkBox = (CheckBox) findViewById(R.id.checkbox);
+       webview.setEnableCache(checkBox.isChecked());
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                webview.setEnableCache(isChecked);
+            }
+        });
+        webview.setCacheInterceptor(new CacheInterceptor() {
+
+            public boolean canCache(String url) {
+                return true;
+            }
+        });
+
+        CacheWebView.getCacheConfig().setEncodeBufferSize(1024);
     }
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-       // CacheWebView.cacheWebView(MainActivity.this)
-       //         .loadUrl(URL);
+
     }
 
-    private Map getHeaderMap(String url){
+    private HashMap getHeaderMap(String url){
         HashMap<String,String> map = new HashMap<>();
-        map.put("aaa",url);
+        map.put("key","value");
         return map;
 
     }
     public void onClick(View v){
         switch (v.getId()){
             case R.id.btn_load:
-
+                webview.stopLoading();
                 webview.loadUrl(URL);
                 break;
             case R.id.btn_preload:
-                CacheWebView.cacheWebView(this).loadUrl(URL);
+                CacheWebView.servicePreload(MainActivity.this,URL,null);
                 break;
             case R.id.btn_clearcache:
                 clearCache();
 
                 break;
-            case R.id.btn_start2:
-                startActivity(new Intent(MainActivity.this,Main2Activity.class));
-                break;
             case R.id.btn_get_file:
-                CacheStatus cacheStatus = CacheWebView.getWebViewCache().getCacheFile("https://m.baidu.com/static/search/baiduapp_icon.png");
+                CacheStatus cacheStatus = webview.getWebViewCache().getCacheFile("https://m.baidu.com/static/search/baiduapp_icon.png");
                 if (cacheStatus.isExist()){
-                   File file = cacheStatus.getPath();
+                   File file = cacheStatus.getCacheFile();
                     String extension = cacheStatus.getExtension();
                 }
 
                 break;
+            case R.id.btn_start2:{
+                Intent intent = new Intent(MainActivity.this,Main2Activity.class);
+                intent.putExtra(Main2Activity.KEY_URL,URL);
+                startActivity(intent);
+                break;
+            }
         }
     }
 
     private void clearCache(){
 
-        CacheWebView.getWebViewCache().clean();
+        webview.clearCache();
     }
 
     @Override
@@ -123,6 +154,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        if (webview.canGoBack()){
+            webview.goBack();
+            return;
+        }
         super.onBackPressed();
     }
 }

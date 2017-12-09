@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
     defaultConfig {
-        applicationId "ren.yale.android.cachewebview1"
+        applicationId "ren.yale.android.cachewebview"
         minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
@@ -30,7 +30,7 @@ dependencies {
     //compile project(':cachewebviewlib')
     //compile 'ren.yale.android:cachewebviewlib:0.5'
     compile project(':cachewebviewlib')
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:appcompat-v7:26.0.2'
 
     testCompile 'junit:junit:4.12'
 }
