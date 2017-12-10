@@ -1,4 +1,4 @@
-package ren.yale.android.cachewebviewlib;
+package ren.yale.android.cachewebviewlib.config;
 
 import android.text.TextUtils;
 
@@ -8,7 +8,7 @@ import java.util.HashSet;
  * Created by yale on 2017/9/26.
  */
 
-public class StaticRes
+public class CacheExtensionConfig
 {
     //全局默认的
     private static HashSet STATIC = new HashSet()
@@ -112,6 +112,9 @@ public class StaticRes
         {
             return false;
         }
+        if (NO_CACH.contains(extension)){
+            return true;
+        }
         return no_cache.contains(extension.toLowerCase().trim());
     }
 
@@ -122,7 +125,11 @@ public class StaticRes
         {
             return false;
         }
-        return statics.contains(extension.toLowerCase().trim());
+        extension = extension.toLowerCase().trim();
+        if (STATIC.contains(extension)){
+            return true;
+        }
+        return statics.contains(extension);
 
     }
 
@@ -133,29 +140,33 @@ public class StaticRes
         {
             return false;
         }
-        return statics_ram.contains(extension.toLowerCase().trim());
+        extension = extension.toLowerCase().trim();
+        if (STATIC_RAM.contains(extension)){
+            return true;
+        }
+        return statics_ram.contains(extension);
 
     }
 
-    public StaticRes addExtension(String extension)
+    public CacheExtensionConfig addExtension(String extension)
     {
         add(statics, extension);
         return this;
     }
 
-    public StaticRes removeExtension(String extension)
+    public CacheExtensionConfig removeExtension(String extension)
     {
         remove(statics, extension);
         return this;
     }
 
-    public StaticRes addRamExtension(String extension)
+    public CacheExtensionConfig addRamExtension(String extension)
     {
         add(statics_ram, extension);
         return this;
     }
 
-    public StaticRes removeRamExtension(String extension)
+    public CacheExtensionConfig removeRamExtension(String extension)
     {
         remove(statics_ram, extension);
         return this;
