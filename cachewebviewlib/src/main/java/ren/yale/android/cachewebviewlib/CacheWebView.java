@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import ren.yale.android.cachewebviewlib.config.CacheConfig;
 import ren.yale.android.cachewebviewlib.utils.FileUtil;
 import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
 

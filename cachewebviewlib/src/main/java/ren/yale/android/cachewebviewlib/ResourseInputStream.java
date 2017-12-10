@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import ren.yale.android.cachewebviewlib.bean.RamObject;
+import ren.yale.android.cachewebviewlib.config.CacheExtensionConfig;
 import ren.yale.android.cachewebviewlib.disklru.DiskLruCache;
 import ren.yale.android.cachewebviewlib.utils.JsonWrapper;
 
@@ -29,7 +30,7 @@ class ResourseInputStream extends InputStream {
     private String mUrl="";
     private LruCache mLruCache;
     private ByteArrayOutputStream mRamArray;
-    private StaticRes mStaticRes;
+    private CacheExtensionConfig mCacheExtensionConfig;
 
 
 
@@ -38,13 +39,13 @@ class ResourseInputStream extends InputStream {
 
 
     public ResourseInputStream(String url,InputStream inputStream,
-                               DiskLruCache.Editor content,HttpCache httpCache,LruCache lrucache,StaticRes staticRes){
+                               DiskLruCache.Editor content,HttpCache httpCache,LruCache lrucache,CacheExtensionConfig cacheExtensionConfig){
         mUrl = url;
         mInnerInputStream = inputStream;
         mHttpCache = httpCache;
         mEditorContent = content;
         mLruCache = lrucache;
-        mStaticRes = staticRes;
+        mCacheExtensionConfig = cacheExtensionConfig;
         getStream(content);
     }
 
@@ -80,7 +81,7 @@ class ResourseInputStream extends InputStream {
             e.printStackTrace();
         }
         String extension = MimeTypeMap.getFileExtensionFromUrl(mUrl.toLowerCase());
-        if (mStaticRes.canRamCache(extension)){
+        if (mCacheExtensionConfig.canRamCache(extension)){
             mRamArray = new ByteArrayOutputStream();
         }
     }

@@ -1,4 +1,4 @@
-package ren.yale.android.cachewebviewlib;
+package ren.yale.android.cachewebviewlib.config;
 
 import android.content.Context;
 
