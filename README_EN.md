@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-1.3.0-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.2.3)
+[![](https://img.shields.io/badge/jcenter-1.3.1-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.2.3)
 
   CacheWebView is a custom implement of Android WebView, through intercept each request to create ram cache(LRU) and disk cache(LRU). It beyond system WebView cache space
   limit, let cache config more simple ,fast and flexible. Visit website by offline.
@@ -17,7 +17,7 @@
 ### use lib
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:1.3.0'
+compile 'ren.yale.android:cachewebviewlib:1.3.1'
 ```
 
 ### Change code
@@ -59,6 +59,15 @@ will not have http 304 status, this mode is very fast. If static resource need t
 CacheWebView webview;
 webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
 ```
+
+
+- Force refresh,if set NO_CACHE mode, CacheWebView cache nothing
+
+```Java
+CacheWebView webview;
+webview.setCacheStrategy(WebViewCache.CacheStrategy.NO_CACHE);
+```
+
 
 - Static resource suffix cache map
 

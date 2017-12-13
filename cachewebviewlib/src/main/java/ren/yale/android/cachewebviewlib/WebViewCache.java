@@ -380,6 +380,9 @@ public class WebViewCache {
                                                       CacheStrategy cacheStrategy,
                                                       String encoding,CacheInterceptor cacheInterceptor){
 
+        if (cacheStrategy == CacheStrategy.NO_CACHE){
+            return null;
+        }
         if(mDiskLruCache==null||mDiskLruCache.isClosed()){
             return null;
         }
@@ -485,7 +488,7 @@ public class WebViewCache {
     }
 
     public enum CacheStrategy{
-        NORMAL,FORCE
+        NORMAL,FORCE,NO_CACHE
     }
 
 }

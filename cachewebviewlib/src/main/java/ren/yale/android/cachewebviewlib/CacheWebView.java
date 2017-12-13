@@ -100,6 +100,11 @@ public class CacheWebView extends WebView {
 
     public void setCacheStrategy(WebViewCache.CacheStrategy cacheStrategy){
         mCacheWebViewClient.setCacheStrategy(cacheStrategy);
+        if (cacheStrategy == WebViewCache.CacheStrategy.NO_CACHE){
+            setWebViewDefaultNoCache();
+        }else{
+            setWebViewDefaultCacheMode();
+        }
     }
 
     public static CacheWebView cacheWebView(Context context){
@@ -167,18 +172,27 @@ public class CacheWebView extends WebView {
             CookieManager cookieManager = CookieManager.getInstance();
             cookieManager.setAcceptThirdPartyCookies(this,true);
         }
-        if (NetworkUtils.isConnected(this.getContext()) ){
-            webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
-        } else {
-            webSettings.setCacheMode(
-                    WebSettings.LOAD_CACHE_ELSE_NETWORK);
-        }
+        setWebViewDefaultCacheMode();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             webSettings.setMixedContentMode(
                     WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         }
         setCachePath();
 
+    }
+    private void setWebViewDefaultNoCache(){
+        WebSettings webSettings = this.getSettings();
+        webSettings.setCacheMode(
+                WebSettings.LOAD_NO_CACHE);
+    }
+    private void setWebViewDefaultCacheMode(){
+        WebSettings webSettings = this.getSettings();
+        if (NetworkUtils.isConnected(this.getContext()) ){
+            webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        } else {
+            webSettings.setCacheMode(
+                    WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        }
     }
     public String getUserAgent(){
         return  this.getSettings().getUserAgentString();
