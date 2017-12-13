@@ -18,6 +18,8 @@ import java.util.Map;
 
 import ren.yale.android.cachewebviewlib.bean.HttpCacheFlag;
 import ren.yale.android.cachewebviewlib.bean.RamObject;
+import ren.yale.android.cachewebviewlib.config.CacheConfig;
+import ren.yale.android.cachewebviewlib.config.CacheExtensionConfig;
 import ren.yale.android.cachewebviewlib.disklru.DiskLruCache;
 import ren.yale.android.cachewebviewlib.encode.BytesEncodingDetect;
 import ren.yale.android.cachewebviewlib.utils.AppUtils;
@@ -34,7 +36,7 @@ import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
 public class WebViewCache {
 
     private DiskLruCache mDiskLruCache;
-    private StaticRes mStaticRes;
+    private CacheExtensionConfig mCacheExtensionConfig;
     private Context mContext;
     private String mCacheFilePath;
     private long mCacheSize;
@@ -42,7 +44,7 @@ public class WebViewCache {
     private LruCache<String,RamObject> mLruCache;
     private BytesEncodingDetect mEncodingDetect;
     public WebViewCache(){
-        mStaticRes = new StaticRes();
+        mCacheExtensionConfig = new CacheExtensionConfig();
         mEncodingDetect = new BytesEncodingDetect();
     }
 
@@ -54,16 +56,19 @@ public class WebViewCache {
                 e.printStackTrace();
             }
         }
-        mStaticRes.clearAll();
+        mCacheExtensionConfig.clearAll();
         if (mLruCache!=null){
             mLruCache.evictAll();
         }
     }
 
-    public StaticRes getStaticRes(){
-        return mStaticRes;
+    public CacheExtensionConfig getCacheExtensionConfig(){
+        return mCacheExtensionConfig;
     }
-
+    @Deprecated
+    public CacheExtensionConfig getStaticRes(){
+        return mCacheExtensionConfig;
+    }
     public WebViewCache openCache(Context context, String directory, long maxSize) throws IOException {
 
         return openCache(context,directory,maxSize,maxSize/10);
@@ -203,14 +208,14 @@ public class WebViewCache {
             if ( responseCode== HttpURLConnection.HTTP_OK){
 
                 return new ResourseInputStream(url,httpURLConnection.getInputStream(),
-                        getEditor(getKey(url)),remote,mLruCache,mStaticRes);
+                        getEditor(getKey(url)),remote,mLruCache, mCacheExtensionConfig);
             }
             if (responseCode == HttpURLConnection.HTTP_NOT_MODIFIED){
                 InputStream  inputStream = getCacheInputStream(url);
                 ResourseInputStream resourseInputStream = null;
                 if (inputStream == null){
                     resourseInputStream = new ResourseInputStream(url,httpURLConnection.getInputStream(),
-                            getEditor(getKey(url)),remote,mLruCache,mStaticRes);
+                            getEditor(getKey(url)),remote,mLruCache, mCacheExtensionConfig);
                 }else{
                     CacheWebViewLog.d("304 from cache "+url);
                     return inputStream;
@@ -329,7 +334,7 @@ public class WebViewCache {
     private void disk2ram(String url,DiskLruCache.Snapshot snapshot,InputStream inputStream){
         if (inputStream !=null){
             String extension = MimeTypeMap.getFileExtensionFromUrl(url.toLowerCase());
-            if (mStaticRes.canRamCache(extension)){
+            if (mCacheExtensionConfig.canRamCache(extension)){
                 InputStream cacheHeader =  snapshot.getInputStream(CacheIndexType.PROPERTY.ordinal());
                 InputStream allHeader = snapshot.getInputStream(CacheIndexType.ALL_PROPERTY.ordinal());
 
@@ -401,16 +406,16 @@ public class WebViewCache {
             return null;
         }
 
-        if (mStaticRes.isMedia(extension)){
+        if (mCacheExtensionConfig.isMedia(extension)){
             return null;
         }
-        if (!mStaticRes.canCache(extension)){
+        if (!mCacheExtensionConfig.canCache(extension)){
             return null;
         }
 
         InputStream inputStream = null;
 
-        if (mStaticRes.isHtml(extension)){
+        if (mCacheExtensionConfig.isHtml(extension)){
             cacheStrategy = CacheStrategy.NORMAL;
         }
 
@@ -441,7 +446,7 @@ public class WebViewCache {
 
                 ResourseInputStream resourseInputStream= (ResourseInputStream) inputStream;
 
-                if (mStaticRes.isCanGetEncoding(extension)&&TextUtils.isEmpty(encoding)){
+                if (mCacheExtensionConfig.isCanGetEncoding(extension)&&TextUtils.isEmpty(encoding)){
                     InputStreamUtils inputStreamUtils = new InputStreamUtils(resourseInputStream.getInnerInputStream());
                     inputStreamUtils.setEncodeBufferSize(CacheConfig.getInstance().getEncodeBufferSize());
                     long start = System.currentTimeMillis();

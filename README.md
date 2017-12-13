@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-1.2.8-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.2.3)
+[![](https://img.shields.io/badge/jcenter-1.3.0-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.2.3)
 
   [English](https://github.com/yale8848/CacheWebView/blob/master/README_EN.md)
 
@@ -13,12 +13,12 @@
 - 对于服务端没有对静态资源的header配置http缓存字段时，可以强制缓存，这样会更快
 - 想方便的拿到web缓存资源，比如说从缓存中拿页面已经加载过的图片
 
-## 使用方式，:heart:很简单:heart:
+## 使用方式，:heart: 很简单 :heart:
 
 ### 引入库
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:1.2.8'
+compile 'ren.yale.android:cachewebviewlib:1.3.0'
 ```
 
 ### 修改代码
@@ -67,6 +67,8 @@ webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
 
   默认磁盘缓存静态资源后缀有：html,htm,js,ico,css,png,jpg,jpeg,gif,bmp,ttf,woff,woff2,otf,eot,svg,xml,swf,txt,text,conf
 
+  不会缓存的有：mp4,mp3,ogg,avi,wmv,flv,rmvb,3gp
+
   可以添加删除,addExtension,removeExtension
 
   默认内存缓存静态资源后缀有：html,htm,js,css,xml,txt,text,conf
@@ -74,12 +76,19 @@ webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
   可以添加删除,addRamExtension,removeRamExtension
 
 ```Java
-webview.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
-                .addRamExtension("png").removeRamExtension("html");
+
+//webview实例添加删除
+webview.getWebViewCache().getCacheExtensionConfig()
+        .addExtension("swf").removeExtension("swf")
+        .addRamExtension("svg").removeRamExtension("svg");
+
+//全局添加删除
+CacheExtensionConfig.addGlobalExtension("swf");
+CacheExtensionConfig.removeGlobalExtension("swf");
+CacheExtensionConfig.addGlobalRamExtension("svg");
+CacheExtensionConfig.removeGlobalRamExtension("svg");
+
 ```
-
-- 不会缓存的有：mp4,mp3,ogg,avi,wmv,flv,rmvb,3gp
-
 - 设置缓存拦截器，可以针对每一个url是否拦截缓存
 
 ```Java

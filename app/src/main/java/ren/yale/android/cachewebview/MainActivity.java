@@ -22,6 +22,7 @@ import java.util.HashMap;
 import ren.yale.android.cachewebviewlib.CacheInterceptor;
 import ren.yale.android.cachewebviewlib.CacheStatus;
 import ren.yale.android.cachewebviewlib.CacheWebView;
+import ren.yale.android.cachewebviewlib.config.CacheExtensionConfig;
 import ren.yale.android.cachewebviewlib.WebViewCache;
 
 
@@ -74,7 +75,7 @@ public class MainActivity extends Activity {
                     CacheWebView v = (CacheWebView) view;
                     view.loadUrl(url,getHeaderMap(url));
                 }
-                return true;
+                return super.shouldOverrideUrlLoading(view,url);
             }
 
             @Override
@@ -96,6 +97,15 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
+
+        webview.getWebViewCache().getCacheExtensionConfig()
+                .addExtension("aaa").removeExtension("aaa")
+                .addRamExtension("bbb").removeRamExtension("bbb");
+
+        CacheExtensionConfig.addGlobalExtension("aaa");
+        CacheExtensionConfig.removeGlobalExtension("aaa");
+        CacheExtensionConfig.addGlobalRamExtension("bbb");
+        CacheExtensionConfig.removeGlobalRamExtension("bbb");
 
         CacheWebView.getCacheConfig().setEncodeBufferSize(1024);
     }

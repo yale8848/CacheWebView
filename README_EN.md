@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-1.2.8-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.2.3)
+[![](https://img.shields.io/badge/jcenter-1.3.0-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.2.3)
 
   CacheWebView is a custom implement of Android WebView, through intercept each request to create ram cache(LRU) and disk cache(LRU). It beyond system WebView cache space
   limit, let cache config more simple ,fast and flexible. Visit website by offline.
@@ -17,7 +17,7 @@
 ### use lib
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:1.2.8'
+compile 'ren.yale.android:cachewebviewlib:1.3.0'
 ```
 
 ### Change code
@@ -66,13 +66,20 @@ webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
 
   default ram space static resource suffix:  html,htm,js,css,xml,txt,text,conf . Call addRamExtension and removeRamExtension to add and remove
 
+   do not cache: mp4,mp3,ogg,avi,wmv,flv,rmvb,3gp
 
 ```Java
-webview.getWebViewCache().getStaticRes().addExtension("swf").removeExtension("svg")
-                .addRamExtension("png").removeRamExtension("html");
-```
+//webview instance config
+webview.getWebViewCache().getCacheExtensionConfig()
+        .addExtension("swf").removeExtension("swf")
+        .addRamExtension("svg").removeRamExtension("svg");
 
-- Do not cache: mp4,mp3,ogg,avi,wmv,flv,rmvb,3gp
+//global config
+CacheExtensionConfig.addGlobalExtension("swf");
+CacheExtensionConfig.removeGlobalExtension("swf");
+CacheExtensionConfig.addGlobalRamExtension("svg");
+CacheExtensionConfig.removeGlobalRamExtension("svg");
+```
 
 - set cache interceptor , whether cache each url
 
