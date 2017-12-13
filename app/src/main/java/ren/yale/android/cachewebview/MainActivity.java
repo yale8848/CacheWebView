@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
             }
         });
         webview = testWebView.getDXHWebView();
-        webview.setCacheStrategy(WebViewCache.CacheStrategy.NO_CACHE);
+        webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
         webview.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {

@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-1.3.0-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.2.3)
+[![](https://img.shields.io/badge/jcenter-1.3.1-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.2.3)
 
   [English](https://github.com/yale8848/CacheWebView/blob/master/README_EN.md)
 
@@ -18,7 +18,7 @@
 ### 引入库
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:1.3.0'
+compile 'ren.yale.android:cachewebviewlib:1.3.1'
 ```
 
 ### 修改代码
@@ -60,6 +60,13 @@ CacheWebView.cacheWebView(this).loadUrl(URL);//要放在UI线程
 ```Java
 CacheWebView webview;
 webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
+```
+
+- 强制刷新，如果设置强制刷新，CacheWebView不会缓存任何数据
+
+```Java
+CacheWebView webview;
+webview.setCacheStrategy(WebViewCache.CacheStrategy.NO_CACHE);
 ```
 
 
