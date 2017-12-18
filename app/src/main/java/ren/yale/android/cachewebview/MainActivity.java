@@ -75,7 +75,8 @@ public class MainActivity extends Activity {
                     CacheWebView v = (CacheWebView) view;
                     view.loadUrl(url,getHeaderMap(url));
                 }
-                return super.shouldOverrideUrlLoading(view,url);
+
+                return true;
             }
 
             @Override

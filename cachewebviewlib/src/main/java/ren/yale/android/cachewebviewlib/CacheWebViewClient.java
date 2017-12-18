@@ -143,22 +143,26 @@ final class CacheWebViewClient extends WebViewClient {
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
         if (mCustomWebViewClient!=null){
-            return mCustomWebViewClient.shouldOverrideUrlLoading(view,url);
+            boolean ret =  mCustomWebViewClient.shouldOverrideUrlLoading(view,url);
+            if (ret){
+                return true;
+            }
         }
         view.loadUrl(url);
         return true;
     }
 
+    @TargetApi(Build.VERSION_CODES.N)
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+
         if (mCustomWebViewClient!=null){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                return  mCustomWebViewClient.shouldOverrideUrlLoading(view,request);
+            boolean ret =  mCustomWebViewClient.shouldOverrideUrlLoading(view,request);
+            if (ret){
+                return true;
             }
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            view.loadUrl(request.getUrl().toString());
-        }
+        view.loadUrl(request.getUrl().toString());
         return true;
     }
 
