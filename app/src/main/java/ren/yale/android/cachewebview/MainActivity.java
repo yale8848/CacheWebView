@@ -149,7 +149,29 @@ public class MainActivity extends Activity {
                 startActivity(intent);
                 break;
             }
+            case R.id.btn_stop:{
+
+                webview.stopLoading();
+               // webview.pauseTimers();
+
+                break;
+            }
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        webview.onPause();
+        webview.pauseTimers();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        webview.onResume();
+        webview.resumeTimers();
     }
 
     private void clearCache(){

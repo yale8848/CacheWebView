@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-1.3.3-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.3.3)
+[![](https://img.shields.io/badge/jcenter-1.3.4-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.3.3)
 
   CacheWebView is a custom implement of Android WebView, through intercept each request to create ram cache(LRU) and disk cache(LRU). It beyond system WebView cache space
   limit, let cache config more simple ,fast and flexible. Visit website by offline.
@@ -17,7 +17,7 @@
 ### use lib
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:1.3.3'
+compile 'ren.yale.android:cachewebviewlib:1.3.4'
 ```
 
 ### Change code
@@ -71,7 +71,7 @@ webview.setCacheStrategy(WebViewCache.CacheStrategy.NO_CACHE);
 
 - Static resource suffix cache map
 
-  default disk space static resource suffix:  html,htm,js,ico,css,png,jpg,jpeg,gif,bmp,ttf,woff,woff2,otf,eot,svg,xml,swf,txt,text,conf . Call addExtension and removeExtension to add and remove
+  default disk space static resource suffix:  html,htm,js,ico,css,png,jpg,jpeg,gif,webp,bmp,ttf,woff,woff2,otf,eot,svg,xml,swf,txt,text,conf . Call addExtension and removeExtension to add and remove
 
   default ram space static resource suffix:  html,htm,js,css,xml,txt,text,conf . Call addRamExtension and removeRamExtension to add and remove
 

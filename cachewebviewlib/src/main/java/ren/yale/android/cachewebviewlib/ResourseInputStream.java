@@ -1,7 +1,6 @@
 package ren.yale.android.cachewebviewlib;
 
 import android.util.LruCache;
-import android.webkit.MimeTypeMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,6 +12,7 @@ import ren.yale.android.cachewebviewlib.bean.RamObject;
 import ren.yale.android.cachewebviewlib.config.CacheExtensionConfig;
 import ren.yale.android.cachewebviewlib.disklru.DiskLruCache;
 import ren.yale.android.cachewebviewlib.utils.JsonWrapper;
+import ren.yale.android.cachewebviewlib.utils.MimeTypeMapUtils;
 
 /**
  * Created by yale on 2017/9/22.
@@ -80,7 +80,7 @@ class ResourseInputStream extends InputStream {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String extension = MimeTypeMap.getFileExtensionFromUrl(mUrl.toLowerCase());
+        String extension = MimeTypeMapUtils.getFileExtensionFromUrl(mUrl);
         if (mCacheExtensionConfig.canRamCache(extension)){
             mRamArray = new ByteArrayOutputStream();
         }

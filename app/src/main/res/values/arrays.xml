@@ -2,6 +2,8 @@
 <resources>
     <string-array name="urls">
 
+        <item>http://t.xkspbz.com/</item>
+        <item>http://m.so.com</item>
         <item>http://element-cn.eleme.io/#/zh-CN</item>
         <item>https://www.baidu.com/s?ie=UTF-8&amp;wd=m.taobao.com</item>
         <item>https://m.taobao.com</item>

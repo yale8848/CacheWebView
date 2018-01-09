@@ -35,6 +35,7 @@ public class CacheExtensionConfig
             add("txt");
             add("text");
             add("conf");
+            add("webp");
         }
     };
     private static HashSet NO_CACH = new HashSet()
