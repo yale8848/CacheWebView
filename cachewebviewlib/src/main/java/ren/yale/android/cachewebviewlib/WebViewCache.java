@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.LruCache;
-import android.webkit.MimeTypeMap;
 import android.webkit.WebResourceResponse;
 
 import java.io.File;
@@ -13,6 +12,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +27,7 @@ import ren.yale.android.cachewebviewlib.utils.FileUtil;
 import ren.yale.android.cachewebviewlib.utils.InputStreamUtils;
 import ren.yale.android.cachewebviewlib.utils.JsonWrapper;
 import ren.yale.android.cachewebviewlib.utils.MD5Utils;
+import ren.yale.android.cachewebviewlib.utils.MimeTypeMapUtils;
 import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
 
 /**
@@ -155,7 +156,7 @@ public class WebViewCache {
     }
 
     public static String getKey(String url){
-        return MD5Utils.getMD5(url,false);
+        return MD5Utils.getMD5(URLEncoder.encode(url),false);
     }
     private DiskLruCache.Editor getEditor(String key){
         try {
@@ -326,14 +327,14 @@ public class WebViewCache {
             cacheStatus.setPath(file);
             cacheStatus.setExist(true);
         }
-        String extension = MimeTypeMap.getFileExtensionFromUrl(url.toLowerCase());
+        String extension = MimeTypeMapUtils.getFileExtensionFromUrl(url);
         cacheStatus.setExtension(extension);
         return cacheStatus;
 
     }
     private void disk2ram(String url,DiskLruCache.Snapshot snapshot,InputStream inputStream){
         if (inputStream !=null){
-            String extension = MimeTypeMap.getFileExtensionFromUrl(url.toLowerCase());
+            String extension = MimeTypeMapUtils.getFileExtensionFromUrl(url);
             if (mCacheExtensionConfig.canRamCache(extension)){
                 InputStream cacheHeader =  snapshot.getInputStream(CacheIndexType.PROPERTY.ordinal());
                 InputStream allHeader = snapshot.getInputStream(CacheIndexType.ALL_PROPERTY.ordinal());
@@ -399,8 +400,8 @@ public class WebViewCache {
                 return null;
             }
         }
-        String extension = MimeTypeMap.getFileExtensionFromUrl(url.toLowerCase());
-        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        String extension = MimeTypeMapUtils.getFileExtensionFromUrl(url);
+        String mimeType = MimeTypeMapUtils.getMimeTypeFromExtension(extension);
 
         if (TextUtils.isEmpty(extension)){
             return null;
