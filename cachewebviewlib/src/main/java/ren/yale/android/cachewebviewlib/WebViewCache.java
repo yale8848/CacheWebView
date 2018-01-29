@@ -43,10 +43,19 @@ public class WebViewCache {
     private long mCacheSize;
     private long mCacheRamSize;
     private LruCache<String,RamObject> mLruCache;
-    private BytesEncodingDetect mEncodingDetect;
+    private volatile BytesEncodingDetect mEncodingDetect;
     public WebViewCache(){
         mCacheExtensionConfig = new CacheExtensionConfig();
-        mEncodingDetect = new BytesEncodingDetect();
+    }
+
+    private void ensureInitEncodingDetect(){
+        if (mEncodingDetect ==null){
+            synchronized (WebViewCache.class){
+                if (mEncodingDetect == null){
+                    mEncodingDetect = new BytesEncodingDetect();
+                }
+            }
+        }
     }
 
     public void release(){
@@ -441,13 +450,15 @@ public class WebViewCache {
         String encode = "UTF-8";
         if (!TextUtils.isEmpty(encoding)){
             encode = encoding;
+        }else {
+            ensureInitEncodingDetect();
         }
         if (inputStream !=null){
             if (inputStream instanceof ResourseInputStream){
 
                 ResourseInputStream resourseInputStream= (ResourseInputStream) inputStream;
 
-                if (mCacheExtensionConfig.isCanGetEncoding(extension)&&TextUtils.isEmpty(encoding)){
+                if (mCacheExtensionConfig.isCanGetEncoding(extension)&&TextUtils.isEmpty(encoding)&&mEncodingDetect!=null){
                     InputStreamUtils inputStreamUtils = new InputStreamUtils(resourseInputStream.getInnerInputStream());
                     inputStreamUtils.setEncodeBufferSize(CacheConfig.getInstance().getEncodeBufferSize());
                     long start = System.currentTimeMillis();

@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-1.3.4-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.3.3)
+[![](https://img.shields.io/badge/jcenter-1.3.5-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.3.3)
 
   [English](https://github.com/yale8848/CacheWebView/blob/master/README_EN.md)
 
@@ -18,7 +18,7 @@
 ### 引入库
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:1.3.4'
+compile 'ren.yale.android:cachewebviewlib:1.3.5'
 ```
 
 ### 修改代码
@@ -170,7 +170,9 @@ CacheWebView webview;
 webview.destroy();
 ```
 
-- 页面乱码；默认判断页面编码的buffer大小是500，如果有些中文网站乱码，可以把这个size设置大些
+- 页面乱码：
+
+  如果你清楚网站的编码，最好调用类似webview.setEncoding("UTF-8")主动设置，这样效率高，如果不知道那就忽略，程序自动判断，默认判断页面编码的buffer大小是500，如果有些中文网站乱码，可以把这个size设置大些
 
 ```Java
 CacheWebView.getCacheConfig().setEncodeBufferSize(1024);
