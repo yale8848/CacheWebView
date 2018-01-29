@@ -92,6 +92,7 @@ public class MainActivity extends Activity {
                 webview.setEnableCache(isChecked);
             }
         });
+        //webview.setEncoding("UTF-8");
         webview.setCacheInterceptor(new CacheInterceptor() {
 
             public boolean canCache(String url) {
