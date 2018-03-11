@@ -30,7 +30,6 @@ public class Main2Activity extends Activity {
         setContentView(R.layout.activity_main2);
 
         mWebView = findViewById(R.id.webview);
-
         String url = getIntent().getStringExtra(KEY_URL);
 
 
@@ -74,15 +73,7 @@ public class Main2Activity extends Activity {
                 return null;
             }
         });
-        mWebView.setWebChromeClient(new WebChromeClient(){
-            @Override
-            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                Log.d("CacheWebView",consoleMessage.message());
-                return super.onConsoleMessage(consoleMessage);
-            }
-        });
         initSettings();
-
     }
 
 

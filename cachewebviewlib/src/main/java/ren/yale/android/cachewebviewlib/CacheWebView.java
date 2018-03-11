@@ -224,9 +224,12 @@ public class CacheWebView extends WebView {
     }
 
     public void clearCache(){
+        CacheWebViewLog.d("webview stopLoading");
+        this.stopLoading();
         CacheWebViewLog.d("clearCache");
         FileUtil.deleteDirs(mAppCachePath,false);
         mWebViewCache.clean();
+
     }
 
     public void destroy(){

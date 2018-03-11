@@ -176,7 +176,7 @@ public class MainActivity extends Activity {
     }
 
     private void clearCache(){
-
+        webview.loadUrl("about:blank");
         webview.clearCache();
     }
 
