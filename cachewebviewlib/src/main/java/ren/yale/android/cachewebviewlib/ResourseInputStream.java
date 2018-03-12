@@ -36,10 +36,13 @@ class ResourseInputStream extends InputStream {
 
     private String mEncode;
 
+    private int mFileSize;
+
 
 
     public ResourseInputStream(String url,InputStream inputStream,
-                               DiskLruCache.Editor content,HttpCache httpCache,LruCache lrucache,CacheExtensionConfig cacheExtensionConfig){
+                               DiskLruCache.Editor content,HttpCache httpCache,LruCache lrucache,
+                               CacheExtensionConfig cacheExtensionConfig,int fileSize){
         mUrl = url;
         mInnerInputStream = inputStream;
         mHttpCache = httpCache;
@@ -47,6 +50,7 @@ class ResourseInputStream extends InputStream {
         mLruCache = lrucache;
         mCacheExtensionConfig = cacheExtensionConfig;
         getStream(content);
+        mFileSize = fileSize;
     }
 
     public String getEncode() {
@@ -93,6 +97,7 @@ class ResourseInputStream extends InputStream {
         return count;
     }
     private void writeStream( byte[] b,  int off, int len){
+
         if (mOutputStream==null){
             return;
         }
@@ -130,6 +135,15 @@ class ResourseInputStream extends InputStream {
         mInnerInputStream.close();
 
         if (mOutputStream!=null&&mOutputStreamProperty!=null){
+
+            if (mFileSize>0&&mCurrenReadLength!=mFileSize){
+
+                if (mEditorContent!=null){
+                    mEditorContent.abort();
+                }
+                return;
+            }
+
             mHttpCache.setEncode(mEncode);
             String flag = mHttpCache.getCacheFlagString();
             String allFlag = JsonWrapper.map2Str(mHttpCache.getResponseHeader());
