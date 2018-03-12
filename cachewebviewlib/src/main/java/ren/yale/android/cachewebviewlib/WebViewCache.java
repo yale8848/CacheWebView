@@ -218,14 +218,16 @@ public class WebViewCache {
             if ( responseCode== HttpURLConnection.HTTP_OK){
 
                 return new ResourseInputStream(url,httpURLConnection.getInputStream(),
-                        getEditor(getKey(url)),remote,mLruCache, mCacheExtensionConfig);
+                        getEditor(getKey(url)),remote,mLruCache, mCacheExtensionConfig,
+                        httpURLConnection.getContentLength());
             }
             if (responseCode == HttpURLConnection.HTTP_NOT_MODIFIED){
                 InputStream  inputStream = getCacheInputStream(url);
                 ResourseInputStream resourseInputStream = null;
                 if (inputStream == null){
                     resourseInputStream = new ResourseInputStream(url,httpURLConnection.getInputStream(),
-                            getEditor(getKey(url)),remote,mLruCache, mCacheExtensionConfig);
+                            getEditor(getKey(url)),remote,mLruCache, mCacheExtensionConfig,
+                            httpURLConnection.getContentLength());
                 }else{
                     CacheWebViewLog.d("304 from cache "+url);
                     return inputStream;
