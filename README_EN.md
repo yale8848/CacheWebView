@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-1.3.7-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.3.7)
+[![](https://img.shields.io/badge/jcenter-1.3.8-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.3.8)
 
   CacheWebView is a custom implement of Android WebView, through intercept each request to create ram cache(LRU) and disk cache(LRU). It beyond system WebView cache space
   limit, let cache config more simple ,fast and flexible. Visit website by offline.
@@ -17,7 +17,7 @@
 ### use lib
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:1.3.7'
+compile 'ren.yale.android:cachewebviewlib:1.3.8'
 ```
 
 ### Change code
@@ -105,7 +105,7 @@ webview.setCacheInterceptor(new CacheInterceptor() {
 
 ```Java
 CacheWebView webview;
-webview.clearCache();//stop webview and clean cache files
+webview.clearCache();
 ```
 
 - Add header
