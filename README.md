@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-1.3.7-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.3.7)
+[![](https://img.shields.io/badge/jcenter-1.3.8-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.3.8)
 
   [English](https://github.com/yale8848/CacheWebView/blob/master/README_EN.md)
 
@@ -18,7 +18,7 @@
 ### 引入库
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:1.3.7'
+compile 'ren.yale.android:cachewebviewlib:1.3.8'
 ```
 
 ### 修改代码
@@ -110,7 +110,7 @@ webview.setCacheInterceptor(new CacheInterceptor() {
 
 ```Java
 CacheWebView webview;
-webview.clearCache();//先停止webview加载，然后删除缓存文件
+webview.clearCache();
 ```
 
 
