@@ -28,9 +28,7 @@ public class BytesEncodingDetect extends Encoding {
 
     int JPFreq[][];
 
-    // int UnicodeFreq[94][128];
-    // public static String[] nicename;
-    // public static String[] codings;
+
     public boolean debug;
 
     public BytesEncodingDetect() {
@@ -980,7 +978,7 @@ public class BytesEncodingDetect extends Encoding {
 
     void initialize_frequencies() {
         int i, j;
-        for (i = 0; i < 94; i++) {
+/*        for (i = 0; i < 94; i++) {
             for (j = 0; j < 94; j++) {
                 GBFreq[i][j] = 0;
             }
@@ -1009,7 +1007,7 @@ public class BytesEncodingDetect extends Encoding {
             for (j = 0; j < 94; j++) {
                 JPFreq[i][j] = 0;
             }
-        }
+        }*/
         GBFreq[20][35] = 599;
         GBFreq[49][26] = 598;
         GBFreq[41][38] = 597;
