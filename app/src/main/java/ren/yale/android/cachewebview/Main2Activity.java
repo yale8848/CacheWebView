@@ -1,19 +1,10 @@
 package ren.yale.android.cachewebview;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import java.io.File;
 
@@ -32,48 +23,10 @@ public class Main2Activity extends Activity {
         mWebView = findViewById(R.id.webview);
         String url = getIntent().getStringExtra(KEY_URL);
 
-
-        mWebView.loadUrl(url);
-        mWebView.setWebViewClient(new WebViewClient(){
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-            }
-
-            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                //view.loadUrl(request.getUrl().toString());
-                return super.shouldOverrideUrlLoading(view,request);
-            }
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                //view.loadUrl(url);
-                return super.shouldOverrideUrlLoading(view,url);
-            }
-
-
-            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-
-                Log.d("CacheWebView","shouldInterceptRequest: "+request.getUrl().toString());
-                return null;
-            }
-
-            @Override
-            public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-                Log.d("CacheWebView","shouldInterceptRequest: "+url);
-                return null;
-            }
-        });
         initSettings();
+
+        String html="<html><div class=\"line\"><img src=\"/bbs/upload/1000/2018/03/21/32873_1025080screenshot_2018-03-21-10-22-54-916_com.unicom.woshipin.png\" width=\"400px\" alt=\"screenshot_2018-03-21-10-22-54-916_com.unicom.woshipin\"></div></html>";
+        mWebView.loadDataWithBaseURL("http://yaohw.com",html,"text/html","utf-8","");
     }
 
 
@@ -86,7 +39,6 @@ public class Main2Activity extends Activity {
         webSettings.setAllowFileAccess(true);
         webSettings.setUseWideViewPort(true);
 
-        webSettings.setUseWideViewPort(true);
         webSettings.setLoadWithOverviewMode(true);
 
         webSettings.setSupportZoom(false);
@@ -104,19 +56,25 @@ public class Main2Activity extends Activity {
             cookieManager.setAcceptThirdPartyCookies(mWebView,true);
         }
        if (NetworkUtils.isConnected(mWebView.getContext()) ){
-            webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+            webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         } else {
             webSettings.setCacheMode(
                     WebSettings.LOAD_CACHE_ELSE_NETWORK);
         }
-
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             webSettings.setMixedContentMode(
                     WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         }
         setCachePath();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+       mWebView.clearCache();
 
     }
 

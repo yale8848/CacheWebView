@@ -156,10 +156,7 @@ public class CacheWebView extends WebView {
         webSettings.setDomStorageEnabled(true);
         webSettings.setAllowFileAccess(true);
         webSettings.setUseWideViewPort(true);
-
-        webSettings.setUseWideViewPort(true);
         webSettings.setLoadWithOverviewMode(true);
-
         webSettings.setSupportZoom(true);
         webSettings.setBuiltInZoomControls(false);
         webSettings.setDisplayZoomControls(false);
@@ -225,6 +222,8 @@ public class CacheWebView extends WebView {
 
     public void clearCache(){
         CacheWebViewLog.d("clearCache");
+        this.stopLoading();
+        clearCache(true);
         FileUtil.deleteDirs(mAppCachePath,false);
         mWebViewCache.clean();
 
