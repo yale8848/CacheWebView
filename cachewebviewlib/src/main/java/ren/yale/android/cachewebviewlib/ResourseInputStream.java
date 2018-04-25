@@ -32,12 +32,7 @@ class ResourseInputStream extends InputStream {
     private ByteArrayOutputStream mRamArray;
     private CacheExtensionConfig mCacheExtensionConfig;
 
-
-
-    private String mEncode;
-
     private int mFileSize;
-
 
 
     public ResourseInputStream(String url,InputStream inputStream,
@@ -51,14 +46,6 @@ class ResourseInputStream extends InputStream {
         mCacheExtensionConfig = cacheExtensionConfig;
         getStream(content);
         mFileSize = fileSize;
-    }
-
-    public String getEncode() {
-        return mEncode;
-    }
-
-    public void setEncode(String encode) {
-        mEncode = encode;
     }
 
     public void setInnerInputStream(InputStream innerInputStream){
@@ -144,7 +131,6 @@ class ResourseInputStream extends InputStream {
                 return;
             }
 
-            mHttpCache.setEncode(mEncode);
             String flag = mHttpCache.getCacheFlagString();
             String allFlag = JsonWrapper.map2Str(mHttpCache.getResponseHeader());
             if (mRamArray!=null){

@@ -21,7 +21,6 @@ import ren.yale.android.cachewebviewlib.bean.RamObject;
 import ren.yale.android.cachewebviewlib.config.CacheConfig;
 import ren.yale.android.cachewebviewlib.config.CacheExtensionConfig;
 import ren.yale.android.cachewebviewlib.disklru.DiskLruCache;
-import ren.yale.android.cachewebviewlib.encode.BytesEncodingDetect;
 import ren.yale.android.cachewebviewlib.utils.AppUtils;
 import ren.yale.android.cachewebviewlib.utils.FileUtil;
 import ren.yale.android.cachewebviewlib.utils.InputStreamUtils;
@@ -43,20 +42,10 @@ public class WebViewCache {
     private long mCacheSize;
     private long mCacheRamSize;
     private LruCache<String,RamObject> mLruCache;
-    private volatile BytesEncodingDetect mEncodingDetect;
     public WebViewCache(){
         mCacheExtensionConfig = new CacheExtensionConfig();
     }
 
-    private void ensureInitEncodingDetect(){
-        if (mEncodingDetect ==null){
-            synchronized (WebViewCache.class){
-                if (mEncodingDetect == null){
-                    mEncodingDetect = new BytesEncodingDetect();
-                }
-            }
-        }
-    }
 
     public void release(){
         if (mDiskLruCache!=null){
@@ -449,45 +438,23 @@ public class WebViewCache {
         if (inputStream==null){
             inputStream = httpRequest(client,url);
         }
-        String encode = "UTF-8";
+        String encode = "";
         if (!TextUtils.isEmpty(encoding)){
             encode = encoding;
-        }else {
-            ensureInitEncodingDetect();
         }
         if (inputStream !=null){
             if (inputStream instanceof ResourseInputStream){
 
                 ResourseInputStream resourseInputStream= (ResourseInputStream) inputStream;
-
-                if (mCacheExtensionConfig.isCanGetEncoding(extension)&&TextUtils.isEmpty(encoding)&&mEncodingDetect!=null){
-                    InputStreamUtils inputStreamUtils = new InputStreamUtils(resourseInputStream.getInnerInputStream());
-                    inputStreamUtils.setEncodeBufferSize(CacheConfig.getInstance().getEncodeBufferSize());
-                    long start = System.currentTimeMillis();
-                    InputStream copyInputStream = inputStreamUtils.copy(mEncodingDetect);
-                    if (copyInputStream == null){
-                        return null;
-                    }
-                    resourseInputStream.setInnerInputStream(copyInputStream);
-                    encode = inputStreamUtils.getEncoding();
-                    CacheWebViewLog.d(encode+" "+"get encoding timecost: "+(System.currentTimeMillis()-start)+ "ms "+url);
-                }
-                resourseInputStream.setEncode(encode);
                 WebResourceResponse webResourceResponse=new WebResourceResponse(mimeType,encode
                         ,inputStream);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     webResourceResponse.setResponseHeaders(resourseInputStream.getHttpCache().getResponseHeader());
                 }
-
                 return webResourceResponse;
             }else{
 
                 Map map = getAllHttpHeaders(url);
-
-                if (httpCacheFlag!=null){
-                    encode = httpCacheFlag.getEncode();
-                }
-                CacheWebViewLog.d(encode +" "+url);
                 WebResourceResponse webResourceResponse= new  WebResourceResponse(mimeType,encode,inputStream);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     webResourceResponse.setResponseHeaders(map);
