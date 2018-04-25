@@ -174,24 +174,6 @@ public class CacheExtensionConfig
     }
 
 
-    public boolean isCanGetEncoding(String extension)
-    {
-        if (TextUtils.isEmpty(extension))
-        {
-            return false;
-        }
-        if (isHtml(extension))
-        {
-            return true;
-        }
-        if (extension.toLowerCase().equals("js") ||
-                extension.toLowerCase().equals("css"))
-        {
-            return true;
-        }
-        return false;
-    }
-
     public boolean isHtml(String extension)
     {
         if (TextUtils.isEmpty(extension))

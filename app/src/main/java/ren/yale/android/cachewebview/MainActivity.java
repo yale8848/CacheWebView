@@ -126,7 +126,7 @@ public class MainActivity extends Activity {
     public void onClick(View v){
         switch (v.getId()){
             case R.id.btn_load:
-                webview.stopLoading();
+               // webview.stopLoading();
                 webview.loadUrl(URL);
                 break;
             case R.id.btn_preload:

@@ -1,12 +1,8 @@
 package ren.yale.android.cachewebviewlib.utils;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
-import ren.yale.android.cachewebviewlib.encode.BytesEncodingDetect;
 
 /**
  * Created by yale on 2017/10/21.
@@ -49,52 +45,5 @@ public class InputStreamUtils {
         return sb.toString();
 
     }
-
-    public InputStream copy(BytesEncodingDetect detect){
-        int len;
-        byte[] buffer = new byte[mEncodeBuffer];
-        if (mInputStream instanceof ByteArrayInputStream){
-            try {
-                len = mInputStream.read(buffer);
-                if (len>0){
-                    if (len == mEncodeBuffer){
-                        mEncoding = detect.detectEncodingStr(buffer);
-                    }else{
-                        mEncoding = detect.detectEncodingStr(buffer,len);
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                mInputStream.reset();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-            return mInputStream;
-        }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        boolean read =false;
-        try {
-            while ((len = mInputStream.read(buffer)) > -1 ) {
-                if (!read){
-                    read = true;
-                    mEncoding = detect.detectEncodingStr(buffer,len);
-                }
-                baos.write(buffer, 0, len);
-            }
-            baos.flush();
-            return new ByteArrayInputStream(baos.toByteArray());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-
-    }
-
-
-
-
 
 }
