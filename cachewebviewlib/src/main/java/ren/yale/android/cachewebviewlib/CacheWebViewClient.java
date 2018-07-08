@@ -7,6 +7,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,12 +39,12 @@ final class CacheWebViewClient extends DelegateWebViewClient {
         mWebViewCache = webViewCache;
     }
 
-    public void setUserAgent(String agent) {
-        mUserAgent = agent;
-    }
-
     public String getUserAgent() {
         return mUserAgent;
+    }
+
+    public void setUserAgent(String agent) {
+        mUserAgent = agent;
     }
 
     public void addHeaderMap(String url, Map<String, String> additionalHttpHeaders) {

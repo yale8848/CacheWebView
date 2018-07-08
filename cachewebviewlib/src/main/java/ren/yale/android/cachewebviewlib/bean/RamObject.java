@@ -8,7 +8,7 @@ import java.util.HashMap;
  */
 
 public class RamObject {
-    private String httpFlag="";
+    private String httpFlag = "";
     private InputStream stream;
     private int inputStreamSize = 0;
     private HashMap headerMap;
@@ -32,9 +32,11 @@ public class RamObject {
     public InputStream getStream() {
         return stream;
     }
+
     public void setStream(InputStream stream) {
         this.stream = stream;
     }
+
     public String getHttpFlag() {
         return httpFlag;
     }

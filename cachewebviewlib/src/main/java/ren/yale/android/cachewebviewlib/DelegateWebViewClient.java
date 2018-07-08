@@ -21,12 +21,12 @@ public class DelegateWebViewClient extends WebViewClient {
 
     private WebViewClient mCustomWebViewClient;
 
-    public void setCustomWebViewClient(WebViewClient webViewClient) {
-        mCustomWebViewClient = webViewClient;
-    }
-
     public WebViewClient getCustomWebViewClient() {
         return mCustomWebViewClient;
+    }
+
+    public void setCustomWebViewClient(WebViewClient webViewClient) {
+        mCustomWebViewClient = webViewClient;
     }
 
     @Deprecated
