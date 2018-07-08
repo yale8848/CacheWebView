@@ -27,7 +27,7 @@ class ResourseInputStream extends InputStream {
     private int mCurrenReadLength;
     private DiskLruCache.Editor mEditorContent;
     private HttpCache mHttpCache;
-    private String mUrl="";
+    private String mUrl = "";
     private LruCache mLruCache;
     private ByteArrayOutputStream mRamArray;
     private CacheExtensionConfig mCacheExtensionConfig;
@@ -35,9 +35,9 @@ class ResourseInputStream extends InputStream {
     private int mFileSize;
 
 
-    public ResourseInputStream(String url,InputStream inputStream,
-                               DiskLruCache.Editor content,HttpCache httpCache,LruCache lrucache,
-                               CacheExtensionConfig cacheExtensionConfig,int fileSize){
+    public ResourseInputStream(String url, InputStream inputStream,
+                               DiskLruCache.Editor content, HttpCache httpCache, LruCache lrucache,
+                               CacheExtensionConfig cacheExtensionConfig, int fileSize) {
         mUrl = url;
         mInnerInputStream = inputStream;
         mHttpCache = httpCache;
@@ -48,20 +48,20 @@ class ResourseInputStream extends InputStream {
         mFileSize = fileSize;
     }
 
-    public void setInnerInputStream(InputStream innerInputStream){
-        mInnerInputStream = innerInputStream;
-    }
-
-    public InputStream getInnerInputStream(){
+    public InputStream getInnerInputStream() {
         return mInnerInputStream;
     }
 
-    public HttpCache getHttpCache(){
+    public void setInnerInputStream(InputStream innerInputStream) {
+        mInnerInputStream = innerInputStream;
+    }
+
+    public HttpCache getHttpCache() {
         return mHttpCache;
     }
 
-    private void getStream(DiskLruCache.Editor content){
-        if (content == null){
+    private void getStream(DiskLruCache.Editor content) {
+        if (content == null) {
             return;
         }
         try {
@@ -72,42 +72,45 @@ class ResourseInputStream extends InputStream {
             e.printStackTrace();
         }
         String extension = MimeTypeMapUtils.getFileExtensionFromUrl(mUrl);
-        if (mCacheExtensionConfig.canRamCache(extension)){
+        if (mCacheExtensionConfig.canRamCache(extension)) {
             mRamArray = new ByteArrayOutputStream();
         }
     }
 
     @Override
-    public int read( byte[] b) throws IOException {
-        int count =  mInnerInputStream.read(b);
-        writeStream(b,0,count);
+    public int read(byte[] b) throws IOException {
+        int count = mInnerInputStream.read(b);
+        writeStream(b, 0, count);
         return count;
     }
-    private void writeStream( byte[] b,  int off, int len){
 
-        if (mOutputStream==null){
+    private void writeStream(byte[] b, int off, int len) {
+
+        if (mOutputStream == null) {
             return;
         }
-        if (len>0){
-            mCurrenReadLength+=len;
+        if (len > 0) {
+            mCurrenReadLength += len;
             try {
-                mOutputStream.write(b,off,len);
+                mOutputStream.write(b, off, len);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if (mRamArray!=null){
-                mRamArray.write(b,off,len);
+            if (mRamArray != null) {
+                mRamArray.write(b, off, len);
             }
         }
 
 
     }
+
     @Override
-    public int read( byte[] b, int off, int len) throws IOException {
+    public int read(byte[] b, int off, int len) throws IOException {
         int count = mInnerInputStream.read(b, off, len);
-        writeStream(b,off,count);
+        writeStream(b, off, count);
         return count;
     }
+
     @Override
     public long skip(long n) throws IOException {
         return mInnerInputStream.skip(n);
@@ -118,14 +121,14 @@ class ResourseInputStream extends InputStream {
         return mInnerInputStream.available();
     }
 
-    private void streamClose() throws Exception{
+    private void streamClose() throws Exception {
         mInnerInputStream.close();
 
-        if (mOutputStream!=null&&mOutputStreamProperty!=null){
+        if (mOutputStream != null && mOutputStreamProperty != null) {
 
-            if (mFileSize>0&&mCurrenReadLength!=mFileSize){
+            if (mFileSize > 0 && mCurrenReadLength != mFileSize) {
 
-                if (mEditorContent!=null){
+                if (mEditorContent != null) {
                     mEditorContent.abort();
                 }
                 return;
@@ -133,17 +136,17 @@ class ResourseInputStream extends InputStream {
 
             String flag = mHttpCache.getCacheFlagString();
             String allFlag = JsonWrapper.map2Str(mHttpCache.getResponseHeader());
-            if (mRamArray!=null){
+            if (mRamArray != null) {
                 try {
                     RamObject ram = new RamObject();
                     byte[] buffer = mRamArray.toByteArray();
                     ram.setStream(new ByteArrayInputStream(buffer));
                     ram.setHttpFlag(flag);
                     ram.setHeaderMap(mHttpCache.getResponseHeader());
-                    ram.setInputStreamSize(buffer.length+allFlag.getBytes().length);
-                    mLruCache.put(WebViewCache.getKey(mUrl),ram);
-                    CacheWebViewLog.d("ram cached "+mUrl);
-                }catch (Exception e){
+                    ram.setInputStreamSize(buffer.length + allFlag.getBytes().length);
+                    mLruCache.put(WebViewCache.getKey(mUrl), ram);
+                    CacheWebViewLog.d("ram cached " + mUrl);
+                } catch (Exception e) {
                 }
             }
 
@@ -157,17 +160,18 @@ class ResourseInputStream extends InputStream {
             mOutputStreamProperty.close();
             mOutputStream.close();
             mOutputStreamAllProperty.close();
-            CacheWebViewLog.d("disk cached "+mUrl);
-        }else if (mEditorContent!=null){
+            CacheWebViewLog.d("disk cached " + mUrl);
+        } else if (mEditorContent != null) {
             mEditorContent.abort();
         }
     }
+
     @Override
     public void close() throws IOException {
 
         try {
             streamClose();
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -192,7 +196,7 @@ class ResourseInputStream extends InputStream {
         return mInnerInputStream.read();
     }
 
-    public interface IWriteFinish{
-        void close(String content,String flag );
+    public interface IWriteFinish {
+        void close(String content, String flag);
     }
 }

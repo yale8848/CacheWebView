@@ -22,12 +22,12 @@ class ResourceLoader {
     private HashSet<String> mAssetResSet;
 
 
-    public static ResourceLoader getInstance(){
+    public static ResourceLoader getInstance() {
         ResourceLoader tmp = INSTANCE;
-        if (tmp ==null){
-            synchronized (ResourceLoader.class){
+        if (tmp == null) {
+            synchronized (ResourceLoader.class) {
                 tmp = INSTANCE;
-                if (tmp == null){
+                if (tmp == null) {
                     tmp = new ResourceLoader();
                     INSTANCE = tmp;
                 }
@@ -36,10 +36,10 @@ class ResourceLoader {
         return tmp;
     }
 
-    public  void init(Context context,String assetDir){
+    public void init(Context context, String assetDir) {
         mContext = context.getApplicationContext();
         mAssetDir = assetDir;
-        if (mAssetResSet!=null){
+        if (mAssetResSet != null) {
             mAssetResSet.clear();
             mAssetResSet = null;
         }
@@ -47,16 +47,16 @@ class ResourceLoader {
         listRes(mAssetDir);
     }
 
-    private void listRes(String resDir){
+    private void listRes(String resDir) {
         try {
-            String[] reses =  mContext.getAssets().list(resDir);
-            for (String res : reses){
-                String sub = resDir+File.separator+res;
+            String[] reses = mContext.getAssets().list(resDir);
+            for (String res : reses) {
+                String sub = resDir + File.separator + res;
                 String[] tmp = mContext.getAssets().list(sub);
-                if (tmp.length==0){
-                    sub = sub.replace(mAssetDir+File.separator,"");
+                if (tmp.length == 0) {
+                    sub = sub.replace(mAssetDir + File.separator, "");
                     mAssetResSet.add(sub);
-                }else{
+                } else {
                     listRes(sub);
                 }
             }
@@ -64,7 +64,8 @@ class ResourceLoader {
             e.printStackTrace();
         }
     }
-    private String getUrlPath(String url){
+
+    private String getUrlPath(String url) {
         try {
             URI u = new URI(url);
             return u.getPath();
@@ -74,39 +75,37 @@ class ResourceLoader {
         return null;
     }
 
-    public String findAssetFile(String url){
+    public String findAssetFile(String url) {
 
         int pos = -1;
-        while (true){
-            if (mAssetResSet.contains(url)){
+        while (true) {
+            if (mAssetResSet.contains(url)) {
                 break;
             }
             pos = url.indexOf('/');
-            if (pos == -1||pos == (url.length()-1)){
+            if (pos == -1 || pos == (url.length() - 1)) {
                 url = "";
                 break;
             }
-            url = url.substring(pos+1);
+            url = url.substring(pos + 1);
         }
         return url;
     }
 
 
-    public InputStream getAssetFileStream(String urlPath){
+    public InputStream getAssetFileStream(String urlPath) {
         String assetFile = findAssetFile(urlPath);
-        if (TextUtils.isEmpty(assetFile)){
+        if (TextUtils.isEmpty(assetFile)) {
             return null;
         }
         try {
             CacheWebViewLog.d(urlPath);
-            return  mContext.getAssets().open(mAssetDir+File.separator+assetFile);
+            return mContext.getAssets().open(mAssetDir + File.separator + assetFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
-
-
 
 
 }

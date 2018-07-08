@@ -22,10 +22,10 @@ class HttpCache {
 
     private HttpCacheFlag mHttpCacheFlag;
     private HttpURLConnection mConnection;
-    private HashMap<String,String> mHeaderMap;
+    private HashMap<String, String> mHeaderMap;
 
 
-    public HttpCache(HttpURLConnection connection){
+    public HttpCache(HttpURLConnection connection) {
         mHttpCacheFlag = new HttpCacheFlag();
         mConnection = connection;
         mHttpCacheFlag.setCacheControl(connection.getHeaderField(CacheFlag.Cache_Control.value()));
@@ -34,12 +34,14 @@ class HttpCache {
         mHttpCacheFlag.setLastModified(connection.getHeaderField(CacheFlag.Last_Modified.value()));
         mHttpCacheFlag.setPragma(connection.getHeaderField(CacheFlag.Pragma.value()));
         mHttpCacheFlag.setCurrentTime(TimeUtils.getCurrentTime());
-        mHeaderMap =getInnerResponseHeader();
+        mHeaderMap = getInnerResponseHeader();
     }
-    public void setEncode(String encode){
+
+    public void setEncode(String encode) {
         mHttpCacheFlag.setEncode(encode);
     }
-    public int getStatusCode(){
+
+    public int getStatusCode() {
         try {
             return mConnection.getResponseCode();
         } catch (IOException e) {
@@ -47,73 +49,78 @@ class HttpCache {
         }
         return 0;
     }
-    public  HashMap<String,String> getResponseHeader(){
-        return  mHeaderMap;
-    }
-    private HashMap<String,String> getInnerResponseHeader(){
-        HashMap<String,String> map = new HashMap<>();
-        Map<String,List<String>> maps =  mConnection.getHeaderFields();
 
-        if (maps==null||maps.size()==0){
+    public HashMap<String, String> getResponseHeader() {
+        return mHeaderMap;
+    }
+
+    private HashMap<String, String> getInnerResponseHeader() {
+        HashMap<String, String> map = new HashMap<>();
+        Map<String, List<String>> maps = mConnection.getHeaderFields();
+
+        if (maps == null || maps.size() == 0) {
             return map;
         }
 
-        for (Map.Entry entry: maps.entrySet()){
+        for (Map.Entry entry : maps.entrySet()) {
 
-            if (entry == null){
+            if (entry == null) {
                 continue;
             }
             Object key = entry.getKey();
-            if (key == null){
+            if (key == null) {
                 continue;
             }
 
             List<String> values = (List<String>) entry.getValue();
-            if (values!=null&&values.size()>0){
-                map.put((String) entry.getKey(),values.get(0));
+            if (values != null && values.size() > 0) {
+                map.put((String) entry.getKey(), values.get(0));
             }
 
         }
 
         return map;
     }
-    public HttpCacheFlag getHttpCacheFlag(){
+
+    public HttpCacheFlag getHttpCacheFlag() {
         return mHttpCacheFlag;
     }
-    public boolean isCanCache(){
 
-        if (!TextUtils.isEmpty(mHttpCacheFlag.getPragma())){
-            return mHttpCacheFlag.getPragma().equals(CacheConrolType.no_cache.value());
-        }else if (!TextUtils.isEmpty(mHttpCacheFlag.getCacheControl())){
-            return mHttpCacheFlag.getCacheControl().equals(CacheConrolType.no_cache.value())||
-                    mHttpCacheFlag.getCacheControl().equals(CacheConrolType.no_store.value());
-        }
-        return false;
-    }
-    public boolean isNoCache(){
+    public boolean isCanCache() {
 
-        if (!TextUtils.isEmpty(mHttpCacheFlag.getPragma())){
+        if (!TextUtils.isEmpty(mHttpCacheFlag.getPragma())) {
             return mHttpCacheFlag.getPragma().equals(CacheConrolType.no_cache.value());
-        }else if (!TextUtils.isEmpty(mHttpCacheFlag.getCacheControl())){
-            return mHttpCacheFlag.getCacheControl().equals(CacheConrolType.no_cache.value())||
+        } else if (!TextUtils.isEmpty(mHttpCacheFlag.getCacheControl())) {
+            return mHttpCacheFlag.getCacheControl().equals(CacheConrolType.no_cache.value()) ||
                     mHttpCacheFlag.getCacheControl().equals(CacheConrolType.no_store.value());
         }
         return false;
     }
 
+    public boolean isNoCache() {
 
-    public String getCacheFlagString(){
+        if (!TextUtils.isEmpty(mHttpCacheFlag.getPragma())) {
+            return mHttpCacheFlag.getPragma().equals(CacheConrolType.no_cache.value());
+        } else if (!TextUtils.isEmpty(mHttpCacheFlag.getCacheControl())) {
+            return mHttpCacheFlag.getCacheControl().equals(CacheConrolType.no_cache.value()) ||
+                    mHttpCacheFlag.getCacheControl().equals(CacheConrolType.no_store.value());
+        }
+        return false;
+    }
+
+
+    public String getCacheFlagString() {
         JsonWrapper jsonWrapper = new JsonWrapper();
 
         try {
-            return jsonWrapper.obj2JosnStr(mHttpCacheFlag,HttpCacheFlag.class);
+            return jsonWrapper.obj2JosnStr(mHttpCacheFlag, HttpCacheFlag.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
     }
 
-    private enum CacheFlag{
+    private enum CacheFlag {
         Cache_Control("Cache-Control"),
         Last_Modified("Last-Modified"),
         ETag("ETag"),
@@ -121,14 +128,17 @@ class HttpCache {
         Pragma("Pragma");
 
         private String mFlag;
+
         CacheFlag(String flag) {
             mFlag = flag;
         }
-        public String value(){
+
+        public String value() {
             return mFlag;
         }
     }
-    private enum CacheConrolType{
+
+    private enum CacheConrolType {
         Public("Public"),
         Private("Private"),
         max_age("max-age"),
@@ -136,10 +146,12 @@ class HttpCache {
         no_store("no-store");
 
         private String mValue;
+
         CacheConrolType(String value) {
             mValue = value;
         }
-        public String value(){
+
+        public String value() {
             return mValue;
         }
     }

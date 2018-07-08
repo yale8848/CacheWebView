@@ -10,13 +10,13 @@ import android.content.pm.PackageManager;
 
 public class AppUtils {
 
-    public static int getVersionCode(Context context){
-        PackageManager packageManager=context.getPackageManager();
+    public static int getVersionCode(Context context) {
+        PackageManager packageManager = context.getPackageManager();
         PackageInfo packageInfo;
-        int versionCode=0;
+        int versionCode = 0;
         try {
-            packageInfo=packageManager.getPackageInfo(context.getPackageName(),0);
-            versionCode=packageInfo.versionCode;
+            packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
+            versionCode = packageInfo.versionCode;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }

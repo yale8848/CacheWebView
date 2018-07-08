@@ -20,6 +20,7 @@ import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
 public class TestWebView extends RelativeLayout {
     private CacheWebView mDXHWebView = null;
     private Context mContext;
+
     public TestWebView(Context context) {
         super(context);
         init(context);
@@ -35,7 +36,8 @@ public class TestWebView extends RelativeLayout {
         init(context);
 
     }
-    public CacheWebView getDXHWebView(){
+
+    public CacheWebView getDXHWebView() {
         return mDXHWebView;
     }
 
@@ -44,11 +46,12 @@ public class TestWebView extends RelativeLayout {
         super.onAttachedToWindow();
     }
 
-    private void addWebView(Context context){
+    private void addWebView(Context context) {
         mDXHWebView = new CacheWebView(context);
         RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        this.addView(mDXHWebView,rl);
+        this.addView(mDXHWebView, rl);
     }
+
     private void initSettings() {
         WebSettings webSettings = mDXHWebView.getSettings();
 
@@ -61,12 +64,11 @@ public class TestWebView extends RelativeLayout {
         webSettings.setUseWideViewPort(true);
         webSettings.setLoadWithOverviewMode(true);
 
-        if (NetworkUtils.isConnected(mContext) ){
+        if (NetworkUtils.isConnected(mContext)) {
             webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
         } else {
             webSettings.setCacheMode(
                     WebSettings.LOAD_CACHE_ELSE_NETWORK);
-
 
 
         }
@@ -75,10 +77,9 @@ public class TestWebView extends RelativeLayout {
         webSettings.setAppCacheEnabled(true);
 
 
-
         //File fDatabase = new File(mContext.getCacheDir().getAbsolutePath(),"webview_db");
         //webSettings.setDatabasePath(fDatabase.getAbsolutePath());
-        File fAppCache = new File(mContext.getCacheDir().getAbsolutePath(),"webview_cache");
+        File fAppCache = new File(mContext.getCacheDir().getAbsolutePath(), "webview_cache");
         webSettings.setAppCachePath(fAppCache.getAbsolutePath());
 
         webSettings.setBuiltInZoomControls(true);// api-3
@@ -98,6 +99,7 @@ public class TestWebView extends RelativeLayout {
                     WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         }
     }
+
     private void init(final Context context) {
 
         mContext = context;

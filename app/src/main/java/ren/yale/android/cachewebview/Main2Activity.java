@@ -13,8 +13,9 @@ import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
 
 public class Main2Activity extends Activity {
 
+    public static final String KEY_URL = "";
     private CacheWebView mWebView;
-    public static final String KEY_URL="";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,12 +26,12 @@ public class Main2Activity extends Activity {
 
         initSettings();
 
-        String html="<html><div class=\"line\"><img src=\"/bbs/upload/1000/2018/03/21/32873_1025080screenshot_2018-03-21-10-22-54-916_com.unicom.woshipin.png\" width=\"400px\" alt=\"screenshot_2018-03-21-10-22-54-916_com.unicom.woshipin\"></div></html>";
-        mWebView.loadDataWithBaseURL("http://yaohw.com",html,"text/html","utf-8","");
+        String html = "<html><div class=\"line\"><img src=\"/bbs/upload/1000/2018/03/21/32873_1025080screenshot_2018-03-21-10-22-54-916_com.unicom.woshipin.png\" width=\"400px\" alt=\"screenshot_2018-03-21-10-22-54-916_com.unicom.woshipin\"></div></html>";
+        mWebView.loadDataWithBaseURL("http://yaohw.com", html, "text/html", "utf-8", "");
     }
 
 
-    private void initSettings(){
+    private void initSettings() {
         WebSettings webSettings = mWebView.getSettings();
 
         webSettings.setJavaScriptEnabled(true);
@@ -51,11 +52,11 @@ public class Main2Activity extends Activity {
             webSettings.setAllowFileAccessFromFileURLs(true);
             webSettings.setAllowUniversalAccessFromFileURLs(true);
         }
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager cookieManager = CookieManager.getInstance();
-            cookieManager.setAcceptThirdPartyCookies(mWebView,true);
+            cookieManager.setAcceptThirdPartyCookies(mWebView, true);
         }
-       if (NetworkUtils.isConnected(mWebView.getContext()) ){
+        if (NetworkUtils.isConnected(mWebView.getContext())) {
             webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         } else {
             webSettings.setCacheMode(
@@ -74,17 +75,17 @@ public class Main2Activity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
 
-       mWebView.clearCache();
+        mWebView.clearCache();
 
     }
 
-    private void setCachePath(){
+    private void setCachePath() {
 
-        File cacheFile = new File(mWebView.getContext().getCacheDir(),"appcache_name");
+        File cacheFile = new File(mWebView.getContext().getCacheDir(), "appcache_name");
         String path = cacheFile.getAbsolutePath();
 
         File file = new File(path);
-        if (!file.exists()){
+        if (!file.exists()) {
             file.mkdirs();
         }
 

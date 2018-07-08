@@ -8,15 +8,25 @@ import android.content.Context;
 
 public class CacheConfig {
 
+    private static CacheConfig mCacheConfig;
     private String cacheFilePath;
-    private long diskMaxSize = 200*1024*1024;
-    private long ramMaxSize = diskMaxSize/10;
+    private long diskMaxSize = 200 * 1024 * 1024;
+    private long ramMaxSize = diskMaxSize / 10;
     private int encodeBufferSize = 500;
     private boolean debug = true;
-
     private Context mContext;
 
-    private static CacheConfig mCacheConfig;
+    public static CacheConfig getInstance() {
+
+        if (mCacheConfig == null) {
+            synchronized (CacheConfig.class) {
+                if (mCacheConfig == null) {
+                    mCacheConfig = new CacheConfig();
+                }
+            }
+        }
+        return mCacheConfig;
+    }
 
     public Context getContext() {
         return mContext;
@@ -26,23 +36,12 @@ public class CacheConfig {
         mContext = context;
     }
 
-    public static CacheConfig getInstance(){
-
-        if (mCacheConfig == null){
-            synchronized (CacheConfig.class){
-                if (mCacheConfig == null){
-                    mCacheConfig = new CacheConfig();
-                }
-            }
-        }
-        return mCacheConfig;
-    }
-    public CacheConfig init(Context context, String directory, long maxDiskSize, long maxRamSize){
+    public CacheConfig init(Context context, String directory, long maxDiskSize, long maxRamSize) {
 
         mContext = context.getApplicationContext();
         cacheFilePath = directory;
         diskMaxSize = maxDiskSize;
-        ramMaxSize =maxRamSize;
+        ramMaxSize = maxRamSize;
         return this;
     }
 
