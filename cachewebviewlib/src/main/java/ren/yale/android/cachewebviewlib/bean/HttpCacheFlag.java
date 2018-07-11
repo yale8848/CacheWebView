@@ -14,14 +14,14 @@ import ren.yale.android.cachewebviewlib.utils.TimeUtils;
  */
 
 public class HttpCacheFlag {
-    private String cacheControl="";
-    private String etag="";
-    private String expires="";
-    private String lastModified="";
-    private String pragma="";
+    private String cacheControl = "";
+    private String etag = "";
+    private String expires = "";
+    private String lastModified = "";
+    private String pragma = "";
     private String currentTime;
 
-    private String encode="UTF-8";
+    private String encode = "UTF-8";
 
     public String getEncode() {
         return encode;
@@ -79,21 +79,21 @@ public class HttpCacheFlag {
         this.pragma = pragma;
     }
 
-    private boolean isLocalOutDateByCacheControl(){
-        if (!TextUtils.isEmpty(getCacheControl())){
+    private boolean isLocalOutDateByCacheControl() {
+        if (!TextUtils.isEmpty(getCacheControl())) {
             Pattern pattern = Pattern.compile("max-age=(\\d+)");
             Matcher matcher = pattern.matcher(getCacheControl());
-            if (matcher.find()){
+            if (matcher.find()) {
                 String time = matcher.group(1);
                 try {
                     Integer nt = Integer.valueOf(time);
-                    if (nt == 0){
+                    if (nt == 0) {
                         return true;
                     }
                     Date last = TimeUtils.getStardTime(getCurrentTime());
-                    return !TimeUtils.compare(new Date(last.getTime()+nt*1000),new Date());
+                    return !TimeUtils.compare(new Date(last.getTime() + nt * 1000), new Date());
 
-                }catch (Exception e){
+                } catch (Exception e) {
                 }
             }
 
@@ -101,28 +101,29 @@ public class HttpCacheFlag {
         return true;
     }
 
-    public boolean isLocalOutDate(){
+    public boolean isLocalOutDate() {
 
-        if (!TextUtils.isEmpty(getExpires())){
+        if (!TextUtils.isEmpty(getExpires())) {
             Date d = TimeUtils.formatGMT(getExpires());
-            if (d == null){
+            if (d == null) {
                 return isLocalOutDateByCacheControl();
             }
-            boolean ret = TimeUtils.compare(new Date(),d);
-            if (ret){
+            boolean ret = TimeUtils.compare(new Date(), d);
+            if (ret) {
                 return isLocalOutDateByCacheControl();
             }
             return ret;
-        }else{
+        } else {
             return isLocalOutDateByCacheControl();
         }
 
     }
-    public boolean isRemoteOutDate(HttpCacheFlag httpCacheFlag){
 
-        if (!TextUtils.isEmpty(getEtag())&&!TextUtils.isEmpty(httpCacheFlag.getEtag())){
+    public boolean isRemoteOutDate(HttpCacheFlag httpCacheFlag) {
+
+        if (!TextUtils.isEmpty(getEtag()) && !TextUtils.isEmpty(httpCacheFlag.getEtag())) {
             return !getEtag().equals(httpCacheFlag.getEtag());
-        }else if (!TextUtils.isEmpty(getLastModified())&&!TextUtils.isEmpty(httpCacheFlag.getLastModified())){
+        } else if (!TextUtils.isEmpty(getLastModified()) && !TextUtils.isEmpty(httpCacheFlag.getLastModified())) {
             return !getLastModified().equals(httpCacheFlag.getLastModified());
         }
         return true;

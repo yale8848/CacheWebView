@@ -10,14 +10,14 @@ import java.util.Locale;
  */
 
 public class TimeUtils {
-    private static final String STARD_FROMAT="yyyy-MM-dd HH:mm:ss";
+    private static final String STARD_FROMAT = "yyyy-MM-dd HH:mm:ss";
 
-    public  static  Date formatGMT(String time){
-        if (time.indexOf("GMT")<0){
+    public static Date formatGMT(String time) {
+        if (time.indexOf("GMT") < 0) {
             try {
                 long tt = Long.valueOf(time);
                 return new Date(tt * 1000);
-            }catch (Exception e){
+            } catch (Exception e) {
             }
             return null;
         }
@@ -30,13 +30,15 @@ public class TimeUtils {
         }
         return null;
     }
-    public static  boolean compare(Date d1,Date d2){
-        if (d1==null|| d2 == null){
+
+    public static boolean compare(Date d1, Date d2) {
+        if (d1 == null || d2 == null) {
             return false;
         }
-        return  d1.getTime()-d2.getTime()>0;
+        return d1.getTime() - d2.getTime() > 0;
     }
-    public static Date getStardTime(String time){
+
+    public static Date getStardTime(String time) {
         SimpleDateFormat sdf = new SimpleDateFormat(STARD_FROMAT);
         try {
             Date date = sdf.parse(time);
@@ -46,7 +48,8 @@ public class TimeUtils {
         }
         return null;
     }
-    public static Date getStardTime(Long time){
+
+    public static Date getStardTime(Long time) {
         try {
             Date date = new Date(time * 1000);
             return date;
@@ -55,7 +58,8 @@ public class TimeUtils {
         }
         return null;
     }
-    public static String getCurrentTime(){
+
+    public static String getCurrentTime() {
         SimpleDateFormat sdf = new SimpleDateFormat(STARD_FROMAT);
         return sdf.format(new Date());
     }

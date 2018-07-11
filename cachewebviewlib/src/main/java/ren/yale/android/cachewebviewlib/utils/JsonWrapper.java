@@ -16,16 +16,18 @@ public class JsonWrapper extends JSONObject {
     public JsonWrapper() {
         super();
     }
+
     public JsonWrapper(String jsonString) throws JSONException {
         super(jsonString);
     }
 
-    public static String map2Str(Map map){
+    public static String map2Str(Map map) {
         JSONObject object = new JSONObject(map);
         return object.toString();
     }
-    public static HashMap<String,String> str2Map(String jsonString){
-        HashMap<String,String> result = new HashMap();
+
+    public static HashMap<String, String> str2Map(String jsonString) {
+        HashMap<String, String> result = new HashMap();
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
             Iterator iterator = jsonObject.keys();
@@ -36,7 +38,7 @@ public class JsonWrapper extends JSONObject {
                     key = (String) iterator.next();
                     value = jsonObject.getString(key);
                     result.put(key, value);
-                }catch (Exception e){
+                } catch (Exception e) {
                 }
             }
         } catch (JSONException e) {
@@ -45,21 +47,21 @@ public class JsonWrapper extends JSONObject {
         return result;
     }
 
-    public String obj2JosnStr(Object obj,Class cls) throws Exception{
+    public String obj2JosnStr(Object obj, Class cls) throws Exception {
         Field[] fs = cls.getDeclaredFields();
         for (int i = 0; i < fs.length; i++) {
             try {
                 String name = fs[i].getName();
                 fs[i].setAccessible(true);
                 String value = (String) fs[i].get(obj);
-                this.put(name,value);
-            }catch ( Exception e){
+                this.put(name, value);
+            } catch (Exception e) {
             }
         }
         return this.toString();
     }
 
-    public <T> T getBean(Class<T> cls) throws Exception{
+    public <T> T getBean(Class<T> cls) throws Exception {
         T obj = cls.newInstance();
         Field[] fs = cls.getDeclaredFields();
         for (int i = 0; i < fs.length; i++) {
@@ -67,9 +69,9 @@ public class JsonWrapper extends JSONObject {
             fs[i].setAccessible(true);
             try {
                 Object value = this.get(name);
-                if(value==null)continue;
+                if (value == null) continue;
                 fs[i].set(obj, value);
-            }catch (Exception e){
+            } catch (Exception e) {
             }
         }
         return obj;

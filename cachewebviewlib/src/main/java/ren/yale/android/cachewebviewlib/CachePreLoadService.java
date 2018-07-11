@@ -35,29 +35,30 @@ public class CachePreLoadService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        if (intent == null){
+        if (intent == null) {
             return super.onStartCommand(intent, flags, startId);
         }
 
-        if (!NetworkUtils.isConnected(this.getApplicationContext())){
+        if (!NetworkUtils.isConnected(this.getApplicationContext())) {
             return super.onStartCommand(intent, flags, startId);
         }
-        String url  = intent.getStringExtra(KEY_URL);
-        if (!TextUtils.isEmpty(url)&&mLastFinish){
+        String url = intent.getStringExtra(KEY_URL);
+        if (!TextUtils.isEmpty(url) && mLastFinish) {
             mLastFinish = false;
             CacheWebView cacheWebView = new CacheWebView(this.getApplicationContext());
             cacheWebView.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
             Map header = null;
             try {
                 header = (Map) intent.getSerializableExtra(KEY_URL_HEADER);
-            }catch (Exception e){
+            } catch (Exception e) {
             }
-            cacheWebView.loadUrl(url,header);
-            cacheWebView.setWebViewClient(new WebViewClient(){
+            cacheWebView.loadUrl(url, header);
+            cacheWebView.setWebViewClient(new WebViewClient() {
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     mLastFinish = true;
                 }
+
                 @Override
                 public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                     mLastFinish = true;
