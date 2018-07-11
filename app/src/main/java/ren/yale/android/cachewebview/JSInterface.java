@@ -10,11 +10,13 @@ import android.widget.Toast;
 public class JSInterface {
 
     private Context mContext;
-    public JSInterface(Context context){
-        mContext =context;
+
+    public JSInterface(Context context) {
+        mContext = context;
     }
+
     @JavascriptInterface
-    public void toast(String text){
+    public void toast(String text) {
         Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
     }
 }
