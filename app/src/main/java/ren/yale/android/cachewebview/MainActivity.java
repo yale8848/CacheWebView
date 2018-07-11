@@ -111,6 +111,7 @@ public class MainActivity extends Activity {
         CacheExtensionConfig.removeGlobalRamExtension("bbb");
 
         CacheWebView.getCacheConfig().setEncodeBufferSize(1024);
+        webview.addJavascriptInterface(new JSInterface(this), "android");
     }
 
     @Override

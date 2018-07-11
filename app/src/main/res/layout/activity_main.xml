@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,42 +14,42 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:text="cache" />
+            android:text="cache"/>
 
         <Button
             android:id="@+id/btn_load"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
-            android:text="load" />
+            android:text="load"/>
 
         <Button
             android:id="@+id/btn_preload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
-            android:text="preload" />
+            android:text="preload"/>
 
         <Button
             android:id="@+id/btn_clearcache"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
-            android:text="clear cache" />
+            android:text="clear cache"/>
 
         <Button
             android:id="@+id/btn_start2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
-            android:text="start2" />
+            android:text="start2"/>
 
         <Button
             android:id="@+id/btn_stop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
-            android:text="stop" />
+            android:text="stop"/>
     </LinearLayout>
 
     <LinearLayout
@@ -62,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
-            android:text="get cache file" />
+            android:text="get cache file"/>
 
         <Spinner
             android:id="@+id/spnner"
