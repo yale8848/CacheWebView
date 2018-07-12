@@ -5,10 +5,15 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,12 +26,16 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import ren.yale.android.cachewebviewlib.config.CacheExtensionConfig;
 import ren.yale.android.cachewebviewlib.utils.MimeTypeMapUtils;
 
 public class Main3Activity extends Activity {
 
     private WebView mWebView;
     private CacheManager mCacheManager;
+    private static final String TAG = "CacheWebView";
+    private String URL = "";
+    private CacheExtensionConfig mCacheExtensionConfig;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +43,21 @@ public class Main3Activity extends Activity {
         mCacheManager = new CacheManager();
         mWebView = findViewById(R.id.webview);
        // mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        final String[] urls = getResources().getStringArray(R.array.urls);
+        URL = urls[0];
+        Spinner spinner = (Spinner) findViewById(R.id.spnner);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                URL = urls[position];
+                mWebView.loadUrl(URL);
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         mWebView.setWebViewClient(new WebViewClient(){
 
 
@@ -48,15 +71,22 @@ public class Main3Activity extends Activity {
             @Nullable
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-
                 //return null;
                 //return super.shouldInterceptRequest(view,url);
+
+
+
                 return mCacheManager.InterceptRequest(view,url);
             }
         });
-        mWebView.loadUrl("https://lftresource.oss-cn-qingdao.aliyuncs.com/test/yale/test.html");
+        mWebView.loadUrl(URL);
     }
 
+
+
+    public static void d(String log) {
+            Log.d(TAG, log);
+    }
     class CacheInterceptor implements Interceptor {
 
         @Override
@@ -64,7 +94,7 @@ public class Main3Activity extends Activity {
 
             Response originResponse = chain.proceed(chain.request());
             return originResponse.newBuilder().removeHeader("pragma").removeHeader("Cache-Control")
-                    .header("Cache-Control","max-age=60").build();
+                    .header("Cache-Control","max-age=600").build();
         }
     }
     class CacheManager {
@@ -80,7 +110,11 @@ public class Main3Activity extends Activity {
 
             client = new OkHttpClient.Builder()
                     .cache(cache)
+                    .addNetworkInterceptor(new CacheInterceptor())
                     .build();
+
+            mCacheExtensionConfig = new CacheExtensionConfig();
+
         }
 
         private Map<String,String> multimapToSingle(Map<String, List<String>> maps){
@@ -105,17 +139,37 @@ public class Main3Activity extends Activity {
         }
 
         public WebResourceResponse InterceptRequest(WebView view, String url){
-
-
-            Request request = new Request.Builder()
-                    .url(url)
-
-                    .build();
+            if (TextUtils.isEmpty(url)) {
+                return null;
+            }
+            if (!url.startsWith("http")) {
+                return null;
+            }
 
             String extension = MimeTypeMapUtils.getFileExtensionFromUrl(url);
             String mimeType = MimeTypeMapUtils.getMimeTypeFromExtension(extension);
+
+            if (TextUtils.isEmpty(extension)) {
+                return null;
+            }
+            if (mCacheExtensionConfig.isMedia(extension)) {
+                return null;
+            }
+            if (!mCacheExtensionConfig.canCache(extension)) {
+                return null;
+            }
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+
             try {
                 Response response = client.newCall(request).execute();
+                Response cacheRes = response.cacheResponse();
+                d(url);
+                if (cacheRes!=null){
+                    d("from cache : "+url);
+                }
                 WebResourceResponse webResourceResponse = new WebResourceResponse(mimeType,"",response.body().byteStream());
                if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
                    webResourceResponse.setResponseHeaders(multimapToSingle(response.headers().toMultimap()));
