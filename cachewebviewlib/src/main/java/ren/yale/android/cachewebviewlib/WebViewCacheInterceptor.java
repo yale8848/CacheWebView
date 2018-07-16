@@ -144,6 +144,17 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
     }
 
     @Override
+    public void loadUrl(WebView webView, String url, Map<String, String> additionalHttpHeaders) {
+        if (!url.startsWith("http")){
+            return;
+        }
+        webView.loadUrl(url,additionalHttpHeaders);
+        mReferer = webView.getUrl();
+        mOrigin = NetUtils.getOriginUrl(mReferer);
+        mUserAgent = webView.getSettings().getUserAgentString();
+    }
+
+    @Override
     public void clearCache() {
         FileUtil.deleteDirs(mCacheFile.getAbsolutePath(),false);
     }
@@ -158,8 +169,8 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
     }
 
     @Override
-    public boolean getCacheFile(String url, File desPath) {
-        return OKHttpFile.getCacheFile(mCacheFile,url,desPath);
+    public InputStream getCacheFile(String url) {
+        return OKHttpFile.getCacheFile(mCacheFile,url);
     }
 
 

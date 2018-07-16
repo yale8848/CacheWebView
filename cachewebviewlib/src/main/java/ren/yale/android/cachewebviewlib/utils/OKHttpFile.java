@@ -5,10 +5,8 @@ import android.text.TextUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import okio.ByteString;
 import okio.GzipSource;
@@ -23,10 +21,10 @@ public class OKHttpFile {
     private static final int ENTRY_METADATA = 0;
     private static final int ENTRY_BODY = 1;
 
-    public static boolean getCacheFile(File path, String url, File destFile){
+    public static InputStream getCacheFile(File path, String url){
 
-        if (TextUtils.isEmpty(url)||destFile==null) {
-            return false;
+        if (TextUtils.isEmpty(url)) {
+            return null;
         }
         String key = ByteString.encodeUtf8(url.toString()).md5().hex();
         File entryFile =  new File(path.getAbsolutePath(),  key+"."+ENTRY_METADATA);
@@ -43,25 +41,21 @@ public class OKHttpFile {
                         break;
                     }
                 }
-                String extension = MimeTypeMapUtils.getFileExtensionFromUrl(url);
-                //File destFile = new File(path.getAbsolutePath(),key+"."+extension);
                 InputStream inputStream = new FileInputStream(bodyFile);
-                OutputStream outputStream = new FileOutputStream(destFile);
                 if (!isGzip){
-
-                    FileUtil.copy(inputStream,outputStream);
+                    return inputStream;
                 }else{
                     Source source = Okio.source(bodyFile);
                     source = new GzipSource(source);
-                    FileUtil.copy(Okio.buffer(source).inputStream(),outputStream);
+                   return Okio.buffer(source).inputStream();
                 }
-                return true;
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
         }
 
-        return false;
+        return null;
     }
 }

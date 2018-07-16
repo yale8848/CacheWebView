@@ -7,6 +7,8 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 
 import java.io.File;
+import java.io.InputStream;
+import java.util.Map;
 
 /**
  * Created by yale on 2018/7/16.
@@ -61,6 +63,14 @@ public class WebViewCacheInterceptorInst implements WebViewRequestInterceptor {
     }
 
     @Override
+    public void loadUrl(WebView webView, String url, Map<String, String> additionalHttpHeaders) {
+        if (mInterceptor==null){
+            return ;
+        }
+        mInterceptor.loadUrl(webView,url,additionalHttpHeaders);
+    }
+
+    @Override
     public void clearCache() {
         if (mInterceptor==null){
             return ;
@@ -77,11 +87,11 @@ public class WebViewCacheInterceptorInst implements WebViewRequestInterceptor {
     }
 
     @Override
-    public boolean getCacheFile(String url, File desPath) {
+    public InputStream getCacheFile(String url) {
         if (mInterceptor==null){
-            return false;
+            return null;
         }
-        return mInterceptor.getCacheFile(url, desPath);
+        return mInterceptor.getCacheFile(url);
     }
 
     @Override

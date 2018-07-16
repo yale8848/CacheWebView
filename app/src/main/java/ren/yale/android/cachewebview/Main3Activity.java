@@ -17,11 +17,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 
-import java.io.File;
+import java.io.InputStream;
 
-import ren.yale.android.cachewebviewlib.WebViewCacheInterceptor;
 import ren.yale.android.cachewebviewlib.WebViewCacheInterceptorInst;
-import ren.yale.android.cachewebviewlib.WebViewRequestInterceptor;
 
 public class Main3Activity extends Activity {
 
@@ -30,15 +28,11 @@ public class Main3Activity extends Activity {
     private String URL = "";
 
 
-    private WebViewRequestInterceptor mInterceptor;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
-        //mInterceptor = new WebViewCacheInterceptor.Builder(this).build();
 
-        WebViewCacheInterceptorInst.getInstance().init(new WebViewCacheInterceptor.Builder(this));
 
 
         mWebView = findViewById(R.id.webview);
@@ -48,7 +42,7 @@ public class Main3Activity extends Activity {
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                //mInterceptor.enableForce(isChecked);
+
                 WebViewCacheInterceptorInst.getInstance().enableForce(isChecked);
             }
         });
@@ -75,16 +69,12 @@ public class Main3Activity extends Activity {
             @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-
-                //mInterceptor.loadUrl(mWebView,request.getUrl().toString());
-
                 WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,request.getUrl().toString());
                 return true;
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                //mInterceptor.loadUrl(mWebView,url);
                 WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,url);
                 return true;
             }
@@ -134,13 +124,10 @@ public class Main3Activity extends Activity {
     }
 
     public void getCacheFile(View v){
-        //http://m.mm131.com/css/at.js
 
-        String url = "https://www.ranwena.com/scripts/header.js";
-        //String url = "http://j.xnojy.com:8080/cpv/bd/sdk/hj3.gif";
-        File df = new File(WebViewCacheInterceptorInst.getInstance().getCachePath(),"aaa.js");
-        boolean find =  WebViewCacheInterceptorInst.getInstance().getCacheFile(url,df);
-        if (find){
+        String url = "http://m.mm131.com/css/at.js";
+        InputStream inputStream =  WebViewCacheInterceptorInst.getInstance().getCacheFile(url);
+        if (inputStream!=null){
 
         }
 

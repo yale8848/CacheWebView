@@ -11,7 +11,7 @@ import okhttp3.Response;
 /**
  * Created by yale on 2018/7/13.
  */
-public class HttpCacheInterceptor implements Interceptor {
+class HttpCacheInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {

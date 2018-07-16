@@ -1,169 +1,236 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-1.4.0-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/1.4.0)
+[![](https://img.shields.io/badge/jcenter-2.0.0-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.0.0)
 
-  CacheWebView is a custom implement of Android WebView, through intercept each request to create ram cache(LRU) and disk cache(LRU). It beyond system WebView cache space
+  CacheWebView is a custom implement of Android WebView resource interceptor. It beyond system WebView cache space
   limit, let cache config more simple ,fast and flexible. Visit website by offline.
 
 ## Why use CacheWebView?
 
-- let WebView cache space more bigger, WebView default http protocol space only 18M, and it can not change
-- easy config cache,divide static resource and dynamic content,only cache static resource
-- if server do not config static file http cache header,CacheWebView also can cache it
+- let WebView cache space more bigger
+- force cache static, it will more fast
 - want to get web page resource in cache, e.g , get pic in cache
 
-## Usage, :heart: Very simple :heart:
+## Usage
 
 ### use lib
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:1.4.0'
+compile 'ren.yale.android:cachewebviewlib:2.0.0'
 ```
+
 
 ### Change code
 
- - Change `WebView` to `CacheWebView` in code or change `WebView` to `ren.yale.android.cachewebviewlib.CacheWebView` in layout xml
+Init in Application
+
+```
+
+    WebViewCacheInterceptorInst.getInstance().
+                init(new WebViewCacheInterceptor.Builder(this));
+
+```
 
 
-  It is over. CacheWebView default have disk cache space 200M , ram cache space 20M, and cache mode is the same with HTTP protocol cache [HTTP Caching](http://www.cnblogs.com/ppoo24/p/5963037.html).
+Add WebView Interceptor
+
+- If your Android project minSdkVersion>=21
+
+```
+    mWebView.setWebViewClient(new WebViewClient(){
+
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            @Nullable
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(view, request);
+            }
+
+            @Nullable
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(view,url);
+            }
+     });
+
+```
+
+- If your Android project minSdkVersion<21
+
+when call `mWebView.loadUrl(url)` replace by `WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,url)`
+
+```
+
+    mWebView.setWebViewClient(new WebViewClient(){
+
+
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,request.getUrl().toString());
+                return true;
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,url);
+                return true;
+            }
+
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            @Nullable
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(view, request);
+            }
+
+            @Nullable
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(view,url);
+            }
+    });
+
+```
 
 ---
 
-### Further
+### Setting
 
- - Modify cache path and size, it is usually call in Android Application
+ - Basic
 
  ```Java
-File cacheFile = new File(this.getCacheDir(),"cache_path_name");
+    WebViewCacheInterceptor.Builder builder =  new WebViewCacheInterceptor.Builder(this);
 
-CacheWebView.getCacheConfig().init(this,cacheFile.getAbsolutePath(),1024*1024*100,1024*1024*10).enableDebug(true);//100M disk space ,10M ram sapce
+     builder.setCachePath(new File(this.getCacheDir(),"cache_path_name"))//set cache path, default getCacheDir, name CacheWebViewCache
+                        .setCacheSize(1024*1024*100)//set cache size, default 100M
+                        .setConnectTimeoutSecond(20)//set http connect timeou,default 20 seconds
+                        .setReadTimeoutSecond(20)//set http read timeout,default 20 seconds
+                        .setCacheType(CacheType.NORMAL);//set cache modal is normal, default is force cache static modal
+
+     WebViewCacheInterceptorInst.getInstance().init(builder);
  ```
 
-- Preload , preload usually request url it will be more fast
+- set cache suffix
+
+CacheWebview according url suffix to cache, you can add and remove suffix
 
 ```Java
-CacheWebView.cacheWebView(this).loadUrl(URL);//this method must call in UI thread
+    WebViewCacheInterceptor.Builder builder =  new WebViewCacheInterceptor.Builder(this);
+
+    CacheExtensionConfig extension = new CacheExtensionConfig();
+    extension.addExtension("json").removeExtension("swf");
+
+    builder.setCacheExtensionConfig(extension);
+
+    WebViewCacheInterceptorInst.getInstance().init(builder);
 ```
 
-or
+default cached suffix
 
-```Java
- CacheWebView.servicePreload(this,URL);//start a Service to preload
+```
+    private static HashSet STATIC = new HashSet() {
+        {
+            add("html");
+            add("htm");
+            add("js");
+            add("ico");
+            add("css");
+            add("png");
+            add("jpg");
+            add("jpeg");
+            add("gif");
+            add("bmp");
+            add("ttf");
+            add("woff");
+            add("woff2");
+            add("otf");
+            add("eot");
+            add("svg");
+            add("xml");
+            add("swf");
+            add("txt");
+            add("text");
+            add("conf");
+            add("webp");
+        }
+    };
+
 ```
 
-- Force cache. Default is Normal cache mode like HTTP cache. Call `setCacheStrategy(WebViewCache.CacheStrategy.FORCE)`, it will force cache every static resource, and it will not connect with server, so it
-will not have http 304 status, this mode is very fast. If static resource need to refresh, change static link like add MD5 value or version info etc.
+default do not cached suffix
 
-
-```Java
-CacheWebView webview;
-webview.setCacheStrategy(WebViewCache.CacheStrategy.FORCE);
+```
+    private static HashSet NO_CACH = new HashSet() {
+        {
+            add("mp4");
+            add("mp3");
+            add("ogg");
+            add("avi");
+            add("wmv");
+            add("flv");
+            add("rmvb");
+            add("3gp");
+        }
+    };
 ```
 
+- set Assets dir
 
-- Force refresh,if set NO_CACHE mode, CacheWebView cache nothing
+CacheWebview can get static from Assets, if you set Assets dir, it will read static from Assets, default is not
 
-```Java
-CacheWebView webview;
-webview.setCacheStrategy(WebViewCache.CacheStrategy.NO_CACHE);
+```
+    WebViewCacheInterceptor.Builder builder =  new WebViewCacheInterceptor.Builder(this);
+
+    builder.setAssetsDir("static");
+
+    WebViewCacheInterceptorInst.getInstance().init(builder);
 ```
 
+builder.setAssetsDir("static") match regular：
 
-- Static resource suffix cache map
+assets struct：
 
-  default disk space static resource suffix:  html,htm,js,ico,css,png,jpg,jpeg,gif,webp,bmp,ttf,woff,woff2,otf,eot,svg,xml,swf,txt,text,conf . Call addExtension and removeExtension to add and remove
+![](art/assets.png)
 
-  default ram space static resource suffix:  html,htm,js,css,xml,txt,text,conf . Call addRamExtension and removeRamExtension to add and remove
+if match like this url：http://xxxxxx/scripts/jquery.min.js , it will be read static from Assets
 
-   do not cache: mp4,mp3,ogg,avi,wmv,flv,rmvb,3gp
 
-```Java
-//webview instance config
-webview.getWebViewCache().getCacheExtensionConfig()
-        .addExtension("swf").removeExtension("swf")
-        .addRamExtension("svg").removeRamExtension("svg");
+- get cache file
 
-//global config
-CacheExtensionConfig.addGlobalExtension("swf");
-CacheExtensionConfig.removeGlobalExtension("swf");
-CacheExtensionConfig.addGlobalRamExtension("svg");
-CacheExtensionConfig.removeGlobalRamExtension("svg");
 ```
 
-- set cache interceptor , whether cache each url
+    String url = "http://m.mm131.com/css/at.js";
+    InputStream inputStream =  WebViewCacheInterceptorInst.getInstance().getCacheFile(url);
+    if (inputStream!=null){
 
-```Java
-webview.setCacheInterceptor(new CacheInterceptor() {
+    }
 
-            public boolean canCache(String url) {
-                return true;
-            }
- });
 ```
 
-- Delete cache
+- clear cache file
 
-```Java
-CacheWebView webview;
-webview.clearCache();
+```
+    WebViewCacheInterceptorInst.getInstance().clearCache();
 ```
 
-- Add header
+- set force cache disable
 
-```Java
-CacheWebView webview;
-webview.loadUrl(URL,getHeaderMap(URL));
+  after set force cache disable, Webview will load static by itself
+
+```
+    WebViewCacheInterceptorInst.getInstance().enableForce(false);
 ```
 
-```Java
-@Override
- public boolean shouldOverrideUrlLoading(WebView view, String url) {
-     CacheWebView v = (CacheWebView) view;
-     v.loadUrl(url,getHeaderMap(url));
-     return true;
- }
+- None singleton used
+
+**call method same as singleton**
+
 ```
-
-- Block NetworkImage load. Page load more fast
-
-  Default is not block network image. After call `setBlockNetworkImage(true)`, When WebView onPageStarted it will be block, onPageFinished will unblock
-
-```Java
-CacheWebView webview;
-webview.setBlockNetworkImage(true);
+    WebViewCacheInterceptor.Builder builder =  new WebViewCacheInterceptor.Builder(this);
+    WebViewRequestInterceptor webViewRequestInterceptor = builder.build();
+    webViewRequestInterceptor.getCacheFile("");
 ```
-
-- Disable CacheWebView cache function. Default is custom cache mode, call `setEnableCache(false)`, WebView will not these function, it just like normal WebView
-
-```Java
-CacheWebView webview;
-webview.setEnableCache(true);
-```
-
-- Setting User-Agent
-
-```Java
-CacheWebView webview;
-webview.setUserAgent("Android");
-```
-
-- Get cache file
-
-```Java
- CacheStatus cacheStatus = webview.getWebViewCache().getCacheFile(URL);
- if (cacheStatus.isExist()){
-    File file = cacheStatus.getCacheFile();
-    String extension = cacheStatus.getExtension();
- }
-```
-
-- destroy
-
-```Java
-CacheWebView webview;
-webview.destroy();
-```
-
 
 ## How to contribute
 
