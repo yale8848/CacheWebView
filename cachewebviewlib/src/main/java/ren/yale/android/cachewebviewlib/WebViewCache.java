@@ -27,7 +27,7 @@ import ren.yale.android.cachewebviewlib.utils.InputStreamUtils;
 import ren.yale.android.cachewebviewlib.utils.JsonWrapper;
 import ren.yale.android.cachewebviewlib.utils.MD5Utils;
 import ren.yale.android.cachewebviewlib.utils.MimeTypeMapUtils;
-import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
+import ren.yale.android.cachewebviewlib.utils.NetUtils;
 
 /**
  * Created by yale on 2017/9/22.
@@ -346,7 +346,6 @@ public class WebViewCache {
             cacheStatus.setExist(true);
         }
         String extension = MimeTypeMapUtils.getFileExtensionFromUrl(url);
-        cacheStatus.setExtension(extension);
         return cacheStatus;
 
     }
@@ -442,7 +441,7 @@ public class WebViewCache {
 
         ensureLruCache();
         HttpCacheFlag httpCacheFlag = getCacheFlag(url);
-        if (NetworkUtils.isConnected(mContext)) {
+        if (NetUtils.isConnected(mContext)) {
 
             if (cacheStrategy == CacheStrategy.NORMAL) {
                 if (httpCacheFlag != null && !httpCacheFlag.isLocalOutDate()) {

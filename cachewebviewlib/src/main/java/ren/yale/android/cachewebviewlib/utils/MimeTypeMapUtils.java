@@ -38,7 +38,9 @@ public class MimeTypeMapUtils {
 
         return "";
     }
-
+    public static String getMimeTypeFromUrl(String url) {
+        return  MimeTypeMap.getSingleton().getMimeTypeFromExtension(getFileExtensionFromUrl(url));
+    }
     public static String getMimeTypeFromExtension(String extension) {
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
     }

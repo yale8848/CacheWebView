@@ -5,44 +5,53 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import okhttp3.Cache;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import ren.yale.android.cachewebviewlib.config.CacheExtensionConfig;
-import ren.yale.android.cachewebviewlib.utils.MimeTypeMapUtils;
+import ren.yale.android.cachewebviewlib.WebViewCacheInterceptor;
+import ren.yale.android.cachewebviewlib.WebViewCacheInterceptorInst;
+import ren.yale.android.cachewebviewlib.WebViewRequestInterceptor;
 
 public class Main3Activity extends Activity {
 
     private WebView mWebView;
-    private CacheManager mCacheManager;
     private static final String TAG = "CacheWebView";
     private String URL = "";
-    private CacheExtensionConfig mCacheExtensionConfig;
+
+
+    private WebViewRequestInterceptor mInterceptor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
-        mCacheManager = new CacheManager();
+        //mInterceptor = new WebViewCacheInterceptor.Builder(this).build();
+
+        WebViewCacheInterceptorInst.getInstance().init(new WebViewCacheInterceptor.Builder(this));
+
+
         mWebView = findViewById(R.id.webview);
-       // mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+
+
+        CheckBox checkBox = (CheckBox) findViewById(R.id.checkbox);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                //mInterceptor.enableForce(isChecked);
+                WebViewCacheInterceptorInst.getInstance().enableForce(isChecked);
+            }
+        });
         final String[] urls = getResources().getStringArray(R.array.urls);
         URL = urls[0];
         Spinner spinner = (Spinner) findViewById(R.id.spnner);
@@ -50,7 +59,8 @@ public class Main3Activity extends Activity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 URL = urls[position];
-                mWebView.loadUrl(URL);
+                //mInterceptor.loadUrl(mWebView,URL);
+                WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,URL);
             }
 
             @Override
@@ -58,127 +68,91 @@ public class Main3Activity extends Activity {
 
             }
         });
+        initSettings();
         mWebView.setWebViewClient(new WebViewClient(){
 
+
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+
+                //mInterceptor.loadUrl(mWebView,request.getUrl().toString());
+
+                WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,request.getUrl().toString());
+                return true;
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                //mInterceptor.loadUrl(mWebView,url);
+                WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,url);
+                return true;
+            }
 
             @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Nullable
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                return shouldInterceptRequest(view, request.getUrl().toString());
+                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(view, request);
             }
 
             @Nullable
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-                //return null;
-                //return super.shouldInterceptRequest(view,url);
-
-
-
-                return mCacheManager.InterceptRequest(view,url);
+                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(view,url);
             }
         });
-        mWebView.loadUrl(URL);
+        WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,URL);
     }
 
+    private void initSettings() {
+        WebSettings webSettings = mWebView.getSettings();
 
+        webSettings.setJavaScriptEnabled(true);
 
-    public static void d(String log) {
-            Log.d(TAG, log);
-    }
-    class CacheInterceptor implements Interceptor {
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setAllowFileAccess(true);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setSupportZoom(true);
+        webSettings.setBuiltInZoomControls(false);
+        webSettings.setDisplayZoomControls(false);
 
-        @Override
-        public Response intercept(Chain chain) throws IOException {
+        webSettings.setDefaultTextEncodingName("UTF-8");
 
-            Response originResponse = chain.proceed(chain.request());
-            return originResponse.newBuilder().removeHeader("pragma").removeHeader("Cache-Control")
-                    .header("Cache-Control","max-age=600").build();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            webSettings.setAllowFileAccessFromFileURLs(true);
+            webSettings.setAllowUniversalAccessFromFileURLs(true);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            CookieManager cookieManager = CookieManager.getInstance();
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webSettings.setMixedContentMode(
+                    WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         }
     }
-    class CacheManager {
-        OkHttpClient client = null;
 
-        public CacheManager(){
+    public void getCacheFile(View v){
+        //http://m.mm131.com/css/at.js
 
-            File cacheFile = new File(getExternalCacheDir().toString(),"CacheWebViewCache");
-
-            int cacheSize = 10 * 1024 * 1024;
-
-            final Cache cache = new Cache(cacheFile,cacheSize);
-
-            client = new OkHttpClient.Builder()
-                    .cache(cache)
-                    .addNetworkInterceptor(new CacheInterceptor())
-                    .build();
-
-            mCacheExtensionConfig = new CacheExtensionConfig();
+        String url = "https://www.ranwena.com/scripts/header.js";
+        //String url = "http://j.xnojy.com:8080/cpv/bd/sdk/hj3.gif";
+        File df = new File(WebViewCacheInterceptorInst.getInstance().getCachePath(),"aaa.js");
+        boolean find =  WebViewCacheInterceptorInst.getInstance().getCacheFile(url,df);
+        if (find){
 
         }
 
-        private Map<String,String> multimapToSingle(Map<String, List<String>> maps){
+    }
 
-            StringBuilder sb = new StringBuilder();
-            Map<String,String> map = new HashMap<>();
-            for (Map.Entry<String, List<String>> entry: maps.entrySet()) {
-                List<String> values = entry.getValue();
-                sb.delete(0,sb.length());
-                if (values!=null&&values.size()>0){
-                    for (String v:values) {
-                        sb.append(v);
-                        sb.append(";");
-                    }
-                }
-                if (sb.length()>0){
-                    sb.deleteCharAt(sb.length()-1);
-                }
-                map.put(entry.getKey(),sb.toString());
-            }
-            return map;
+    @Override
+    public void onBackPressed() {
+        if(mWebView.canGoBack()){
+            mWebView.goBack();
+            return;
         }
-
-        public WebResourceResponse InterceptRequest(WebView view, String url){
-            if (TextUtils.isEmpty(url)) {
-                return null;
-            }
-            if (!url.startsWith("http")) {
-                return null;
-            }
-
-            String extension = MimeTypeMapUtils.getFileExtensionFromUrl(url);
-            String mimeType = MimeTypeMapUtils.getMimeTypeFromExtension(extension);
-
-            if (TextUtils.isEmpty(extension)) {
-                return null;
-            }
-            if (mCacheExtensionConfig.isMedia(extension)) {
-                return null;
-            }
-            if (!mCacheExtensionConfig.canCache(extension)) {
-                return null;
-            }
-
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
-
-            try {
-                Response response = client.newCall(request).execute();
-                Response cacheRes = response.cacheResponse();
-                d(url);
-                if (cacheRes!=null){
-                    d("from cache : "+url);
-                }
-                WebResourceResponse webResourceResponse = new WebResourceResponse(mimeType,"",response.body().byteStream());
-               if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
-                   webResourceResponse.setResponseHeaders(multimapToSingle(response.headers().toMultimap()));
-               }
-               return webResourceResponse;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
+       // mInterceptor.clearCache();
+        super.onBackPressed();
     }
 }

@@ -11,7 +11,7 @@ import android.webkit.WebViewClient;
 
 import java.util.Map;
 
-import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
+import ren.yale.android.cachewebviewlib.utils.NetUtils;
 
 /**
  * Created by yale on 2017/10/27.
@@ -39,7 +39,7 @@ public class CachePreLoadService extends Service {
             return super.onStartCommand(intent, flags, startId);
         }
 
-        if (!NetworkUtils.isConnected(this.getApplicationContext())) {
+        if (!NetUtils.isConnected(this.getApplicationContext())) {
             return super.onStartCommand(intent, flags, startId);
         }
         String url = intent.getStringExtra(KEY_URL);

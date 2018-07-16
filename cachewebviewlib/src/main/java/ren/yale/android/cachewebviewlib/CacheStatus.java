@@ -10,7 +10,6 @@ public class CacheStatus {
 
     private File path = null;
     private boolean exist = false;
-    private String extension = "";
 
 
     @Deprecated
@@ -34,11 +33,4 @@ public class CacheStatus {
         this.exist = exist;
     }
 
-    public String getExtension() {
-        return extension;
-    }
-
-    public void setExtension(String extension) {
-        this.extension = extension;
-    }
 }

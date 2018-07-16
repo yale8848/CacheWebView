@@ -9,7 +9,7 @@ import android.webkit.WebSettings;
 import java.io.File;
 
 import ren.yale.android.cachewebviewlib.CacheWebView;
-import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
+import ren.yale.android.cachewebviewlib.utils.NetUtils;
 
 public class Main2Activity extends Activity {
 
@@ -56,7 +56,7 @@ public class Main2Activity extends Activity {
             CookieManager cookieManager = CookieManager.getInstance();
             cookieManager.setAcceptThirdPartyCookies(mWebView, true);
         }
-        if (NetworkUtils.isConnected(mWebView.getContext())) {
+        if (NetUtils.isConnected(mWebView.getContext())) {
             webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         } else {
             webSettings.setCacheMode(

@@ -20,7 +20,7 @@ import java.util.Map;
 
 import ren.yale.android.cachewebviewlib.config.CacheConfig;
 import ren.yale.android.cachewebviewlib.utils.FileUtil;
-import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
+import ren.yale.android.cachewebviewlib.utils.NetUtils;
 
 
 /**
@@ -195,7 +195,7 @@ public class CacheWebView extends WebView {
 
     private void setWebViewDefaultCacheMode() {
         WebSettings webSettings = this.getSettings();
-        if (NetworkUtils.isConnected(this.getContext())) {
+        if (NetUtils.isConnected(this.getContext())) {
             webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
         } else {
             webSettings.setCacheMode(

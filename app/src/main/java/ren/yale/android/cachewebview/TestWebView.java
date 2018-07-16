@@ -10,7 +10,7 @@ import android.widget.RelativeLayout;
 import java.io.File;
 
 import ren.yale.android.cachewebviewlib.CacheWebView;
-import ren.yale.android.cachewebviewlib.utils.NetworkUtils;
+import ren.yale.android.cachewebviewlib.utils.NetUtils;
 
 
 /**
@@ -64,7 +64,7 @@ public class TestWebView extends RelativeLayout {
         webSettings.setUseWideViewPort(true);
         webSettings.setLoadWithOverviewMode(true);
 
-        if (NetworkUtils.isConnected(mContext)) {
+        if (NetUtils.isConnected(mContext)) {
             webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
         } else {
             webSettings.setCacheMode(

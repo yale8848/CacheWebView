@@ -162,7 +162,6 @@ public class CacheExtensionConfig {
         }
         return false;
     }
-
     public void clearAll() {
         clearRamExtension();
         clearDiskExtension();

@@ -3,7 +3,18 @@
 <head>
     <meta charset="GB2312">
     <title>Title</title>
+    <script src="https://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 </head>
+
 <body>
 <div style="text-align: center;font-size: 50px;padding: 20px">你好啊啊115</div>
+<button class="test">ajax test</button>
+<script>
+    $(".test").click(function(){
+
+         $.get("https://admin.daoxuehao.com/yxk/paid/totalDate/2018-01/2018-07",function(data){
+            console.log(JSON.stringify(data));
+         });
+    });
+</script>
 </body>
