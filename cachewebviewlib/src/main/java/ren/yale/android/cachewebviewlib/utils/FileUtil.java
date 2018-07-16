@@ -3,12 +3,16 @@ package ren.yale.android.cachewebviewlib.utils;
 import android.text.TextUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Created by yale on 2017/9/18.
  */
 
 public class FileUtil {
+
 
     public static void deleteDirs(String path, boolean isDeleteDir) {
 
@@ -32,4 +36,16 @@ public class FileUtil {
         }
 
     }
+
+
+    public static void copy(InputStream inputStream, OutputStream out) throws IOException {
+        byte[] buf =new byte[512];
+        int len = -1;
+        while ((len = inputStream.read(buf))!=-1){
+            out.write(buf,0,len);
+        }
+        inputStream.close();
+        out.close();
+    }
+
 }

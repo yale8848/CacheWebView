@@ -48,22 +48,9 @@ public class CacheExtensionConfig {
             add("3gp");
         }
     };
-    private static HashSet STATIC_RAM = new HashSet() {
-        {
-            add("html");
-            add("htm");
-            add("js");
-            add("css");
-            add("xml");
-            add("txt");
-            add("text");
-            add("conf");
-        }
-    };
     //单独webview实例的
     private HashSet statics = new HashSet(STATIC);
     private HashSet no_cache = new HashSet(NO_CACH);
-    private HashSet statics_ram = new HashSet(STATIC_RAM);
 
     public static void addGlobalExtension(String extension) {
         add(STATIC, extension);
@@ -73,13 +60,6 @@ public class CacheExtensionConfig {
         remove(STATIC, extension);
     }
 
-    public static void addGlobalRamExtension(String extension) {
-        add(STATIC_RAM, extension);
-    }
-
-    public static void removeGlobalRamExtension(String extension) {
-        remove(STATIC_RAM, extension);
-    }
 
     private static void add(HashSet set, String extension) {
         if (TextUtils.isEmpty(extension)) {
@@ -118,18 +98,6 @@ public class CacheExtensionConfig {
 
     }
 
-    public boolean canRamCache(String extension) {
-
-        if (TextUtils.isEmpty(extension)) {
-            return false;
-        }
-        extension = extension.toLowerCase().trim();
-        if (STATIC_RAM.contains(extension)) {
-            return true;
-        }
-        return statics_ram.contains(extension);
-
-    }
 
     public CacheExtensionConfig addExtension(String extension) {
         add(statics, extension);
@@ -141,36 +109,19 @@ public class CacheExtensionConfig {
         return this;
     }
 
-    public CacheExtensionConfig addRamExtension(String extension) {
-        add(statics_ram, extension);
-        return this;
-    }
-
-    public CacheExtensionConfig removeRamExtension(String extension) {
-        remove(statics_ram, extension);
-        return this;
-    }
-
 
     public boolean isHtml(String extension) {
         if (TextUtils.isEmpty(extension)) {
             return false;
         }
-        if (extension.toLowerCase().equals("html") ||
-                extension.toLowerCase().equals("htm")) {
+        if (extension.toLowerCase().contains("html") ||
+                extension.toLowerCase().contains("htm")) {
             return true;
         }
         return false;
     }
-
     public void clearAll() {
-        clearRamExtension();
         clearDiskExtension();
-    }
-
-    public void clearRamExtension() {
-
-        statics_ram.clear();
     }
 
     public void clearDiskExtension() {
