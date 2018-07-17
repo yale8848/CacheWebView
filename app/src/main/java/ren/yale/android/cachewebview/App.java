@@ -7,7 +7,6 @@ import java.io.File;
 import ren.yale.android.cachewebviewlib.CacheType;
 import ren.yale.android.cachewebviewlib.WebViewCacheInterceptor;
 import ren.yale.android.cachewebviewlib.WebViewCacheInterceptorInst;
-import ren.yale.android.cachewebviewlib.WebViewRequestInterceptor;
 import ren.yale.android.cachewebviewlib.config.CacheExtensionConfig;
 
 /**
@@ -22,8 +21,7 @@ public class App extends Application {
         super.onCreate();
 
         WebViewCacheInterceptor.Builder builder =  new WebViewCacheInterceptor.Builder(this);
-        WebViewRequestInterceptor webViewRequestInterceptor = builder.build();
-        webViewRequestInterceptor.getCacheFile("");
+
 
         builder.setCachePath(new File(this.getCacheDir(),"cache_path_name"))//设置缓存路径，默认getCacheDir，名称CacheWebViewCache
                 .setCacheSize(1024*1024*100)//设置缓存大小，默认100M
@@ -36,7 +34,7 @@ public class App extends Application {
 
         builder.setCacheExtensionConfig(extension);
         builder.setAssetsDir("static");
-
+        builder.setDebug(false);
         WebViewCacheInterceptorInst.getInstance().
                 init(builder);
 

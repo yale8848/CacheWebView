@@ -17,6 +17,8 @@
 
 ### 引入库
 
+**注意2.x.x 不兼容 1.x.x**
+
 ```groovy
 compile 'ren.yale.android:cachewebviewlib:2.0.0'
 ```
@@ -222,6 +224,18 @@ assets 结构如下：
 ```
     WebViewCacheInterceptorInst.getInstance().enableForce(false);
 ```
+
+- Debug log
+
+默认开启debug log , TAG="CacheWebView",可以关闭log
+
+```
+    WebViewCacheInterceptor.Builder builder =  new WebViewCacheInterceptor.Builder(this);
+    builder.setDebug(false);
+    WebViewCacheInterceptorInst.getInstance().init(builder);
+
+```
+
 
 - 非单例模式
 
