@@ -230,7 +230,6 @@ assets 结构如下：
 ```
     WebViewCacheInterceptor.Builder builder =  new WebViewCacheInterceptor.Builder(this);
     builder.setTrustAllHostname();//HostnameVerifier不验证，HostnameVerifier.verify()返回true，默认正常验证
-    builder.setSSLSocketFactory(SSLSocketFactory sslSocketFactory, X509TrustManager trustManager);//自定义SSLSocketFactory和X509TrustManager
     WebViewCacheInterceptorInst.getInstance().init(builder);
 
 ```
