@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-2.0.0-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.0.0)
+[![](https://img.shields.io/badge/jcenter-2.0.1-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.0.1)
 
   [English](https://github.com/yale8848/CacheWebView/blob/master/README_EN.md)
 
@@ -20,7 +20,7 @@
 **注意2.x.x 不兼容 1.x.x**
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:2.0.0'
+compile 'ren.yale.android:cachewebviewlib:2.0.1'
 ```
 
 ### 修改代码
@@ -223,6 +223,25 @@ assets 结构如下：
 
 ```
     WebViewCacheInterceptorInst.getInstance().enableForce(false);
+```
+
+- HostnameVerifier设置
+
+```
+    WebViewCacheInterceptor.Builder builder =  new WebViewCacheInterceptor.Builder(this);
+    builder.setTrustAllHostname();//HostnameVerifier不验证，HostnameVerifier.verify()返回true，默认正常验证
+    builder.setSSLSocketFactory(SSLSocketFactory sslSocketFactory, X509TrustManager trustManager);//自定义SSLSocketFactory和X509TrustManager
+    WebViewCacheInterceptorInst.getInstance().init(builder);
+
+```
+
+- SSLSocketFactory 设置
+
+```
+    WebViewCacheInterceptor.Builder builder =  new WebViewCacheInterceptor.Builder(this);
+    builder.setSSLSocketFactory(SSLSocketFactory sslSocketFactory, X509TrustManager trustManager);//自定义SSLSocketFactory和X509TrustManager
+    WebViewCacheInterceptorInst.getInstance().init(builder);
+
 ```
 
 - Debug log
