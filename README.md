@@ -227,6 +227,8 @@ assets 结构如下：
 
 - HostnameVerifier设置
 
+ builder.setTrustAllHostname();不安全
+
 ```
     WebViewCacheInterceptor.Builder builder =  new WebViewCacheInterceptor.Builder(this);
     builder.setTrustAllHostname();//HostnameVerifier不验证，HostnameVerifier.verify()返回true，默认正常验证
