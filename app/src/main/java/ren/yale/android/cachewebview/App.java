@@ -4,6 +4,9 @@ import android.app.Application;
 
 import java.io.File;
 
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.X509TrustManager;
+
 import ren.yale.android.cachewebviewlib.CacheType;
 import ren.yale.android.cachewebviewlib.WebViewCacheInterceptor;
 import ren.yale.android.cachewebviewlib.WebViewCacheInterceptorInst;
@@ -35,6 +38,9 @@ public class App extends Application {
         builder.setCacheExtensionConfig(extension);
         builder.setAssetsDir("static");
         builder.setDebug(false);
+
+
+
         WebViewCacheInterceptorInst.getInstance().
                 init(builder);
 

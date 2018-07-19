@@ -15,6 +15,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.X509TrustManager;
+
 import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.OkHttpClient;
@@ -41,6 +46,9 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
     private boolean mDebug;
     private CacheType mCacheType;
     private String mAssetsDir = null;
+    private boolean mTrustAllHostname=false;
+    private SSLSocketFactory mSSLSocketFactory =null;
+    private  X509TrustManager mX509TrustManager = null;
 
     //==============
     private OkHttpClient mHttpClient = null;
@@ -61,6 +69,9 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         this.mContext = builder.mContext;
         this.mDebug = builder.mDebug;
         this.mAssetsDir = builder.mAssetsDir;
+        this.mX509TrustManager = builder.mX509TrustManager;
+        this.mSSLSocketFactory = builder.mSSLSocketFactory;
+        this.mTrustAllHostname = builder.mTrustAllHostname;
 
         initHttpClient();
         if (isEnableAssets()){
@@ -77,12 +88,24 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
     private void initHttpClient(){
 
         final Cache cache = new Cache(mCacheFile,mCacheSize);
-        mHttpClient = new OkHttpClient.Builder()
+        OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .cache(cache)
                 .connectTimeout(mConnectTimeout, TimeUnit.SECONDS)
                 .readTimeout(mReadTimeout, TimeUnit.SECONDS)
-                .addNetworkInterceptor(new HttpCacheInterceptor())
-                .build();
+                .addNetworkInterceptor(new HttpCacheInterceptor());
+
+        if (mTrustAllHostname){
+            builder.hostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+        }
+        if(mSSLSocketFactory!=null&&mX509TrustManager!=null){
+            builder.sslSocketFactory(mSSLSocketFactory,mX509TrustManager);
+        }
+        mHttpClient = builder.build();
     }
 
 
@@ -211,6 +234,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
 
             Request.Builder reqBuilder = new Request.Builder()
                     .url(url);
+
             String extension = MimeTypeMapUtils.getFileExtensionFromUrl(url);
 
             if (mCacheExtensionConfig.isHtml(extension)){
@@ -252,11 +276,27 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         private CacheType mCacheType = CacheType.FORCE;
         private String mAssetsDir =null;
 
+        private boolean mTrustAllHostname=false;
+        private SSLSocketFactory mSSLSocketFactory =null;
+        private  X509TrustManager mX509TrustManager = null;
+
         public Builder(Context context){
 
             mContext = context;
             mCacheFile =  new File(context.getCacheDir().toString(),"CacheWebViewCache");
             mCacheExtensionConfig = new CacheExtensionConfig();
+        }
+
+        public Builder setTrustAllHostname(){
+            mTrustAllHostname = true;
+            return this;
+        }
+        public Builder setSSLSocketFactory( SSLSocketFactory sslSocketFactory, X509TrustManager trustManager){
+              if (sslSocketFactory!=null&&trustManager!=null){
+                 mSSLSocketFactory = sslSocketFactory;
+                 mX509TrustManager = trustManager;
+              }
+              return this;
         }
 
         public Builder setCachePath(File file){
