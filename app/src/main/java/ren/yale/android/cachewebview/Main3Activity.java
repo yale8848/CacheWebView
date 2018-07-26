@@ -83,13 +83,13 @@ public class Main3Activity extends Activity {
             @Nullable
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(view, request);
+                return  WebViewCacheInterceptorInst.getInstance().interceptRequest( request);
             }
 
             @Nullable
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(view,url);
+                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(url);
             }
         });
         WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,URL);

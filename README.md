@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-2.0.1-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.0.1)
+[![](https://img.shields.io/badge/jcenter-2.0.2-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.0.2)
 
   [English](https://github.com/yale8848/CacheWebView/blob/master/README_EN.md)
 
@@ -20,7 +20,7 @@
 **注意2.x.x 不兼容 1.x.x**
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:2.0.1'
+compile 'ren.yale.android:cachewebviewlib:2.0.2'
 ```
 
 ### 修改代码
@@ -46,13 +46,13 @@ Application 里初始化
             @Nullable
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(view, request);
+                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(request);
             }
 
             @Nullable
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(view,url);
+                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(url);
             }
      });
 
@@ -84,19 +84,150 @@ Application 里初始化
             @Nullable
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(view, request);
+                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(request);
             }
 
             @Nullable
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(view,url);
+                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(url);
             }
     });
 
 ```
 
 以上就配置完毕，其他代码不用改，这样拥有默认100M缓存空间；如果你需要更详细的配置，可以看看下面的进阶设置；
+
+---
+
+- 腾讯X5内核WebView兼容处理
+
+
+```
+     mWebView.setWebViewClient(new WebViewClient() {
+
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView webView, String s) {
+                return WebResourceResponseAdapter.adapter(WebViewCacheInterceptorInst.getInstance().
+                        interceptRequest(s));
+            }
+
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest webResourceRequest) {
+
+                return WebResourceResponseAdapter.adapter(WebViewCacheInterceptorInst.getInstance().
+                        interceptRequest(WebResourceRequestAdapter.adapter(webResourceRequest)));
+            }
+        });
+
+```
+
+下面是兼容代码，可以参考：
+
+```
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+public class WebResourceRequestAdapter implements android.webkit.WebResourceRequest {
+
+    private com.tencent.smtt.export.external.interfaces.WebResourceRequest mWebResourceRequest;
+
+    private WebResourceRequestAdapter(com.tencent.smtt.export.external.interfaces.WebResourceRequest x5Request){
+        mWebResourceRequest = x5Request;
+    }
+
+    public static WebResourceRequestAdapter adapter(com.tencent.smtt.export.external.interfaces.WebResourceRequest x5Request){
+        return new WebResourceRequestAdapter(x5Request);
+    }
+
+    @Override
+    public Uri getUrl() {
+        return mWebResourceRequest.getUrl();
+    }
+
+    @Override
+    public boolean isForMainFrame() {
+        return mWebResourceRequest.isForMainFrame();
+    }
+
+    @Override
+    public boolean isRedirect() {
+        return mWebResourceRequest.isRedirect();
+    }
+
+    @Override
+    public boolean hasGesture() {
+        return mWebResourceRequest.hasGesture();
+    }
+
+    @Override
+    public String getMethod() {
+        return mWebResourceRequest.getMethod();
+    }
+
+    @Override
+    public Map<String, String> getRequestHeaders() {
+        return mWebResourceRequest.getRequestHeaders();
+    }
+}
+
+```
+
+
+```
+public class WebResourceResponseAdapter extends com.tencent.smtt.export.external.interfaces.WebResourceResponse {
+
+    private android.webkit.WebResourceResponse mWebResourceResponse;
+
+    private WebResourceResponseAdapter(android.webkit.WebResourceResponse webResourceResponse){
+        mWebResourceResponse = webResourceResponse;
+    }
+
+    public static WebResourceResponseAdapter adapter(android.webkit.WebResourceResponse webResourceResponse){
+        if (webResourceResponse == null){
+            return null;
+        }
+        return new WebResourceResponseAdapter(webResourceResponse);
+
+    }
+
+    @Override
+    public String getMimeType() {
+        return mWebResourceResponse.getMimeType();
+    }
+
+    @Override
+    public InputStream getData() {
+        return mWebResourceResponse.getData();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public int getStatusCode() {
+        return mWebResourceResponse.getStatusCode();
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public Map<String, String> getResponseHeaders() {
+        return mWebResourceResponse.getResponseHeaders();
+    }
+
+    @Override
+    public String getEncoding() {
+        return mWebResourceResponse.getEncoding();
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public String getReasonPhrase() {
+        return mWebResourceResponse.getReasonPhrase();
+    }
+}
+
+
+```
+
+如果你的项目minSdkVersion<21, 在 `mWebView.loadUrl(url)` 之后调用  `WebViewCacheInterceptorInst.getInstance().loadUrl(url,mWebView.getSettings().getUserAgentString())`;
+
 
 ---
 

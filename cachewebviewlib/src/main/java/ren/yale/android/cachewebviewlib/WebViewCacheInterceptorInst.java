@@ -25,7 +25,6 @@ public class WebViewCacheInterceptorInst implements WebViewRequestInterceptor {
             mInterceptor =  builder.build();
         }
     }
-
     public static WebViewCacheInterceptorInst getInstance(){
         if (webViewCacheInterceptorInst==null){
             synchronized (WebViewCacheInterceptorInst.class){
@@ -36,22 +35,21 @@ public class WebViewCacheInterceptorInst implements WebViewRequestInterceptor {
         }
         return webViewCacheInterceptorInst;
     }
-
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public WebResourceResponse interceptRequest(WebView view, WebResourceRequest request) {
+    public WebResourceResponse interceptRequest( WebResourceRequest request) {
         if (mInterceptor==null){
             return null;
         }
-        return mInterceptor.interceptRequest(view,request);
+        return mInterceptor.interceptRequest(request);
     }
 
     @Override
-    public WebResourceResponse interceptRequest(WebView view, String url) {
+    public WebResourceResponse interceptRequest(String url) {
         if (mInterceptor==null){
             return null;
         }
-        return mInterceptor.interceptRequest(view,url);
+        return mInterceptor.interceptRequest(url);
     }
 
     @Override
@@ -60,6 +58,22 @@ public class WebViewCacheInterceptorInst implements WebViewRequestInterceptor {
             return ;
         }
         mInterceptor.loadUrl(webView,url);
+    }
+
+    @Override
+    public void loadUrl(String url, String userAgent) {
+        if (mInterceptor==null){
+            return ;
+        }
+        mInterceptor.loadUrl(url,userAgent);
+    }
+
+    @Override
+    public void loadUrl(String url, Map<String, String> additionalHttpHeaders, String userAgent) {
+        if (mInterceptor==null){
+            return ;
+        }
+        mInterceptor.loadUrl(url,additionalHttpHeaders,userAgent);
     }
 
     @Override
