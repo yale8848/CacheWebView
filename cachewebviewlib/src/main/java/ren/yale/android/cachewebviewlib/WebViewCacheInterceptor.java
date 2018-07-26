@@ -111,8 +111,8 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public WebResourceResponse interceptRequest(WebView view, WebResourceRequest request) {
-        return interceptRequest(view,request.getUrl().toString(),request.getRequestHeaders());
+    public WebResourceResponse interceptRequest( WebResourceRequest request) {
+        return interceptRequest(request.getUrl().toString(),request.getRequestHeaders());
     }
     private Map<String, String> buildHeaders(){
 
@@ -129,8 +129,8 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         return headers;
     }
     @Override
-    public WebResourceResponse interceptRequest(WebView view, String url) {
-        return interceptRequest(view,url,buildHeaders());
+    public WebResourceResponse interceptRequest(String url) {
+        return interceptRequest(url,buildHeaders());
     }
 
     private boolean checkUrl(String url){
@@ -164,6 +164,26 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         mReferer = webView.getUrl();
         mOrigin = NetUtils.getOriginUrl(mReferer);
         mUserAgent = webView.getSettings().getUserAgentString();
+    }
+
+    @Override
+    public void loadUrl(String url, String userAgent) {
+        if (!url.startsWith("http")){
+            return;
+        }
+        mReferer = url;
+        mOrigin = NetUtils.getOriginUrl(mReferer);
+        mUserAgent = userAgent;
+    }
+
+    @Override
+    public void loadUrl(String url, Map<String, String> additionalHttpHeaders, String userAgent) {
+        if (!url.startsWith("http")){
+            return;
+        }
+        mReferer = url;
+        mOrigin = NetUtils.getOriginUrl(mReferer);
+        mUserAgent = userAgent;
     }
 
     @Override
@@ -212,7 +232,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         }
     }
 
-    private WebResourceResponse interceptRequest(WebView view, String url, Map<String, String> headers){
+    private WebResourceResponse interceptRequest(String url, Map<String, String> headers){
 
         if(mCacheType==CacheType.NORMAL){
             return null;

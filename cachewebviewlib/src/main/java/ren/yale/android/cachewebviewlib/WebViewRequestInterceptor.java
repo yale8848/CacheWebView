@@ -8,21 +8,21 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
 
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.X509TrustManager;
-
 /**
  * Created by yale on 2018/7/13.
  */
 public interface WebViewRequestInterceptor {
-    WebResourceResponse interceptRequest(WebView view, WebResourceRequest request);
-    WebResourceResponse interceptRequest(WebView view, String url);
+    WebResourceResponse interceptRequest(WebResourceRequest request);
+    WebResourceResponse interceptRequest(String url);
     File getCachePath();
 
     void clearCache();
     void enableForce(boolean force);
     InputStream getCacheFile(String url);
     void loadUrl(WebView webView ,String url);
+    void loadUrl(String url,String userAgent);
+    void loadUrl(String url,Map<String, String> additionalHttpHeaders,String userAgent);
     void loadUrl(WebView webView ,String url, Map<String, String> additionalHttpHeaders);
+
 
 }
