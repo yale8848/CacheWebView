@@ -400,6 +400,23 @@ assets 结构如下：
     webViewRequestInterceptor.getCacheFile("");
 ```
 
+## 混淆
+
+```
+#CacheWebview
+-dontwarn ren.yale.android.cachewebviewlib.**
+-keep class ren.yale.android.cachewebviewlib.**{*;}
+
+#okhttp
+-dontwarn okhttp3.**
+-keep class okhttp3.**{*;}
+
+#okio
+-dontwarn okio.**
+-keep class okio.**{*;}
+```
+
+
 ## 贡献
 
    [如何贡献代码](https://github.com/yale8848/CacheWebView/blob/master/CONTRIBUTING.md)

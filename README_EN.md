@@ -232,6 +232,22 @@ if match like this url：http://xxxxxx/scripts/jquery.min.js , it will be read s
     webViewRequestInterceptor.getCacheFile("");
 ```
 
+## Proguard
+
+```
+#CacheWebview
+-dontwarn ren.yale.android.cachewebviewlib.**
+-keep class ren.yale.android.cachewebviewlib.**{*;}
+
+#okhttp
+-dontwarn okhttp3.**
+-keep class okhttp3.**{*;}
+
+#okio
+-dontwarn okio.**
+-keep class okio.**{*;}
+```
+
 ## How to contribute
 
    [Contributing Guide](https://github.com/yale8848/CacheWebView/blob/master/CONTRIBUTING.md)
