@@ -49,6 +49,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
     private boolean mTrustAllHostname=false;
     private SSLSocketFactory mSSLSocketFactory =null;
     private  X509TrustManager mX509TrustManager = null;
+    private  ResourceInterceptor mResourceInterceptor;
 
     //==============
     private OkHttpClient mHttpClient = null;
@@ -72,6 +73,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         this.mX509TrustManager = builder.mX509TrustManager;
         this.mSSLSocketFactory = builder.mSSLSocketFactory;
         this.mTrustAllHostname = builder.mTrustAllHostname;
+        this.mResourceInterceptor = builder.mResourceInterceptor;
 
         initHttpClient();
         if (isEnableAssets()){
@@ -140,6 +142,11 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         if (!url.startsWith("http")) {
             return false;
         }
+
+        if (mResourceInterceptor!=null&&!mResourceInterceptor.interceptor(url)){
+            return false;
+        }
+
         String extension = MimeTypeMapUtils.getFileExtensionFromUrl(url);
 
 
@@ -299,12 +306,17 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         private boolean mTrustAllHostname=false;
         private SSLSocketFactory mSSLSocketFactory =null;
         private  X509TrustManager mX509TrustManager = null;
+        private ResourceInterceptor mResourceInterceptor;
 
         public Builder(Context context){
 
             mContext = context;
             mCacheFile =  new File(context.getCacheDir().toString(),"CacheWebViewCache");
             mCacheExtensionConfig = new CacheExtensionConfig();
+        }
+
+        public void setResourceInterceptor(ResourceInterceptor resourceInterceptor){
+            mResourceInterceptor = resourceInterceptor;
         }
 
         public Builder setTrustAllHostname(){

@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-2.0.2-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.0.2)
+[![](https://img.shields.io/badge/jcenter-2.0.3-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.0.3)
 
   CacheWebView is a custom implement of Android WebView resource interceptor. It beyond system WebView cache space
   limit, let cache config more simple ,fast and flexible. Visit website by offline.
@@ -16,7 +16,7 @@
 ### use lib
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:2.0.2'
+compile 'ren.yale.android:cachewebviewlib:2.0.3'
 ```
 
 
@@ -194,6 +194,18 @@ assets struct：
 ![](art/assets.png)
 
 if match like this url：http://xxxxxx/scripts/jquery.min.js , it will be read static from Assets
+
+
+- custom interceptor role
+
+```
+    builder.setResourceInterceptor(new ResourceInterceptor() {
+            @Override
+            public boolean interceptor(String url) {
+                return true;
+            }
+        });
+```
 
 
 - get cache file

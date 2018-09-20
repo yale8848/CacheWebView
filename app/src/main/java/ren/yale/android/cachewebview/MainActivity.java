@@ -21,7 +21,7 @@ import java.io.InputStream;
 
 import ren.yale.android.cachewebviewlib.WebViewCacheInterceptorInst;
 
-public class Main3Activity extends Activity {
+public class MainActivity extends Activity {
 
     private WebView mWebView;
     private static final String TAG = "CacheWebView";

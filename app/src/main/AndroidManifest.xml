@@ -28,7 +28,7 @@
         android:theme="@android:style/Theme.Black.NoTitleBar">
 
 
-        <activity android:name=".Main3Activity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
