@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-2.0.2-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.0.2)
+[![](https://img.shields.io/badge/jcenter-2.0.3-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.0.3)
 
   [English](https://github.com/yale8848/CacheWebView/blob/master/README_EN.md)
 
@@ -20,7 +20,7 @@
 **注意2.x.x 不兼容 1.x.x**
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:2.0.2'
+compile 'ren.yale.android:cachewebviewlib:2.0.3'
 ```
 
 ### 修改代码
@@ -330,6 +330,17 @@ assets 结构如下：
 ![](art/assets.png)
 
 那么只要满足这种结构的url：http://xxxxxx/scripts/jquery.min.js 都会从assets获取资源
+
+- 自定义拦截规则
+
+```
+    builder.setResourceInterceptor(new ResourceInterceptor() {
+            @Override
+            public boolean interceptor(String url) {
+                return true;//按照默认规则，false 不拦截资源
+            }
+        });
+```
 
 
 - 获取缓存文件

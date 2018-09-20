@@ -7,6 +7,7 @@ import com.tencent.smtt.sdk.QbSdk;
 
 import java.io.File;
 
+import ren.yale.android.cachewebviewlib.ResourceInterceptor;
 import ren.yale.android.cachewebviewlib.WebViewCacheInterceptor;
 import ren.yale.android.cachewebviewlib.WebViewCacheInterceptorInst;
 import ren.yale.android.cachewebviewlib.config.CacheExtensionConfig;
@@ -37,6 +38,13 @@ public class App extends Application {
         builder.setCacheExtensionConfig(extension);
         builder.setAssetsDir("static");
         builder.setDebug(true);
+
+        builder.setResourceInterceptor(new ResourceInterceptor() {
+            @Override
+            public boolean interceptor(String url) {
+                return true;
+            }
+        });
 
         WebViewCacheInterceptorInst.getInstance().
                 init(builder);
