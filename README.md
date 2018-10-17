@@ -20,7 +20,7 @@
 **注意2.x.x 不兼容 1.x.x**
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:2.0.3'
+compile 'ren.yale.android:cachewebviewlib:2.0.4'
 ```
 
 ### 修改代码
