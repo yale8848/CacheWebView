@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-2.0.3-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.0.3)
+[![](https://img.shields.io/badge/jcenter-2.0.4-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.0.4)
 
   CacheWebView is a custom implement of Android WebView resource interceptor. It beyond system WebView cache space
   limit, let cache config more simple ,fast and flexible. Visit website by offline.
