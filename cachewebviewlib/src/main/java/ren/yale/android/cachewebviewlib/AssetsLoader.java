@@ -6,6 +6,8 @@ import android.text.TextUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,10 +39,35 @@ class AssetsLoader {
         return this;
     }
 
+    private String getUrlPath(String url){
+        String uPath="";
+        try {
+            URL u = new URL(url);
+            uPath = u.getPath();
+            if (uPath.startsWith("/")){
+                if (uPath.length()==1){
+                    return uPath;
+                }
+                uPath = uPath.substring(1);
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return uPath;
+    }
     public InputStream getResByUrl(String url){
+
+
+        String uPath = getUrlPath(url);
+
+        if (TextUtils.isEmpty(uPath)){
+            return null;
+        }
+
         if (mAssetResSet!=null){
             for (Pattern p: mAssetResSet) {
-                Matcher mc = p.matcher(url);
+
+                Matcher mc = p.matcher(uPath);
                 if (mc.find()){
                     String path="";
                     if (TextUtils.isEmpty(mDir)){

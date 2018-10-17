@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-2.0.3-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.0.3)
+[![](https://img.shields.io/badge/jcenter-2.0.4-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.0.4)
 
   [English](https://github.com/yale8848/CacheWebView/blob/master/README_EN.md)
 
