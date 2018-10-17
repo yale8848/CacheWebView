@@ -16,7 +16,7 @@
 ### use lib
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:2.0.3'
+compile 'ren.yale.android:cachewebviewlib:2.0.4'
 ```
 
 
