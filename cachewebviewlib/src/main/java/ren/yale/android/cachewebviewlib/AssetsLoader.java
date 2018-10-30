@@ -82,9 +82,14 @@ class AssetsLoader {
         }
         return null;
     }
-    public AssetsLoader setDir(String dir){
+    public AssetsLoader setDir(final String dir){
         mDir = dir;
-        initResource(dir);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                initResource(dir);
+            }
+        }).start();
         return this;
     }
     private AssetsLoader initResource(String dir){
