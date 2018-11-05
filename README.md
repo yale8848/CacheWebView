@@ -337,7 +337,8 @@ assets 结构如下：
 ![](art/assets.png)
 
 （1）默认精确匹配规则：那么只有满足这种结构的url：http://xxx.com/scripts/jquery.min.js 都会从assets获取资源
-（1）后缀匹配规则：那么只要满足这种结构的url：http://xxx.com/x/xx/scripts/jquery.min.js 都会从assets获取资源
+
+（2）后缀匹配规则：那么只要满足这种结构的url：http://xxx.com/x/xx/scripts/jquery.min.js 都会从assets获取资源
 
 - 自定义拦截规则
 
