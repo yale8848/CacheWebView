@@ -109,7 +109,6 @@ class AssetsLoader {
 
     public void clear(){
         mCleared = true;
-        assetsLoader = null;
         if (mAssetResSet.size()>0){
             mAssetResSet.clear();
         }
