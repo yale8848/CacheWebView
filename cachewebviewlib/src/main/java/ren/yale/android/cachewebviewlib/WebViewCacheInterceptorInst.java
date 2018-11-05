@@ -109,6 +109,11 @@ public class WebViewCacheInterceptorInst implements WebViewRequestInterceptor {
     }
 
     @Override
+    public void initAssetsData() {
+        AssetsLoader.getInstance().initData();
+    }
+
+    @Override
     public File getCachePath() {
         if (mInterceptor==null){
             return null;

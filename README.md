@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-2.0.5-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.0.5)
+[![](https://img.shields.io/badge/jcenter-2.1.0-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.1.0)
 
   [English](https://github.com/yale8848/CacheWebView/blob/master/README_EN.md)
 
@@ -20,7 +20,7 @@
 **注意2.x.x 不兼容 1.x.x**
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:2.0.5'
+compile 'ren.yale.android:cachewebviewlib:2.1.0'
 ```
 
 ### 修改代码
@@ -316,11 +316,18 @@ CacheWebview通过后缀判断来缓存静态文件，可以添加删除
 CacheWebview可以从Assets路径加载静态资源，只要设置了Assets路径就是开启此功能，默认未开启；
 
 ```
+
+  
     WebViewCacheInterceptor.Builder builder =  new WebViewCacheInterceptor.Builder(this);
-
+    //默认精确匹配地址规则
     builder.setAssetsDir("static");
-
+    
+    //后缀匹配规则
+    //builder.isAssetsSuffixMod(true);
+    //WebViewCacheInterceptorInst.getInstance().initAssetsData(); //后台线程获取Assets文件资源
+    
     WebViewCacheInterceptorInst.getInstance().init(builder);
+
 ```
 
 builder.setAssetsDir("static")后匹配规则：
@@ -329,7 +336,8 @@ assets 结构如下：
 
 ![](art/assets.png)
 
-那么只要满足这种结构的url：http://xxxxxx/scripts/jquery.min.js 都会从assets获取资源
+（1）默认精确匹配规则：那么只有满足这种结构的url：http://xxx.com/scripts/jquery.min.js 都会从assets获取资源
+（1）后缀匹配规则：那么只要满足这种结构的url：http://xxx.com/x/xx/scripts/jquery.min.js 都会从assets获取资源
 
 - 自定义拦截规则
 

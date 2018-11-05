@@ -50,6 +50,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
     private SSLSocketFactory mSSLSocketFactory =null;
     private  X509TrustManager mX509TrustManager = null;
     private  ResourceInterceptor mResourceInterceptor;
+    private boolean mIsSuffixMod=false;
 
     //==============
     private OkHttpClient mHttpClient = null;
@@ -74,6 +75,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         this.mSSLSocketFactory = builder.mSSLSocketFactory;
         this.mTrustAllHostname = builder.mTrustAllHostname;
         this.mResourceInterceptor = builder.mResourceInterceptor;
+        this.mIsSuffixMod = builder.mIsSuffixMod;
 
         initHttpClient();
         if (isEnableAssets()){
@@ -84,7 +86,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         return mAssetsDir != null;
     }
     private void initAssetsLoader(){
-        AssetsLoader.getInstance().init(mContext).setDir(mAssetsDir);
+        AssetsLoader.getInstance().init(mContext).setDir(mAssetsDir).isAssetsSuffixMod(mIsSuffixMod);
     }
 
     private void initHttpClient(){
@@ -207,6 +209,8 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
     @Override
     public void clearCache() {
         FileUtil.deleteDirs(mCacheFile.getAbsolutePath(),false);
+        AssetsLoader.getInstance().clear();
+
     }
 
     @Override
@@ -221,6 +225,11 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
     @Override
     public InputStream getCacheFile(String url) {
         return OKHttpFile.getCacheFile(mCacheFile,url);
+    }
+
+    @Override
+    public void initAssetsData() {
+        AssetsLoader.getInstance().initData();
     }
 
 
@@ -301,12 +310,15 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         private Context mContext;
         private boolean mDebug = true;
         private CacheType mCacheType = CacheType.FORCE;
-        private String mAssetsDir =null;
+
 
         private boolean mTrustAllHostname=false;
         private SSLSocketFactory mSSLSocketFactory =null;
         private  X509TrustManager mX509TrustManager = null;
         private ResourceInterceptor mResourceInterceptor;
+
+        private String mAssetsDir=null;
+        private boolean mIsSuffixMod=false;
 
         public Builder(Context context){
 
@@ -369,6 +381,10 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
 
         public Builder setCacheType(CacheType cacheType){
             mCacheType = cacheType;
+            return this;
+        }
+        public Builder isAssetsSuffixMod(boolean suffixMod){
+            this.mIsSuffixMod = suffixMod;
             return this;
         }
         public Builder setAssetsDir(String dir){
