@@ -33,10 +33,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
 
-
-
         mWebView = findViewById(R.id.webview);
-
 
         CheckBox checkBox = (CheckBox) findViewById(R.id.checkbox);
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -92,7 +89,9 @@ public class MainActivity extends Activity {
                 return  WebViewCacheInterceptorInst.getInstance().interceptRequest(url);
             }
         });
+        //WebViewCacheInterceptorInst.getInstance().initAssetsData();
         WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,URL);
+
     }
 
     private void initSettings() {
@@ -123,6 +122,9 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void cleanCache(View v){
+        WebViewCacheInterceptorInst.getInstance().clearCache();
+    }
     public void getCacheFile(View v){
 
         String url = "http://m.mm131.com/css/at.js";

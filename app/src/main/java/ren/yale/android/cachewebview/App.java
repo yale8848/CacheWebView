@@ -37,6 +37,7 @@ public class App extends Application {
 
         builder.setCacheExtensionConfig(extension);
         builder.setAssetsDir("static");
+        //builder.isAssetsSuffixMod(true);
         builder.setDebug(true);
 
         builder.setResourceInterceptor(new ResourceInterceptor() {

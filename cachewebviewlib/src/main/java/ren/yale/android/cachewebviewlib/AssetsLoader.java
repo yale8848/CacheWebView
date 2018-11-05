@@ -8,9 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.LinkedList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Created by yale on 2018/7/16.
@@ -19,8 +18,10 @@ class AssetsLoader {
 
     private static volatile  AssetsLoader assetsLoader;
     private Context mContext;
-    private HashSet<Pattern> mAssetResSet;
+    private CopyOnWriteArraySet<String> mAssetResSet;
     private String mDir="";
+    private boolean mCleared = false;
+    private boolean mIsSuffixMod=false;
 
     public static AssetsLoader getInstance() {
         if (assetsLoader==null){
@@ -33,9 +34,14 @@ class AssetsLoader {
         return assetsLoader;
     }
 
+    public AssetsLoader isAssetsSuffixMod(boolean suffixMod){
+        mIsSuffixMod = suffixMod;
+        return this;
+    }
     public AssetsLoader init(Context context){
         mContext = context;
-        mAssetResSet = new HashSet<>();
+        mAssetResSet = new CopyOnWriteArraySet<>();
+        mCleared = false;
         return this;
     }
 
@@ -57,26 +63,25 @@ class AssetsLoader {
     }
     public InputStream getResByUrl(String url){
 
-
         String uPath = getUrlPath(url);
-
         if (TextUtils.isEmpty(uPath)){
             return null;
         }
-
+        if (!mIsSuffixMod){
+            if (TextUtils.isEmpty(mDir)){
+                return getAssetFileStream(uPath);
+            }else{
+                return getAssetFileStream(mDir+File.separator+uPath);
+            }
+        }
         if (mAssetResSet!=null){
-            for (Pattern p: mAssetResSet) {
-
-                Matcher mc = p.matcher(uPath);
-                if (mc.find()){
-                    String path="";
+            for (String p: mAssetResSet) {
+                if (uPath.endsWith(p)){
                     if (TextUtils.isEmpty(mDir)){
-                        path = p.pattern();
+                        return getAssetFileStream(p);
                     }else{
-                        path =  mDir+File.separator+p.pattern();
+                        return getAssetFileStream(mDir+File.separator+p);
                     }
-                    path = path.substring(0,path.length()-1);
-                    return getAssetFileStream(path);
                 }
             }
         }
@@ -84,31 +89,79 @@ class AssetsLoader {
     }
     public AssetsLoader setDir(final String dir){
         mDir = dir;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                initResource(dir);
-            }
-        }).start();
         return this;
     }
-    private AssetsLoader initResource(String dir){
+    public AssetsLoader initData(){
+
+        if (!mIsSuffixMod){
+            return this;
+        }
+        if (mAssetResSet.size()==0){
+           new Thread(new Runnable() {
+               @Override
+               public void run() {
+                   initResourceNoneRecursion(mDir);
+               }
+           }).start();
+        }
+        return this;
+    }
+
+    public void clear(){
+        mCleared = true;
+        assetsLoader = null;
+        if (mAssetResSet.size()>0){
+            mAssetResSet.clear();
+        }
+    }
+
+    private void addAssetsFile(String file){
+
+        String flag = mDir+File.separator;
+        if (!TextUtils.isEmpty(mDir)){
+            int pos = file.indexOf(flag);
+            if (pos>=0){
+                file = file.substring(pos+flag.length());
+            }
+        }
+        mAssetResSet.add(file);
+    }
+    private AssetsLoader initResourceNoneRecursion(String dir){
+
         try {
+
+            LinkedList<String> list = new LinkedList<String>();
             String[] resData = mContext.getAssets().list(dir);
             for (String res : resData) {
                 String sub = dir + File.separator + res;
                 String[] tmp = mContext.getAssets().list(sub);
                 if (tmp.length == 0) {
-                    if (!TextUtils.isEmpty(mDir)){
-                        sub = sub.replace(mDir + File.separator, "");
-                    }
-                    mAssetResSet.add( Pattern.compile(sub+"$"));
+                    addAssetsFile(sub);
                 } else {
-                    initResource(sub);
+                    list.add(sub);
+                }
+            }
+            while (!list.isEmpty()){
+                if (mCleared){
+                    break;
+                }
+                String last = list.removeFirst();
+                String[] tmp = mContext.getAssets().list(last);
+                if (tmp.length == 0) {
+                    addAssetsFile(last);
+                } else {
+                    for(String sub : tmp){
+                        String[] tmp1 = mContext.getAssets().list(last+File.separator+sub);
+                        if (tmp1.length == 0){
+                            addAssetsFile(last+File.separator+sub);
+                        }else{
+                            list.add(last+File.separator+sub);
+                        }
+                    }
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+           // e.printStackTrace();
         }
         return this;
 
@@ -117,7 +170,7 @@ class AssetsLoader {
         try {
             return mContext.getAssets().open(path);
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return null;
     }

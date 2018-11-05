@@ -19,6 +19,7 @@ public interface WebViewRequestInterceptor {
     void clearCache();
     void enableForce(boolean force);
     InputStream getCacheFile(String url);
+    void initAssetsData();
     void loadUrl(WebView webView ,String url);
     void loadUrl(String url,String userAgent);
     void loadUrl(String url,Map<String, String> additionalHttpHeaders,String userAgent);
