@@ -36,7 +36,7 @@ public class App extends Application {
         extension.addExtension("json").removeExtension("swf");
 
         builder.setCacheExtensionConfig(extension);
-        builder.setAssetsDir("static");
+        //builder.setAssetsDir("static");
         //builder.isAssetsSuffixMod(true);
         builder.setDebug(true);
 
