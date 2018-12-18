@@ -45,12 +45,14 @@ public class MainActivity extends Activity {
         });
         final String[] urls = getResources().getStringArray(R.array.urls);
         URL = urls[0];
+        //URL=URL+"?r="+System.currentTimeMillis();
         Spinner spinner = (Spinner) findViewById(R.id.spnner);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 URL = urls[position];
                 //mInterceptor.loadUrl(mWebView,URL);
+                //URL=URL+"?r="+System.currentTimeMillis();
                 WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,URL);
             }
 
@@ -88,9 +90,14 @@ public class MainActivity extends Activity {
             public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
                 return  WebViewCacheInterceptorInst.getInstance().interceptRequest(url);
             }
+
+            @Override
+            public void onLoadResource(WebView view, String url) {
+                super.onLoadResource(view, url);
+            }
         });
         //WebViewCacheInterceptorInst.getInstance().initAssetsData();
-        WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,URL);
+        //WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,URL);
 
     }
 
