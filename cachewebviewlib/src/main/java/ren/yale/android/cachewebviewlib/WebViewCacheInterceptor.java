@@ -292,7 +292,11 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
             String mimeType = MimeTypeMapUtils.getMimeTypeFromUrl(url);
             WebResourceResponse webResourceResponse = new WebResourceResponse(mimeType,"",response.body().byteStream());
             if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
-                webResourceResponse.setStatusCodeAndReasonPhrase(response.code(),response.message());
+                String message = response.message();
+                if(TextUtils.isEmpty(message)){
+                    message = "OK";
+                }
+                webResourceResponse.setStatusCodeAndReasonPhrase(response.code(),message);
                 webResourceResponse.setResponseHeaders(NetUtils.multimapToSingle(response.headers().toMultimap()));
             }
             return webResourceResponse;
