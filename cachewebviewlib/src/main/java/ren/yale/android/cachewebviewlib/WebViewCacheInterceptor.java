@@ -296,7 +296,11 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
                 if(TextUtils.isEmpty(message)){
                     message = "OK";
                 }
-                webResourceResponse.setStatusCodeAndReasonPhrase(response.code(),message);
+                try{
+                    webResourceResponse.setStatusCodeAndReasonPhrase(response.code(),message);
+                }catch (Exception e){
+                    return  null;
+                }
                 webResourceResponse.setResponseHeaders(NetUtils.multimapToSingle(response.headers().toMultimap()));
             }
             return webResourceResponse;
