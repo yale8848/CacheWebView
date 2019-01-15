@@ -146,7 +146,8 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         if (TextUtils.isEmpty(url)) {
             return false;
         }
-        if (!isValidUrl(url)) {
+        //okhttp only deal with http[s]
+        if (!url.startsWith("http")) {
             return false;
         }
 
