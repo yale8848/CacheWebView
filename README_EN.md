@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-2.1.6-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.1.6)
+[![](https://img.shields.io/badge/jcenter-2.1.7-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.1.7)
 
   CacheWebView is a custom implement of Android WebView resource interceptor. It beyond system WebView cache space
   limit, let cache config more simple ,fast and flexible. Visit website by offline.
@@ -16,7 +16,7 @@
 ### use lib
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:2.1.6'
+compile 'ren.yale.android:cachewebviewlib:2.1.7'
 ```
 
 
