@@ -5,8 +5,10 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.view.View;
 import android.webkit.CookieManager;
+import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -94,6 +96,14 @@ public class MainActivity extends Activity {
             @Override
             public void onLoadResource(WebView view, String url) {
                 super.onLoadResource(view, url);
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                int code = error.getErrorCode();
+                String resp = error.getDescription().toString();
+                super.onReceivedError(view, request, error);
             }
         });
         //WebViewCacheInterceptorInst.getInstance().initAssetsData();
