@@ -23,6 +23,7 @@ import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Cache;
 import okhttp3.CacheControl;
+import okhttp3.Dns;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -50,6 +51,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
     private boolean mTrustAllHostname = false;
     private SSLSocketFactory mSSLSocketFactory = null;
     private X509TrustManager mX509TrustManager = null;
+    private Dns mDns=null;
     private ResourceInterceptor mResourceInterceptor;
     private boolean mIsSuffixMod = false;
 
@@ -77,6 +79,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         this.mTrustAllHostname = builder.mTrustAllHostname;
         this.mResourceInterceptor = builder.mResourceInterceptor;
         this.mIsSuffixMod = builder.mIsSuffixMod;
+        this.mDns = builder.mDns;
 
         initHttpClient();
         if (isEnableAssets()) {
@@ -100,7 +103,6 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
                 .connectTimeout(mConnectTimeout, TimeUnit.SECONDS)
                 .readTimeout(mReadTimeout, TimeUnit.SECONDS)
                 .addNetworkInterceptor(new HttpCacheInterceptor());
-
         if (mTrustAllHostname) {
             builder.hostnameVerifier(new HostnameVerifier() {
                 @Override
@@ -111,6 +113,9 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         }
         if (mSSLSocketFactory != null && mX509TrustManager != null) {
             builder.sslSocketFactory(mSSLSocketFactory, mX509TrustManager);
+        }
+        if(mDns!=null){
+            builder.dns(mDns);
         }
         mHttpClient = builder.build();
     }
@@ -339,7 +344,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
 
         private String mAssetsDir = null;
         private boolean mIsSuffixMod = false;
-
+        private Dns mDns=null;
         public Builder(Context context) {
 
             mContext = context;
@@ -420,6 +425,10 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
                 mAssetsDir = dir;
             }
             return this;
+        }
+
+        public void setDns(Dns dns) {
+            this.mDns = dns;
         }
 
         public WebViewRequestInterceptor build() {
