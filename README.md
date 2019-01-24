@@ -1,6 +1,6 @@
 # CacheWebView
 
-[![](https://img.shields.io/badge/jcenter-2.1.7-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.1.7)
+[![](https://img.shields.io/badge/jcenter-2.1.8-519dd9.svg)](https://bintray.com/yale8848/maven/CacheWebView/2.1.8)
 
   [English](https://github.com/yale8848/CacheWebView/blob/master/README_EN.md)
 
@@ -20,7 +20,7 @@
 **注意2.x.x 不兼容 1.x.x**
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:2.1.7'
+compile 'ren.yale.android:cachewebviewlib:2.1.8'
 ```
 
 ### 修改代码
