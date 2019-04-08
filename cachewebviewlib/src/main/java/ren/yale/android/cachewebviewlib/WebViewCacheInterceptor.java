@@ -9,7 +9,6 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -279,8 +278,6 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
                 return webResourceResponse;
             }
         }
-
-        String mimeType = MimeTypeMapUtils.getMimeTypeFromUrl(url);
         try {
 
             Request.Builder reqBuilder = new Request.Builder()
@@ -304,7 +301,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
             } else {
                 CacheWebViewLog.d(String.format("from server: %s", url), mDebug);
             }
-
+            String mimeType = MimeTypeMapUtils.getMimeTypeFromUrl(url);
             WebResourceResponse webResourceResponse = new WebResourceResponse(mimeType, "", response.body().byteStream());
             if (response.code() == 504 && !NetUtils.isConnected(mContext)){
                 return null;
@@ -325,9 +322,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream("".getBytes());
-        WebResourceResponse webResourceResponse = new WebResourceResponse(mimeType, "", byteArrayInputStream);
-        return webResourceResponse;
+        return null;
     }
 
     public static class Builder {
