@@ -1,13 +1,16 @@
 package ren.yale.android.cachewebview;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -52,8 +55,7 @@ public class MainActivity extends Activity {
                 URL = urls[position];
                 //mInterceptor.loadUrl(mWebView,URL);
                 //URL=URL+"?r="+System.currentTimeMillis();
-                String u="file://"+getFilesDir()+"/Wikipedia.html";
-                WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,u);
+                WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,URL);
             }
 
             @Override
@@ -70,7 +72,7 @@ public class MainActivity extends Activity {
                 super.onPageFinished(view, url);
             }
 
-      /*      @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+           @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,request.getUrl().toString());
@@ -94,7 +96,7 @@ public class MainActivity extends Activity {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
                 return  WebViewCacheInterceptorInst.getInstance().interceptRequest(url);
-            }*/
+            }
 
             @Override
             public void onLoadResource(WebView view, String url) {

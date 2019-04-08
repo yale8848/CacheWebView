@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="urls">
-        <item>file:///mnt/sdcard/dxh/Wikipedia.html</item>
+        <item>http://m.mm131.com/xinggan/3320_3.html</item>
         <item>http://aixuetang.whytouch.com/ppt/fba9f758a0f0d3787866e2dedae2996f/index.html?mode=2&amp;taskStudentId=5982574acd0a11e883b600163e100c20</item>
         <item>http://www.ranwena.com/files/article/1/1268/5028890.html</item>
-        <item>http://m.mm131.com/xinggan/3320_3.html</item>
         <item>https://mail.qq.com</item>
         <item>http://element-cn.eleme.io/#/zh-CN</item>
         <item>https://www.baidu.com/s?ie=UTF-8&amp;wd=m.taobao.com</item>
@@ -25,5 +24,6 @@
         <item>http://m.lewen8.com/lw2408/2030224.html</item>
         <item>https://lftresource.oss-cn-qingdao.aliyuncs.com/test/index1.html</item>
         <item>https://lftresource.oss-cn-qingdao.aliyuncs.com/test/yale/test.html</item>
+        <item>file:///mnt/sdcard/dxh/Wikipedia.html</item>
     </string-array>
 </resources>
