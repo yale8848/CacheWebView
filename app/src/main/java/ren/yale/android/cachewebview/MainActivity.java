@@ -67,7 +67,12 @@ public class MainActivity extends Activity {
         mWebView.setWebViewClient(new WebViewClient(){
 
 
-            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+            }
+
+           @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 WebViewCacheInterceptorInst.getInstance().loadUrl(mWebView,request.getUrl().toString());
@@ -103,6 +108,7 @@ public class MainActivity extends Activity {
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 int code = error.getErrorCode();
                 String resp = error.getDescription().toString();
+                String url = request.getUrl().toString();
                 super.onReceivedError(view, request, error);
             }
         });
