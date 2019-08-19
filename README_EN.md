@@ -43,7 +43,7 @@ Add WebView Interceptor
             @Nullable
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(view, request);
+                return  WebViewCacheInterceptorInst.getInstance().interceptRequest(request);
             }
 
             @Nullable
