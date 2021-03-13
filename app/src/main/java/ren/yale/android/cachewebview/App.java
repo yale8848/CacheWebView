@@ -25,8 +25,9 @@ public class App extends Application {
 
         WebViewCacheInterceptor.Builder builder =  new WebViewCacheInterceptor.Builder(this);
 
-
-        builder.setCachePath(new File(this.getCacheDir(),"cache_path_name"))//设置缓存路径，默认getCacheDir，名称CacheWebViewCache
+        //设置okhttp缓存路径，默认getCacheDir，名称CacheWebViewCache
+        builder.setCachePath(new File(this.getCacheDir(),"cache_path_name"))
+               .setDynamicCachePath(new File(this.getCacheDir(),"dynamic_webview_cache"))
                 .setCacheSize(1024*1024*100)//设置缓存大小，默认100M
                 .setConnectTimeoutSecond(20)//设置http请求链接超时，默认20秒
                 .setReadTimeoutSecond(20);//设置http请求链接读取超时，默认20秒

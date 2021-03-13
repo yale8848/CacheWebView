@@ -10,6 +10,8 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -28,6 +30,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import ren.yale.android.cachewebviewlib.config.CacheExtensionConfig;
+import ren.yale.android.cachewebviewlib.utils.DynamicCacheLoader;
 import ren.yale.android.cachewebviewlib.utils.FileUtil;
 import ren.yale.android.cachewebviewlib.utils.MimeTypeMapUtils;
 import ren.yale.android.cachewebviewlib.utils.NetUtils;
@@ -40,6 +43,7 @@ import ren.yale.android.cachewebviewlib.utils.OKHttpFile;
 public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
 
     private File mCacheFile;
+    private File mDynamicCacheFile;
     private long mCacheSize;
     private long mConnectTimeout;
     private long mReadTimeout;
@@ -64,9 +68,9 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
 
 
     public WebViewCacheInterceptor(Builder builder) {
-
         this.mCacheExtensionConfig = builder.mCacheExtensionConfig;
         this.mCacheFile = builder.mCacheFile;
+        this.mDynamicCacheFile = builder.mDynamicCacheFile;
         this.mCacheSize = builder.mCacheSize;
         this.mCacheType = builder.mCacheType;
         this.mConnectTimeout = builder.mConnectTimeout;
@@ -85,6 +89,11 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         if (isEnableAssets()) {
             initAssetsLoader();
         }
+    }
+
+
+    private boolean isEnableDynamicCache(){
+        return mDynamicCacheFile!=null;
     }
 
     private boolean isEnableAssets() {
@@ -269,6 +278,30 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
             return null;
         }
 
+
+
+      if (isEnableDynamicCache()) {
+        File file = DynamicCacheLoader.getInstance().getResByUrl(mDynamicCacheFile, url);
+        if (file != null) {
+          CacheWebViewLog.d(String.format("from dynamic file: %s", url), mDebug);
+          String mimeType = MimeTypeMapUtils.getMimeTypeFromUrl(url);
+          InputStream inputStream = null;
+          try {
+            inputStream = new FileInputStream(file);
+          } catch (FileNotFoundException e) {
+            e.printStackTrace();
+          }
+          WebResourceResponse webResourceResponse = new WebResourceResponse(mimeType, "",
+              inputStream);
+          return webResourceResponse;
+
+        }
+
+
+      }
+
+
+
         if (isEnableAssets()) {
             InputStream inputStream = AssetsLoader.getInstance().getResByUrl(url);
             if (inputStream != null) {
@@ -328,6 +361,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
     public static class Builder {
 
         private File mCacheFile;
+        private File mDynamicCacheFile;
         private long mCacheSize = 100 * 1024 * 1024;
         private long mConnectTimeout = 20;
         private long mReadTimeout = 20;
@@ -372,6 +406,13 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
         public Builder setCachePath(File file) {
             if (file != null) {
                 mCacheFile = file;
+            }
+            return this;
+        }
+
+        public Builder setDynamicCachePath(File file){
+            if(file!=null){
+                mDynamicCacheFile = file;
             }
             return this;
         }
