@@ -30,7 +30,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import ren.yale.android.cachewebviewlib.config.CacheExtensionConfig;
-import ren.yale.android.cachewebviewlib.utils.DynamicCacheLoader;
+import ren.yale.android.cachewebviewlib.DynamicCacheLoader;
 import ren.yale.android.cachewebviewlib.utils.FileUtil;
 import ren.yale.android.cachewebviewlib.utils.MimeTypeMapUtils;
 import ren.yale.android.cachewebviewlib.utils.NetUtils;

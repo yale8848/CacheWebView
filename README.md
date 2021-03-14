@@ -20,7 +20,7 @@
 **注意2.x.x 不兼容 1.x.x**
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:2.1.8'
+implementation 'ren.yale.android:cachewebviewlib:2.2.1'
 ```
 
 ### 修改代码
@@ -239,6 +239,7 @@ public class WebResourceResponseAdapter extends com.tencent.smtt.export.external
     WebViewCacheInterceptor.Builder builder =  new WebViewCacheInterceptor.Builder(this);
 
      builder.setCachePath(new File(this.getCacheDir(),"cache_path_name"))//设置缓存路径，默认getCacheDir，名称CacheWebViewCache
+                        .setDynamicCachePath(new File(this.getCacheDir(),"dynamic_webview_cache"))
                         .setCacheSize(1024*1024*100)//设置缓存大小，默认100M
                         .setConnectTimeoutSecond(20)//设置http请求链接超时，默认20秒
                         .setReadTimeoutSecond(20)//设置http请求链接读取超时，默认20秒

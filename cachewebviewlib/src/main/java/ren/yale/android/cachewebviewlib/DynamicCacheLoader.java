@@ -1,4 +1,4 @@
-package ren.yale.android.cachewebviewlib.utils;
+package ren.yale.android.cachewebviewlib;
 
 import java.io.File;
 import java.net.MalformedURLException;

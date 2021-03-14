@@ -16,7 +16,7 @@
 ### use lib
 
 ```groovy
-compile 'ren.yale.android:cachewebviewlib:2.1.8'
+implementation 'ren.yale.android:cachewebviewlib:2.2.1'
 ```
 
 
@@ -103,6 +103,7 @@ when call `mWebView.loadUrl(url)` replace by `WebViewCacheInterceptorInst.getIns
     WebViewCacheInterceptor.Builder builder =  new WebViewCacheInterceptor.Builder(this);
 
      builder.setCachePath(new File(this.getCacheDir(),"cache_path_name"))//set cache path, default getCacheDir, name CacheWebViewCache
+                        .setDynamicCachePath(new File(this.getCacheDir(),"dynamic_webview_cache"))
                         .setCacheSize(1024*1024*100)//set cache size, default 100M
                         .setConnectTimeoutSecond(20)//set http connect timeou,default 20 seconds
                         .setReadTimeoutSecond(20)//set http read timeout,default 20 seconds
