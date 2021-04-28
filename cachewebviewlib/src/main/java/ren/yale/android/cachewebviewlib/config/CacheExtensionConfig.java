@@ -108,6 +108,11 @@ public class CacheExtensionConfig {
         remove(statics, extension);
         return this;
     }
+    
+    public CacheExtensionConfig removeMediaExtension(String extension) {
+        remove(no_cache, extension);
+        return this;
+    }
 
 
     public boolean isHtml(String extension) {
