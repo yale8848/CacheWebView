@@ -161,7 +161,7 @@ public class WebViewCacheInterceptor implements WebViewRequestInterceptor {
             return false;
         }
         //okhttp only deal with http[s]
-        if (!url.startsWith("http")) {
+        if (url.startsWith("https")) {
             return false;
         }
 
